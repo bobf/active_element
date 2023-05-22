@@ -1,0 +1,33 @@
+<h1>Forbidden</h1>
+
+<h2>You do not have access to this page</h2>
+
+<hr/>
+
+<% if missing_permissions.present? %>
+<p>Your user account requires the following permission(s) to view this content:</p>
+
+<div>
+  <ul style="list-style-type: none;">
+    <% missing_permissions.each do |missing_permission| %>
+      <li class="font-monospace"><%= missing_permission %></li>
+    <% end %>
+  </ul>
+</div>
+
+<hr/>
+<% end %>
+
+<p>Please contact your administrator if you need access to this page, or <%= link_to 'go back', request.referrer %> to the previous page and try a different option.</p>
+
+<% if alternatives.present? %>
+  <div class="alternative-links">
+    <h5>Alternatively, try one of the following suggestions:</h5>
+
+    <ul class="pt-1" style="list-style-type: none">
+      <% alternatives.first(5).each do |route| %>
+        <li class="mt-1 font-monospace"><%= link_to route.title, route.path %></li>
+      <% end %>
+    </ul>
+  </div>
+<% end %>

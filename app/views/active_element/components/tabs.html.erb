@@ -1,0 +1,7 @@
+<div class="p-3">
+  <% if tabs.size > 10 %>
+    <%= controller.helpers.render partial: 'active_element/components/vertical_tabs', locals: { tabs: tabs, class_name: class_name } %>
+  <% else %>
+    <%= controller.helpers.render partial: 'active_element/components/horizontal_tabs', locals: { tabs: tabs, class_name: class_name } %>
+  <% end %>
+</div>

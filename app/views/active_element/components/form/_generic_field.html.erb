@@ -1,0 +1,3 @@
+<%= form.public_send(type, field, value: component.value_for(field),
+                                  class: "form-control #{component.valid?(field) ? nil : 'is-invalid'}",
+                                  **options) %>

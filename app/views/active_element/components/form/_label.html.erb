@@ -1,0 +1,17 @@
+<%= form.label field, options[:label] do %>
+  <% if options[:description].present? %>
+    <%= options[:label] %>
+    <button type="button"
+            style="background: none; border: none; outline: 0; position: absolute; margin-top: 0.3rem"
+            data-bs-toggle="popover"
+            title="<%= options.fetch(:label) %>"
+            data-bs-content="<%= options[:description] %>">
+            <i class="text-secondary fa-solid fa-circle-info"></i>
+    </button>
+  <% end %>
+<% end %>
+
+<% if type == :check_boxes && options[:option_groups].present? %>
+  <%= render partial: 'active_element/components/form/option_groups_summary',
+             locals: { option_groups: options[:option_groups] } %>
+<% end %>

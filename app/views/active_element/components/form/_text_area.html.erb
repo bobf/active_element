@@ -1,0 +1,4 @@
+<%= form.text_area field,
+                   value: component.value_for(field),
+                   rows: 5,
+                   class: "form-control #{component.valid?(field) ? nil : 'is-invalid'}" %>

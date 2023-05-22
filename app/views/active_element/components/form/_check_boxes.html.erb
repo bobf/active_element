@@ -1,0 +1,33 @@
+<% if options.key?(:option_groups) %>
+  <% options[:option_groups].each do |group_title, group, group_options| %>
+    <div class="p-3">
+      <a name="<%= ActiveElement::Components::Util::I18n.class_name(group_title) %>"></a>
+      <%= component.page_section_title group_title %>
+      <%= form.fields_for field do |subform| %>
+        <% group.each do |label, name, checked| %>
+          <%= subform.check_box(name, checked: checked, class: 'me-2') %>
+          <%= subform.label name, label %>
+          <br/>
+        <% end %>
+      <% end %>
+
+    </div>
+    <hr/>
+  <% end %>
+<% else %>
+  <div class="container w-100">
+    <%= form.fields_for field do |subform| %>
+      <% options.fetch(:options).each_slice(options.fetch(:columns, 1)) do |slice| %>
+        <div class="row w-100">
+          <% slice.each do |label, name, checked| %>
+            <div class="col">
+              <%= subform.check_box(name, checked: checked, class: 'me-2') %>
+              <%= subform.label name, label %>
+            </div>
+            <br/>
+          <% end %>
+        </div>
+      <% end %>
+    <% end %>
+  </div>
+<% end %>

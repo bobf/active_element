@@ -1,0 +1,9 @@
+<% if item.separator? %>
+  <li>
+    <div class="menu-item-separator">
+      <div class="menu-item-separator-line"></div>
+    </div>
+  </li>
+<% else %>
+  <li><%= link_to item.name, item.url, class: 'menu-section-dropdown-item dropdown-item' %></li>
+<% end %>

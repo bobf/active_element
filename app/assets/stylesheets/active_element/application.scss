@@ -1,0 +1,48 @@
+@import "bootstrap";
+
+td.action-column {
+  width: 2rem;
+}
+
+.action-button {
+  margin-right: 0.5rem;
+  min-width: 5rem;
+}
+
+table {
+  td.action-column {
+    padding-right: 0.2rem;
+    padding-left: 0.2rem;
+  }
+
+  .action-button {
+    margin-right: 0.2rem;
+    min-width: 2rem;
+
+    .button-title {
+      display: none;
+    }
+  }
+}
+
+form {
+  label {
+    display: inline;
+  }
+}
+
+.json-field {
+  .form-control, .form-select {
+    width: calc(100% - 2.5rem);
+    display: inline;
+  }
+
+  .action-button {
+    min-width: 2rem;
+    margin-left: 0.2rem;
+
+    .button-title {
+      display: none;
+    }
+  }
+}

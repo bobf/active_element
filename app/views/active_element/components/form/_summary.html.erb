@@ -1,0 +1,40 @@
+<% values = [] %>
+<% fields.each do |field_name, type, options| %>
+  <% value = component.value_for(field_name) %>
+
+  <% if type == :check_box %>
+
+    <% if ['1', true].include?(value) %>
+      <% values << value %>
+      <div class="d-inline me-3">
+        <i class="text-success fa-regular fa-fw fa-circle-check"></i>
+        <span class="text-primary"><%= options.fetch(:label) %></span>
+      </div>
+    <% end %>
+
+  <% elsif type == :select %>
+      <% value = component.display_value_for_select(field_name, options) %>
+      <% if value.present? %>
+        <% values << value %>
+        <div class="d-inline me-3">
+          <span class="text-secondary"><%= options.fetch(:label) %>:</span>
+          <span class="ms-1 text-primary"><%= value %></span>
+        </div>
+      <% end %>
+  <% elsif value.present? %>
+    <%# TODO: Handle other field types %>
+
+    <% values << value %>
+    <div class="d-inline me-3">
+      <span class="text-secondary"><%= options.fetch(:label) %>:</span>
+      <span class="ms-1 text-primary"><%= value %></span>
+    </div>
+
+  <% end %>
+<% end %>
+
+<% if values.empty? %>
+  <div class="d-inline ms-3 me-3">
+    <span class="fst-italic text-secondary">(No filters applied)</span>
+  </div>
+<% end %>

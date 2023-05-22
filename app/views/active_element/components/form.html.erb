@@ -1,0 +1,78 @@
+<% if destroy %>
+  <%= active_element_component.destroy_button(record, float: 'end') %>
+<% end %>
+
+<% if modal %>
+
+  <div class="mt-4 mb-5 ms-3">
+
+    <div class="p-3 pb-4 border-bottom d-inline">
+      <%= active_element_component.button(
+            title: title.presence || 'Show Form',
+            icon: 'arrow-up-right-dots',
+            data: { field_type: 'form-modal', form_id: id, form_title: title }) %>
+    </div>
+
+    <div class="form-summary d-inline bg-light border-bottom border-start mt-1 p-3 pb-4">
+      <%= render partial: 'active_element/components/form/summary',
+                 locals: { fields: fields, component: component } %>
+    </div>
+
+  </div>
+
+<% elsif title.present? && expanded == false %>
+
+  <div data-field-type="form-expand" data-form-id="<%= id %>" class="mb-3">
+    <span class="text-primary fs-4 align-bottom"><%= title %></span>
+  </div>
+
+<% elsif title.blank? && expanded == false %>
+
+  <div data-field-type="form-expand" data-form-id="<%= id %>" class="mb-3"></div>
+
+<% elsif title.present? %>
+
+  <span class="text-primary fs-4 align-bottom"><%= title %></span>
+
+<% end %>
+
+<div class="expand-collapse-form <%= modal ? 'd-none' : nil %>" id="form-wrapper-<%= id %>">
+  <%= form_with local: true, **kwargs, method: method, id: id, class: "#{class_name} m-3 #{modal == false && expanded == false ? 'd-none' : nil}" do |form| %>
+    <% if %i[top both].include?(submit_position) %>
+      <div class="form-group sticky-top" style="top: 0.5rem;">
+        <%= form.submit submit_label, class: 'btn btn-success float-end' %>
+      </div>
+    <% end %>
+
+    <% fields.each_slice(columns) do |field_group| %>
+      <div class="row mb-3">
+        <% field_group.each do |field, type, options| %>
+          <div class="col-sm-3">
+            <%= render partial: 'active_element/components/form/label',
+                       locals: { type: type, form: form, field: field, options: options } %>
+          </div>
+
+
+          <div class="col">
+            <%= render partial: 'active_element/components/form/field',
+                       locals: {
+                         id: id,
+                         type: type,
+                         form: form,
+                         field: field,
+                         options: options,
+                         component: component,
+                         record: record }
+            %>
+          </div>
+        <% end %>
+      </div>
+    <% end %>
+
+    <% if %i[bottom both].include?(submit_position) %>
+      <div class="form-group">
+        <%= form.submit submit_label, class: "btn btn-#{method == :post ? 'success' : 'primary'}" %>
+      </div>
+    <% end %>
+  <% end %>
+</div>

@@ -1,0 +1,27 @@
+
+<%=
+  link_to(
+    path.presence || '#',
+    method: path.present? && method != :get ? method : nil,
+    data: { confirm_action: confirm },
+    class: "btn #{button_class} #{float_class} #{kwargs_class}",
+    title: title,
+    **kwargs
+  ) do %>
+  <% if block_given %>
+    <%= raw content %>
+  <% else %>
+    <span class="text-nowrap">
+      <% if icon.present? %>
+        <i class="fa-solid fa-<%= icon %>"></i>
+      <% elsif type == :show %>
+        <i class="fa-solid fa-eye"></i>
+      <% elsif type == :edit %>
+        <i class="fa-solid fa-pen"></i>
+      <% elsif type == :destroy %>
+        <i class="fa-solid fa-square-xmark"></i>
+      <% end %>
+      <span class="button-title"><%= title %></span>
+    </span>
+  <% end %>
+<% end %>

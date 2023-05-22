@@ -1,0 +1,12 @@
+<div class="col-sm-10 json-field form-group"
+     data-data-key="<%= ActiveElement::Components::Util.json_name("#{form.object_name}.#{field}") %>"
+>
+
+</div>
+
+<%=
+  component.json(
+    ActiveElement::Components::Util.json_name("#{form.object_name}.#{field}"),
+    { data: component.value_for(field, options), schema: component.schema_for(field, options) }
+  )
+%>

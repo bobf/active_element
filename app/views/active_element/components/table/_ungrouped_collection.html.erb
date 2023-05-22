@@ -1,0 +1,49 @@
+<table class="<%= class_name %> table" style="<%= style %>">
+  <thead>
+    <tr>
+      <% fields.each do |field, class_name, label, _mapper, options| %>
+        <th class="text-primary text-nowrap">
+          <%= label %>
+          <% if options[:description].present? %>
+            <button type="button"
+                    style="background: none; border: none; outline: 0; position: absolute; margin-top: 0.3rem"
+                    data-bs-toggle="popover"
+                    data-bs-content="<%= options[:description] %>">
+                    <i class="text-secondary fa-solid fa-circle-info"></i>
+            </button>
+          <% end %>
+        </th>
+      <% end %>
+
+      <% if show %>
+        <th></th>
+      <% end %>
+
+      <% if edit %>
+        <th></th>
+      <% end %>
+
+      <% if destroy %>
+        <th></th>
+      <% end %>
+    </tr>
+  </thead>
+
+  <tbody>
+    <% collection.each_with_index do |item, index| %>
+      <%= render partial: 'active_element/components/table/collection_row',
+                 locals: {
+                   component: component,
+                   item: item,
+                   index: index,
+                   fields: fields,
+                   class_name: class_name,
+                   show: show,
+                   edit: edit,
+                   destroy: destroy,
+                   row_class_mapper: row_class_mapper
+                 } %>
+    <% end %>
+  </tbody>
+</table>
+

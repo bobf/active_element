@@ -1,0 +1,32 @@
+<nav class="<%= class_name %>">
+  <div class="nav nav-tabs" id="nav-tab" role="tablist">
+    <% tabs.each do |tab| %>
+      <%=
+        link_to tab.title,
+                tab.path,
+                class: "nav-link #{tab.selected? ? 'active' : nil}",
+                id: "nav-#{tab.identifier}-tab",
+                type: 'button',
+                role: 'tab',
+                :'aria-controls' => "nav-#{tab.identifier}",
+                :'aria-selected' => tab.selected? ? 'true' : 'false'
+      %>
+    <% end %>
+  </div>
+</nav>
+
+<% tabs.each do |tab| %>
+  <div class="tab-content" id="nav-tabContent">
+    <div
+      class="p-3 tab-pane fade <%= tab.selected? ? 'show active' : nil %> <%= tab.identifier %>"
+      id="nav-credentials"
+      role="tabpanel"
+      aria-labelledby="nav-<%= tab.identifier %>-tab"
+      tabindex="0"
+    >
+      <div class="<%= tab.identifier %>">
+        <%= tab.content %>
+      </div>
+    </div>
+  </div>
+<% end %>

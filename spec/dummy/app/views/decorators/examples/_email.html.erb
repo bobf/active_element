@@ -1,0 +1,5 @@
+<% if context == 'item_table' %>
+  <%= mail_to record.email %>
+<% else %>
+  <span class="default-value"><%= default %></span>
+<% end %>

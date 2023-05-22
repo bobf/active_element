@@ -1,0 +1,36 @@
+<%= active_element_component.page_title 'Page Title' %>
+<%= active_element_component.page_subtitle 'Page Subtitle' %>
+
+<%= active_element_component.page_description 'Page Description' %>
+
+<%= active_element_component.page_section_title 'Section Title' %>
+<%= active_element_component.button 'Example Button', '/path/to/example/resource' %>
+
+<%=
+  active_element_component.table item: Example.first,
+                           fields: [:name, :email, :password, :secret]
+%>
+
+<%=
+  active_element_component.table collection: Example.all,
+                                 show: true, new: true, edit: true, destroy: true,
+                                 fields: [:name, :email, :password, :secret]
+%>
+
+<%=
+  active_element_component.form model: Example.new(
+                                name: 'My Name',
+                                email: 'user@example.com',
+                                password: 'user-password',
+                                secret: 'user-secret'
+                               ),
+                               fields: [:name, :email, :password, :secret]
+%>
+
+<%=
+  active_element_component.tabs class: 'my-tabs' do |tabs|
+    tabs.tab title: 'Example', path: '/tab-path' do |tab|
+      'My content'
+    end
+  end
+%>

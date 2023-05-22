@@ -1,0 +1,39 @@
+<% if destroy && item.present? %>
+  <%= active_element_component.destroy_button(item, destroy, float: 'end') %>
+<% end %>
+
+<% if edit && item.present? %>
+  <%= active_element_component.edit_button(item, edit, float: 'end') %>
+<% end %>
+
+<% if new %>
+  <%= active_element_component.new_button(item, float: 'end', class: 'mb-3') %>
+<% end %>
+
+<table class="<%= class_name %> table" style="<%= style %>">
+  <tbody>
+    <% fields.each do |field, class_mapper, label, value_mapper, options| %>
+      <tr>
+        <th calss="text-primary">
+          <%= label %>
+          <% if options[:description].present? %>
+            <button type="button"
+                    style="background: none; border: none; outline: 0; position: absolute; margin-top: 0.3rem"
+                    data-bs-toggle="popover"
+                    data-bs-content="<%= options[:description] %>">
+                    <i class="text-secondary fa-solid fa-circle-info"></i>
+            </button>
+          <% end %>
+        </th>
+        <td class="text-primary <%= class_mapper.call(item) %>">
+          <% if component.secret_field?(field) %>
+            <%= controller.helpers.render partial: 'active_element/components/secret/field',
+                                          locals: { secret: value_mapper.call(item), label: label } %>
+          <% else %>
+            <%= value_mapper.call(item) %>
+          <% end %>
+        </td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>

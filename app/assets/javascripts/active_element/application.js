@@ -1,0 +1,10 @@
+//= require rails-ujs
+//= require bootstrap
+//= require active_element/setup
+//= require active_element/theme
+//= require active_element/secret
+//= require active_element/json_field
+//= require active_element/search_field
+//= require active_element/form
+//= require active_element/confirm
+//= require active_element/pagination

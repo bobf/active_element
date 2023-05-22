@@ -1,0 +1,3 @@
+<%= form.check_box field, checked: ['1', true].include?(component.value_for(field)),
+                          class: "form-check-input #{component.valid?(field) ? nil : 'is-invalid'}",
+                          **options  %>

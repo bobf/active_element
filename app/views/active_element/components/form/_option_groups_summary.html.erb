@@ -1,0 +1,17 @@
+<ol class="list-group pt-2">
+  <% option_groups.each do |group_title, group, group_options| %>
+    <li class="list-group-item d-flex justify-content-between align-items-start">
+      <div class="ms-2 me-auto">
+        <a style="font-size: 0.8rem;" href="#<%= ActiveElement::Components::Util::I18n.class_name(group_title) %>">
+          <%= group_title %>
+        </a>
+      </div>
+      <% if group_options.key?(:count) %>
+        <span
+          class="badge bg-<%= group_options[:count].positive? ? 'primary' : 'secondary' %> rounded-pill">
+            <%= group_options[:count] %>
+          </span>
+      <% end %>
+    </li>
+  <% end %>
+</ol>

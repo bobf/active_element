@@ -1,0 +1,85 @@
+<div class="d-none" id="form-templates">
+  <div id="json-templates">
+    <ol id="json-list-group-template"></ol>
+
+    <li id="json-list-item-template" class="text-nowrap"></li>
+
+    <label id="json-form-check-label-template" class="form-check-label"></label>
+    <label id="json-label-template" class="mb-4 fw-bold"></label>
+
+    <div id="json-form-group-template" class="form-group p-3 text-wrap m-3"></div>
+    <div id="json-form-group-floating-template" class="form-floating m-3 text-wrap"></div>
+    <div id="json-form-check-template" class="form-check m-3"></div>
+
+    <input id="json-checkbox-field-template" type="checkbox" class="form-check-input json-checkbox-field" />
+
+    <input id="json-text-field-template" type="text" class="form-control m-1 json-text-field" />
+
+    <select id="json-select-template" class="form-select m-1 json-select-field"></select>
+
+    <%= active_element_component.destroy_button id: 'json-delete-button-template',
+                                          class: 'button-sm json-delete-button' %>
+
+    <%= active_element_component.button 'Delete Item', type: 'danger', id: 'json-delete-object-button-template',
+                                          class: 'json-delete-button w-25 float-end json-delete-object-button' %>
+
+    <%= active_element_component.button id: 'json-append-button-template',
+                                  class: 'btn-sm mt-3 mb-3 json-add-field-button' %>
+
+    <%= active_element_component.button 'Hide', id: 'json-expand-collapse-button-template',
+                                  class: 'float-end expand-collapse-button' %>
+
+  </div>
+
+  <%= active_element_component.button 'Expand Form', id: 'form-expand-button-template', class: 'mb-1 btn-sm' do %>
+    <i class="fa-solid fa-fw fa-up-right-and-down-left-from-center"></i>
+  <% end %>
+
+  <%= active_element_component.button 'Collapse Form', id: 'form-collapse-button-template', class: 'mb-1 btn-sm' do %>
+    <i class="fa-solid fa-fw fa-down-left-and-up-right-to-center"></i>
+  <% end %>
+
+
+  <div id="form-search-field-templates">
+    <input id="form-search-field-hidden-input-template" type="hidden" autocomplete="off" />
+    <p id="form-search-field-response-error-template" class="text-danger position-absolute validation-error-message pt-1 m-0"></p>
+    <div id="form-search-field-results-template" class="search-field-results d-none border border-top-0"></div>
+    <div id="form-search-field-results-item-template" class="search-field-result p-2"></div>
+    <div id="form-search-field-spinner-template" class="invisible text-end">
+      <div style="position: relative; float: right; width: auto; right: 0.5rem; top: -1.7rem;">
+        <i class="fa-solid fa-spinner fa-spin"></i>
+      </div>
+    </div>
+    <div id="form-search-field-clear-button-template" class="invisible text-end">
+      <div style="position: relative; float: right; width: auto; right: 0.5rem; top: -1.7rem;">
+        <i class="fa-solid fa-delete-left" style="cursor: pointer;"></i>
+      </div>
+    </div>
+  </div>
+
+  <div id="form-modal-template"
+       class="modal fade"
+       tabindex="-1"
+       aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-xl modal-dialog-scrollable">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" data-field-type="modal-title"></h5>
+          <button type="button" class="btn-close fs-3" data-bs-dismiss="modal" aria-label="Close">
+            <i class="fa-regular fa-rectangle-xmark"></i>
+          </button>
+        </div>
+        <div class="modal-body" data-field-type="modal-body"></div>
+        <div class="modal-footer" data-field-type="modal-footer"></div>
+      </div>
+    </div>
+  </div>
+
+  <div id="form-confirm-button-template">
+    <%= active_element_component.button 'Confirm' %>
+  </div>
+
+  <div id="form-cancel-button-template">
+    <%= active_element_component.button 'Cancel' %>
+  </div>
+</div>

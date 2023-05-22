@@ -1,0 +1,16 @@
+<%=
+  form.text_field field, value: component.value_for(field),
+                         id: "#{form_id}-#{field}-text-search",
+                         class: "form-control #{component.valid?(field) ? nil : 'is-invalid'}",
+                         autocomplete: 'off',
+                         placeholder: options[:placeholder].presence || 'Search...',
+                         data: {
+                           field_type: 'text-search',
+                           form_id: form_id,
+                           search_attributes: (
+                             options.dig(:search, :attributes) || [options.dig(:search, :attribute)]
+                           )&.to_json,
+                           search_value: options.dig(:search, :value),
+                           search_model: options.dig(:search, :model)
+                         }
+%>

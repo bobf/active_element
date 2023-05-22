@@ -1,0 +1,39 @@
+<% if new %>
+  <%= active_element_component.new_button(collection, float: 'end', class: 'mb-3') %>
+<% end %>
+
+<% if display_pagination %>
+  <%=
+    render partial: 'active_element/components/table/pagination',
+           locals: { collection: collection, params: params, page_size: page_size, page_sizes: page_sizes }
+  %>
+<% end %>
+
+<% if group %>
+  <%= render partial: 'active_element/components/table/grouped_collection',
+             locals: { component: component,
+                       collection: collection,
+                       fields: fields,
+                       grouped_collection: component.grouped_collection,
+                       grouping_field: group,
+                       group_title: group_title,
+                       show: show,
+                       edit: edit,
+                       destroy: destroy,
+                       class_name: class_name,
+                       style: style,
+                       i18n: i18n,
+                       row_class_mapper: row_class_mapper } %>
+<% else %>
+  <%= render partial: 'active_element/components/table/ungrouped_collection',
+             locals: { component: component,
+                       collection: collection,
+                       fields: fields,
+                       show: show,
+                       edit: edit,
+                       destroy: destroy,
+                       class_name: class_name,
+                       style: style,
+                       i18n: i18n,
+                       row_class_mapper: row_class_mapper } %>
+<% end %>

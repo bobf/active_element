@@ -1,0 +1,4 @@
+<%= form.select field,
+                component.options_for_select(field, options),
+                { selected: component.value_for(field) },
+                { class: "form-select #{component.valid?(field) ? nil : 'is-invalid'}" } %>

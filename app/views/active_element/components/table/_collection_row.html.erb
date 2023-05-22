@@ -1,0 +1,30 @@
+<tr class="<%= (index % 2).zero? ? 'even' : 'odd' %> <%= row_class_mapper.call(item) %>">
+  <% fields.each do |field, class_mapper, label, value_mapper| %>
+    <td class="align-middle text-primary <%= class_mapper.call(item) %>">
+      <% if component.secret_field?(field) %>
+        <%= controller.helpers.render partial: 'active_element/components/secret/field',
+                                      locals: { secret: value_mapper.call(item), label: label } %>
+      <% else %>
+        <%= value_mapper.call(item) %>
+      <% end %>
+    </td>
+  <% end %>
+
+  <% if show %>
+    <td class="<%= "#{class_name}-show" %> action-column text-end">
+      <%= active_element_component.show_button(item, show, class: 'btn-sm') %>
+    </td>
+  <% end %>
+
+  <% if edit %>
+    <td class="<%= "#{class_name}-edit" %> action-column text-end">
+      <%= active_element_component.edit_button(item, show, class: 'btn-sm') %>
+    </td>
+  <% end %>
+
+  <% if destroy %>
+    <td class="<%= "#{class_name}-destroy" %> action-column text-end">
+      <%= active_element_component.destroy_button(item, destroy, class: 'btn-sm') %>
+    </td>
+  <% end %>
+</tr>

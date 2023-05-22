@@ -1,0 +1,17 @@
+<div class="row ms-3 pt-3 pb-3 row-cols-lg-auto">
+  <div class="col-auto">
+    <%= paginate collection %>
+  </div>
+
+  <div class="col-auto text-primary mt-2 pe-0">
+    Displaying
+  </div>
+  <div class="col-auto">
+    <%= select_tag 'collection-table-page-size-selector',
+                   options_for_select(page_sizes, page_size),
+                   class: 'form-select form-inline' %>
+  </div>
+  <div class="col-auto text-primary mt-2 ps-0">
+    of <%= number_to_human(collection.total_count) %> <%= 'record'.pluralize(collection.total_count) %>.
+  </div>
+</div>

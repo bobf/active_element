@@ -5,3 +5,14 @@ require:
 
 AllCops:
   NewCops: enable
+  Exclude:
+  - 'bin/**/*'
+  - 'spec/dummy/bin/**/*'
+
+RSpec/MultipleMemoizedHelpers:
+  Max: 8
+
+Metrics/ParameterLists:
+  Exclude:
+  - 'lib/active_element/components/**/*.rb'
+  - 'lib/active_element/active_element_component.rb'

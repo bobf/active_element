@@ -1,0 +1,88 @@
+<div class="container grouped-table">
+  <div class="row">
+    <div class="col-sm-2">
+      <% if group_title == true %>
+        <h4><%= i18n.label(grouping_field).pluralize %></h4>
+      <% elsif group_title.present? %>
+        <h4><%= group_title %></h4>
+      <% end %>
+
+      <ol class="list-group pt-2 <%= group_title.present? ? 'mt-3' : nil %> sticky-top">
+        <% grouped_collection.each do |group_identifier, group| %>
+          <li class="list-group-item d-flex justify-content-between align-items-start">
+
+            <div class="ms-2 me-auto pe-3">
+              <a style="font-size: 0.8rem;"
+                 href="#<%= "#{class_name}-collection-group-#{group_identifier}" %>">
+                <%= i18n.label(group_identifier) %>
+              </a>
+            </div>
+
+            <a href="#<%= "#{class_name}-collection-group-#{group_identifier}" %>">
+              <span class="badge bg-primary rounded-pill">
+                <%= group.size %>
+              </span>
+            </a>
+
+          </li>
+        <% end %>
+      </ol>
+    </div>
+
+    <div class="col ms-3 ps-4 border-start">
+      <table class="table <%= class_name %>">
+        <thead class="sticky-top">
+          <tr>
+            <% fields.each do |field, _class_mapper, label, _value_mapper| %>
+              <th>
+                <%= label %>
+              </th>
+            <% end %>
+
+            <% if show %>
+              <th></th>
+            <% end %>
+
+            <% if edit %>
+              <th></th>
+            <% end %>
+
+            <% if destroy %>
+              <th></th>
+            <% end %>
+          </tr>
+        </thead>
+
+        <tbody>
+          <% grouped_collection.each do |group_identifier, group| %>
+
+            <tr>
+              <th class="collection-group-separator" colspan="<%= fields.size + (show ? 1 : 0) + (edit ? 1 : 0) + (destroy ? 1 : 0) %>">
+                <%= i18n.label(group_identifier) %>
+                <a name="<%= "#{class_name}-collection-group-#{group_identifier}" %>"></a>
+              </th>
+              <% fields.each do %>
+
+              <% end %>
+            </tr>
+
+            <% group.sort.each_with_index do |item, index| %>
+              <%= render partial: 'active_element/components/table/collection_row',
+                         locals: {
+                           component: component,
+                           item: item,
+                           fields: fields,
+                           index: index,
+                           class_name: class_name,
+                           show: show,
+                           edit: edit,
+                           destroy: destroy,
+                           row_class_mapper: row_class_mapper
+                         } %>
+            <% end %>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>

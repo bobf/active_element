@@ -29,4 +29,11 @@ Gem::Specification.new do |spec|
   spec.executables = spec.files.grep(%r{\Aexe/}) { |f| File.basename(f) }
   spec.require_paths = ['lib']
   spec.metadata['rubygems_mfa_required'] = 'true'
+
+  spec.add_runtime_dependency 'faraday', '~> 2.7'
+  spec.add_runtime_dependency 'bootstrap', '~> 5.3.0alpha3'
+  spec.add_runtime_dependency 'kaminari', '~> 1.2'
+  spec.add_runtime_dependency 'rails', '~> 6.1'
+  spec.add_runtime_dependency 'rouge', '~> 4.1'
+  spec.add_runtime_dependency 'sassc', '~> 2.4'
 end
