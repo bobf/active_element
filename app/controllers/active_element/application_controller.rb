@@ -25,7 +25,7 @@ module ActiveElement
     end
 
     def render_active_element_hook(hook)
-      render_to_string partial: "/active_element/#{hook}"
+      render_to_string partial: hook
     rescue ActionView::MissingTemplate
       nil
     end

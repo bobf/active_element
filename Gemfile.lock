@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    active_element (0.0.1)
+    active_element (0.0.3)
       bootstrap (~> 5.3.0alpha3)
       faraday (~> 2.7)
       kaminari (~> 1.2)
@@ -102,7 +102,7 @@ GEM
     factory_bot_rails (5.2.0)
       factory_bot (~> 5.2.0)
       railties (>= 4.2.0)
-    faraday (2.7.4)
+    faraday (2.7.5)
       faraday-net_http (>= 2.0, < 3.1)
       ruby2_keywords (>= 0.0.4)
     faraday-net_http (3.0.2)
@@ -202,7 +202,6 @@ GEM
       rspec-mocks (~> 3.12.0)
     rspec-core (3.12.2)
       rspec-support (~> 3.12.0)
-    rspec-documentation (0.0.1)
     rspec-expectations (3.12.3)
       diff-lcs (>= 1.2.0, < 2.0)
       rspec-support (~> 3.12.0)
@@ -301,7 +300,6 @@ DEPENDENCIES
   factory_bot_rails (~> 5.2)
   rake (~> 13.0)
   rspec (~> 3.12)
-  rspec-documentation
   rspec-file_fixtures (~> 0.1.6)
   rspec-html (~> 0.3.2)
   rspec-its (~> 1.3)
