@@ -3,7 +3,7 @@
     <%= paginate collection %>
   </div>
 
-  <div class="col-auto text-primary mt-2 pe-0">
+  <div class="col-auto mt-2 pe-0">
     Displaying
   </div>
   <div class="col-auto">
@@ -11,7 +11,7 @@
                    options_for_select(page_sizes, page_size),
                    class: 'form-select form-inline' %>
   </div>
-  <div class="col-auto text-primary mt-2 ps-0">
+  <div class="col-auto mt-2 ps-0">
     of <%= number_to_human(collection.total_count) %> <%= 'record'.pluralize(collection.total_count) %>.
   </div>
 </div>

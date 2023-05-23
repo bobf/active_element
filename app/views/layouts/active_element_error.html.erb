@@ -8,28 +8,25 @@
 
   <style>
     body {
-      background-color: #2c3c4c;
+      background-color: #623131;
     }
 
-    h1 {
-      color: #ff6600;
+    a {
+      color: #d7df93;
     }
 
     div.content {
       position: absolute;
+      color: #efefef;
       left: 50%;
       top: 40%;
-      color: #fff;
       -webkit-transform: translate(-50%, -50%);
       transform: translate(-50%, -50%);
       text-align: center;
     }
-
-    a {
-      font-size: 1rem;
-      color: rgb(72, 181, 204);
-    }
   </style>
+
+  <%= render_active_element_hook 'before_error_content' %>
 
   <body>
     <div class="wrapper">

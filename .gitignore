@@ -13,3 +13,6 @@
 
 /spec/dummy/log/*
 /spec/dummy/tmp/*
+
+/rspec-documentation/pages/**/*.html
+/rspec-documentation/dummy/

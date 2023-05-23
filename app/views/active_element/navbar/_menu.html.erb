@@ -1,5 +1,6 @@
-<nav class="application-menu navbar navbar-expand-lg">
-  <div class="container-fluid">
+<div class="application-menu sticky-top navbar navbar-dark bg-dark navbar-expand-lg">
+  <%= render partial: 'active_element/theme/select' %>
+  <div class="container p-0">
     <a class="navbar-brand" href="#"><%= ActiveElement.application_title %></a>
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
       <span class="navbar-toggler-icon"></span>
@@ -26,4 +27,4 @@
       </ul>
     </div>
   </div>
-</nav>
+</div>

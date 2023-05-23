@@ -1,4 +1,8 @@
+@import "variables";
 @import "bootstrap";
+
+.navbar-brand {
+}
 
 td.action-column {
   width: 2rem;
@@ -43,6 +47,31 @@ form {
 
     .button-title {
       display: none;
+    }
+  }
+}
+
+#theme-select {
+  font-size: 1.5rem;
+  padding: 0.2rem 0.8rem;
+  position: absolute;
+  right: 0;
+
+  a {
+    &.dark-theme {
+      color: #{$theme-select-icon-dark};
+
+      &:hover, &:active {
+        color: #{lighten($theme-select-icon-dark, 10%)};
+      }
+    }
+
+    &.light-theme {
+      color: #{$theme-select-icon-light};
+
+      &:hover, &:active {
+        color: #{lighten($theme-select-icon-light, 10%)};
+      }
     }
   }
 }

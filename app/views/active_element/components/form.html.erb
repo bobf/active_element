@@ -13,7 +13,7 @@
             data: { field_type: 'form-modal', form_id: id, form_title: title }) %>
     </div>
 
-    <div class="form-summary d-inline bg-light border-bottom border-start mt-1 p-3 pb-4">
+    <div class="form-summary d-inline border-bottom border-start mt-1 p-3 pb-4">
       <%= render partial: 'active_element/components/form/summary',
                  locals: { fields: fields, component: component } %>
     </div>
@@ -23,7 +23,7 @@
 <% elsif title.present? && expanded == false %>
 
   <div data-field-type="form-expand" data-form-id="<%= id %>" class="mb-3">
-    <span class="text-primary fs-4 align-bottom"><%= title %></span>
+    <span class="fs-4 align-bottom"><%= title %></span>
   </div>
 
 <% elsif title.blank? && expanded == false %>
@@ -32,7 +32,7 @@
 
 <% elsif title.present? %>
 
-  <span class="text-primary fs-4 align-bottom"><%= title %></span>
+  <span class="fs-4 align-bottom"><%= title %></span>
 
 <% end %>
 

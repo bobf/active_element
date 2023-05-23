@@ -8,7 +8,7 @@
       <% values << value %>
       <div class="d-inline me-3">
         <i class="text-success fa-regular fa-fw fa-circle-check"></i>
-        <span class="text-primary"><%= options.fetch(:label) %></span>
+        <span><%= options.fetch(:label) %></span>
       </div>
     <% end %>
 
@@ -18,7 +18,7 @@
         <% values << value %>
         <div class="d-inline me-3">
           <span class="text-secondary"><%= options.fetch(:label) %>:</span>
-          <span class="ms-1 text-primary"><%= value %></span>
+          <span class="ms-1"><%= value %></span>
         </div>
       <% end %>
   <% elsif value.present? %>
@@ -27,7 +27,7 @@
     <% values << value %>
     <div class="d-inline me-3">
       <span class="text-secondary"><%= options.fetch(:label) %>:</span>
-      <span class="ms-1 text-primary"><%= value %></span>
+      <span class="ms-1"><%= value %></span>
     </div>
 
   <% end %>

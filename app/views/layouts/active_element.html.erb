@@ -1,5 +1,7 @@
 <html>
   <head>
+    <%= render_active_element_hook 'active_element/before_head' %>
+
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha512-iecdLmaskl7CVkqkXNQ/ZH/XLlvWZOJyj7Yy7tcenmpD1ypASozpmT/E0iPtmFIB46ZmdtAc9eNBvH0H/ZpiBw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
     <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js" integrity="sha512-fD9DI5bZwQxOi7MhYWnnNPlvXdp/2Pj3XSTRrFs5FQa4mizyGLnJcN6tuvUS6LbmgN1ut+XGSABKvjN0H6Aoow==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/2.9.2/umd/popper.min.js" integrity="sha512-2rNj2KJ+D8s1ceNasTIex6z4HWyOnEYLVC3FigGOmyQCZc2eBXKgOxQmo3oKLHyfcj53uz4QMsRCWNbLd32Q1g==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
@@ -17,90 +19,13 @@
 
     <%= csrf_meta_tag %>
 
-    <style>
-      .main-menu .btn {
-        --bs-btn-border-color: #222;
-        --bs-btn-border-radius: 0;
-      }
-
-      .main-menu-wrapper {
-        background-color: #222;
-        padding: 0.3rem;
-      }
-
-      .main-menu {
-        background-color: #222;
-      }
-
-      .menu-section-header {
-        background-color: #222;
-      }
-
-      .menu-section-header:after {
-        color: #999;
-      }
-
-      .menu-section-dropdown-menu {
-        background-color: #222;
-      }
-
-      .menu-item-separator {
-        background-color: #222;
-        padding-top: 0.45rem;
-        padding-bottom: 0.45rem;
-      }
-
-      .menu-item-separator-line {
-        background-color: #333;
-        height: 0.05rem;
-      }
-
-      .menu-section {
-        background-color: #222;
-      }
-
-      .menu-section-dropdown-item {
-        color: #D8D8D8;
-      }
-
-      .menu-section-dropdown-item:hover {
-        background-color: #D8D8D8;
-        color: #222;
-      }
-
-      .flash.card {
-        position: absolute;
-        top: 0;
-        right: 0;
-        margin-top: 3rem;
-        margin-right: 1rem;
-        padding: 0;
-      }
-
-      .monospace {
-        font-family: monospace;
-      }
-
-      .gray {
-        color: #777;
-      }
-
-      .red {
-        color: #d00;
-      }
-
-      .blue {
-        color: #5757ab;
-      }
-
-      .bold {
-        font-weight: bold;
-      }
-    </style>
+    <%= render_active_element_hook 'active_element/after_head' %>
   </head>
 
   <body>
+    <%= render_active_element_hook 'active_element/before_navbar' %>
     <%= render partial: 'active_element/navbar/menu' %>
+    <%= render_active_element_hook 'active_element/after_navbar' %>
 
     <% flash.each do |type, message| %>
       <div class="flash card text-bg-<%= { notice: 'info', alert: 'danger' }.fetch(type.to_sym, 'info') %> flash <%= type %> float-end">
@@ -111,6 +36,8 @@
       </div>
     <% end %>
 
+    <%= render_active_element_hook 'active_element/before_content' %>
+
     <div class="content p-3 m-3">
       <%= yield %>
     </div>
@@ -118,6 +45,8 @@
     <%= render partial: 'active_element/components/form/templates' %>
     <%= render partial: 'active_element/components/secret/templates' %>
     <%= render partial: 'active_element/theme/templates' %>
+
+    <%= render_active_element_hook 'active_element/after_content' %>
 
     <script>
       var popoverTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="popover"]'))

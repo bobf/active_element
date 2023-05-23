@@ -19,11 +19,11 @@ RSpec.describe 'navbar' do
 
   it 'displays navbar title' do
     get '/examples'
-    expect(document.nav('.navbar').a('.navbar-brand')).to match_text 'Example Application'
+    expect(document.div('.navbar').a('.navbar-brand')).to match_text 'Example Application'
   end
 
   it 'displays navbar items' do
     get '/examples'
-    expect(document.nav('.navbar').li('.nav-item')).to match_text 'Permissions'
+    expect(document.div('.navbar').li('.nav-item')).to match_text 'Permissions'
   end
 end

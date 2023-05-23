@@ -21,6 +21,7 @@ Dir[File.join(__dir__, 'factories', '**', '*.rb')].sort.each { |path| require pa
 RSpec.configure do |config|
   config.infer_spec_type_from_file_location!
   config.example_status_persistence_file_path = '.rspec_status'
+  config.use_transactional_fixtures = true
   config.include FactoryBot::Syntax::Methods
   config.include ExamplesTable
   config.include UsersTable

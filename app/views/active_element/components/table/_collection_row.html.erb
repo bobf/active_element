@@ -1,6 +1,6 @@
 <tr class="<%= (index % 2).zero? ? 'even' : 'odd' %> <%= row_class_mapper.call(item) %>">
   <% fields.each do |field, class_mapper, label, value_mapper| %>
-    <td class="align-middle text-primary <%= class_mapper.call(item) %>">
+    <td class="align-middle <%= class_mapper.call(item) %>">
       <% if component.secret_field?(field) %>
         <%= controller.helpers.render partial: 'active_element/components/secret/field',
                                       locals: { secret: value_mapper.call(item), label: label } %>

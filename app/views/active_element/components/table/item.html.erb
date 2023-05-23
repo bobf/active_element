@@ -14,7 +14,7 @@
   <tbody>
     <% fields.each do |field, class_mapper, label, value_mapper, options| %>
       <tr>
-        <th calss="text-primary">
+        <th>
           <%= label %>
           <% if options[:description].present? %>
             <button type="button"
@@ -25,7 +25,7 @@
             </button>
           <% end %>
         </th>
-        <td class="text-primary <%= class_mapper.call(item) %>">
+        <td class="<%= class_mapper.call(item) %>">
           <% if component.secret_field?(field) %>
             <%= controller.helpers.render partial: 'active_element/components/secret/field',
                                           locals: { secret: value_mapper.call(item), label: label } %>

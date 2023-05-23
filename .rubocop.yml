@@ -8,6 +8,7 @@ AllCops:
   Exclude:
   - 'bin/**/*'
   - 'spec/dummy/bin/**/*'
+  - 'rspec-documentation/**/*'
 
 RSpec/MultipleMemoizedHelpers:
   Max: 8

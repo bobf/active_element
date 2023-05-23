@@ -12,11 +12,11 @@ RSpec.describe '/components' do
     before { get '/components' }
 
     it 'renders inferred navbar title' do
-      expect(document.nav('.application-menu.navbar').a('.navbar-brand')).to match_text 'Dummy'
+      expect(document.div('.application-menu.navbar').a('.navbar-brand')).to match_text 'Dummy'
     end
 
     it 'renders inferred navbar items' do
-      expect(document.nav('.application-menu.navbar').ul('.navbar-nav').li('.nav-item')).to match_text 'Examples'
+      expect(document.div('.application-menu.navbar').ul('.navbar-nav').li('.nav-item')).to match_text 'Examples'
     end
 
     it 'renders a page title' do

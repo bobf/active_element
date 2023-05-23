@@ -6,6 +6,7 @@ require 'kaminari'
 require 'sassc'
 require 'bootstrap'
 require 'active_record'
+# require 'rspec/documentation' # FIXME: Load dynamically when running rspec documentation command.
 
 require_relative 'active_element/version'
 require_relative 'active_element/active_record_text_search_authorization'
