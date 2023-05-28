@@ -12,6 +12,7 @@ require_relative 'components/button'
 require_relative 'components/tabs'
 require_relative 'components/tab'
 require_relative 'components/json'
+require_relative 'components/text_search'
 
 module ActiveElement
   # Standardised HTML components to be used in admin front ends.

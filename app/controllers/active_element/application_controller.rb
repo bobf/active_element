@@ -8,21 +8,19 @@ module ActiveElement
 
     layout 'active_element'
 
-    before_action -> { authenticate_user! }
+    def self.active_element
+      @active_element ||= ActiveElement::ControllerInterface.new(self)
+    end
+
+    def active_element
+      @active_element ||= ActiveElement::ControllerInterface.new(self.class, self)
+    end
+
+    before_action -> { active_element.authenticator&.call }
     before_action -> { ActiveElement::ControllerAction.new(self).process_action }
 
-    helper_method :active_element_component
+    helper_method :active_element
     helper_method :render_active_element_hook
-
-    def self.permit_user(permissions, **kwargs)
-      active_element_permissions << [permissions, kwargs]
-
-      nil
-    end
-
-    def active_element_component
-      @active_element_component ||= ActiveElement::Component.new(self)
-    end
 
     def render_active_element_hook(hook)
       render_to_string partial: hook
@@ -30,12 +28,8 @@ module ActiveElement
       nil
     end
 
-    def missing_template_store
-      @missing_template_store ||= {}
-    end
-
-    def self.active_element_permissions
-      @active_element_permissions ||= []
+    def _active_element_text_search
+      render(**ActiveElement::Components::TextSearch::Component.new(controller: self).response)
     end
   end
 end

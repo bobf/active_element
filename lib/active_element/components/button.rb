@@ -3,7 +3,6 @@
 module ActiveElement
   module Components
     # A clickable button.
-    # rubocop:disable Metrics/ClassLength
     class Button
       # rubocop:disable Metrics/MethodLength
       def initialize(controller, record, flag_or_options, confirm: false, type: :primary, method: nil,
@@ -75,45 +74,6 @@ module ActiveElement
         { 'end' => 'float-end', 'start' => 'float-start', nil => nil }.fetch(float)
       end
 
-      def namespace_prefix
-        # XXX: We guess the namespace from the current controller's module name. This will work
-        # most of the time but will break the current record's controller exists in a different
-        # namespace to the current controller, e.g. `BackEndAdmin::UsersController` and
-        # `FrontEndAdmin::ThemesController` - if `FrontEndAdmin::ThemesController` renders a
-        # collection of `User` objects, the "show" path will be wrong:
-        # `front_end_admin_user_path`. Maybe descend through the full controller class tree to
-        # find a best match ?
-        namespace = controller.class.name.deconstantize.underscore
-        return nil if namespace.blank?
-
-        "#{namespace}_"
-      end
-
-      def record_path
-        return nil if record.nil?
-
-        controller.helpers.public_send(default_record_path, record)
-      rescue NoMethodError
-        controller.helpers.public_send(sti_record_path, record)
-      end
-
-      def default_record_path
-        "#{record_path_prefix}#{namespace_prefix}#{record_name}_path"
-      end
-
-      def sti_record_path
-        "#{record_path_prefix}#{namespace_prefix}#{sti_record_name}_path"
-      end
-
-      def record_path_prefix
-        case type
-        when :edit
-          'edit_'
-        when :new
-          'new_'
-        end
-      end
-
       def title
         return flag_or_options[:title] if flag_or_options.is_a?(Hash) && flag_or_options[:title].present?
         return default_action_title if %i[show destroy edit new].include?(type)
@@ -150,7 +110,12 @@ module ActiveElement
       def sti_record_name
         Util.sti_record_name(record)
       end
+
+      def record_path
+        return nil unless record.class.is_a?(ActiveModel::Naming)
+
+        Util::RecordPath.new(record: record, controller: controller, type: type).path
+      end
     end
   end
-  # rubocop:enable Metrics/ClassLength
 end

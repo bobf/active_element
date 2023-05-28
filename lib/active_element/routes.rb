@@ -41,7 +41,7 @@ module ActiveElement
 
     def descendants_with_permissions
       @descendants_with_permissions ||= descendants.map do |controller_class|
-        [controller_class.new, controller_class.active_element_permissions]
+        [controller_class.new, controller_class.active_element.permissions]
       end.compact
     end
 

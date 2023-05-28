@@ -15,7 +15,7 @@ collection = [
   User.new(name: 'Jane', email: 'jane@example.org')
 ]
 
-html = active_element_component.table collection: collection, fields: [:name, :email]
+html = active_element.component.table collection: collection, fields: [:name, :email]
 
 it_documents html do
   expect(html).to include 'John'
@@ -32,7 +32,7 @@ end
 
 item = User.new(name: 'John', email: 'john@example.com', overview: 'Writes Ruby code for a living.')
 
-html = active_element_component.table item: item, fields: [:name, :email, :password, :secret]
+html = active_element.component.table item: item, fields: [:name, :email, :password, :secret]
 
 it_documents html do
   expect(html).to include 'John'

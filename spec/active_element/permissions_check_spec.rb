@@ -12,8 +12,7 @@ RSpec.describe ActiveElement::PermissionsCheck do
   end
 
   let(:rails_options) { { application_name: 'example_application', environment: 'production' } }
-  let(:required) { [['example_permission', options]] }
-  let(:options) { {} }
+  let(:required) { [{ with: 'example_permission', action: 'show' }] }
   let(:actual) { %w[example_permission can_view_example_application_examples] }
   let(:action_name) { 'show' }
   let(:controller_path) { 'examples' }
@@ -36,7 +35,7 @@ RSpec.describe ActiveElement::PermissionsCheck do
   end
 
   context 'with applicable permissions not met by actual permissions' do
-    let(:required) { [['example_permission', {}]] }
+    let(:required) { [{ with: 'example_permission', action: 'show' }] }
     let(:actual) { [] }
 
     its(:permitted?) { is_expected.to be false }
@@ -47,46 +46,10 @@ RSpec.describe ActiveElement::PermissionsCheck do
     end
   end
 
-  context 'with `only` option for current action' do
-    let(:options) { { only: :index } }
-    let(:actual) { %w[example_permission can_update_example_application_examples] }
-    let(:action_name) { 'update' }
-
-    its(:permitted?) { is_expected.to be false }
-  end
-
-  context 'with `only` option for other action' do
-    let(:options) { { only: :index } }
-    let(:actual) { %w[example_permission can_view_example_application_examples] }
-    let(:action_name) { 'show' }
+  context 'with always: true' do
+    let(:required) { [{ action: 'custom_action', always: true }] }
+    let(:action_name) { 'custom_action' }
 
     its(:permitted?) { is_expected.to be true }
-  end
-
-  context 'with `except` option for current action' do
-    let(:options) { { except: :index } }
-    let(:actual) { %w[example_permission can_view_example_application_examples] }
-    let(:action_name) { 'show' }
-
-    its(:permitted?) { is_expected.to be true }
-  end
-
-  context 'with `except` option for other action' do
-    let(:options) { { except: :index } }
-    let(:actual) { %w[example_permission can_update_example_application_examples] }
-    let(:action_name) { 'update' }
-
-    its(:permitted?) { is_expected.to be false }
-  end
-
-  context 'with `except` option for current custom action' do
-    let(:options) { { except: :custom } }
-    let(:actual) { %w[example_permission] }
-    let(:action_name) { 'custom' }
-
-    it 'raises UnprotectedRouteError' do
-      expect { permissions_check }.to raise_error ActiveElement::UnprotectedRouteError,
-                                                  'Examples#custom must be protected with `permit_user`'
-    end
   end
 end

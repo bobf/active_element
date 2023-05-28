@@ -1,6 +1,6 @@
-<%= form.label field, options[:label] do %>
+<%= form.label field do %>
+  <%= options[:label] %>
   <% if options[:description].present? %>
-    <%= options[:label] %>
     <button type="button"
             style="background: none; border: none; outline: 0; position: absolute; margin-top: 0.3rem"
             data-bs-toggle="popover"

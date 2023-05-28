@@ -30,6 +30,6 @@ RSpec::Documentation.configure do |config|
       end
     end
 
-    context.active_element_component = ActiveElement::Component.new(StubbedController.new)
+    context.active_element.component = ActiveElement::Component.new(StubbedController.new)
   end
 end

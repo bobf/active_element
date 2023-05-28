@@ -20,6 +20,17 @@
     return element;
   };
 
+  const navbar = document.querySelector('.navbar.application-menu');
+
+  window.addEventListener('scroll', () => {
+    if (window.scrollY > 50) {
+      navbar.classList.add('shrink');
+    } else {
+      navbar.classList.remove('shrink');
+    }
+  });
+
+
   const ActiveElement = {
     log: (message) => { console.log(`[ActiveElement] ${message}`); },
     _id: 0,
@@ -28,6 +39,7 @@
     cloneElement,
     components: {},
     jsonData: {},
+    controller_path: document.querySelector('meta[name="active_element_controller_path"]').content
   };
 
   window.ActiveElement = ActiveElement;

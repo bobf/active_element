@@ -7,17 +7,14 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/2.9.2/umd/popper.min.js" integrity="sha512-2rNj2KJ+D8s1ceNasTIex6z4HWyOnEYLVC3FigGOmyQCZc2eBXKgOxQmo3oKLHyfcj53uz4QMsRCWNbLd32Q1g==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 
     <%= stylesheet_link_tag 'active_element/application', 'data-turbolinks-track': 'reload' %>
-    <%= javascript_include_tag 'active_element/application', 'data-turbolinks-track': 'reload' %>
 
     <% if Rails.application.assets.find_asset('application.css').present? %>
       <%= stylesheet_link_tag 'application', 'data-turbolinks-track': 'reload' %>
     <% end %>
 
-    <% if Rails.application.assets.find_asset('application.js').present? %>
-      <%= javascript_include_tag 'application', 'data-turbolinks-track': 'reload' %>
-    <% end %>
-
     <%= csrf_meta_tag %>
+
+    <meta name="active_element_controller_path" content="<%= controller_path %>">
 
     <%= render_active_element_hook 'active_element/after_head' %>
   </head>
@@ -28,11 +25,21 @@
     <%= render_active_element_hook 'active_element/after_navbar' %>
 
     <% flash.each do |type, message| %>
-      <div class="flash card text-bg-<%= { notice: 'info', alert: 'danger' }.fetch(type.to_sym, 'info') %> flash <%= type %> float-end">
-          <div class="card-body">
-            <%= message %>
-            <button type="button" class="btn-close" aria-label="Close"></button>
-          </div>
+      <div class="flash toast <%= type %> position-absolute top-0 end-0 mt-5" role="alert" aria-live="assertive" aria-atomic="true">
+        <div class="toast-header">
+          <% if type == 'notice' %>
+            <i class="fa-solid me-2 text-info fa-circle-info"></i>
+          <% elsif type == 'alert' %>
+            <i class="fa-solid me-2 text-danger fa-circle-exclamation"></i>
+          <% else %>
+            <i class="fa-solid me-2 text-info fa-circle-info"></i>
+          <% end %>
+          <strong class="me-auto"><%= type.titleize %></strong>
+          <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+        </div>
+        <div class="toast-body fw-bold align-middle">
+          <%= message %>
+        </div>
       </div>
     <% end %>
 
@@ -48,18 +55,9 @@
 
     <%= render_active_element_hook 'active_element/after_content' %>
 
-    <script>
-      var popoverTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="popover"]'))
-      var popoverList = popoverTriggerList.map(function (popoverTriggerEl) {
-        return new bootstrap.Popover(popoverTriggerEl)
-      })
-
-      document.querySelectorAll('.flash .btn-close').forEach(element => {
-        element.onclick = ev => {
-          ev.stopPropagation();
-          ev.target.parentElement.parentElement.classList.add('d-none');
-        };
-      });
-    </script>
+    <%= javascript_include_tag 'active_element/application', 'data-turbolinks-track': 'reload' %>
+    <% if Rails.application.assets.find_asset('application.js').present? %>
+      <%= javascript_include_tag 'application', 'data-turbolinks-track': 'reload' %>
+    <% end %>
   </body>
 </html>

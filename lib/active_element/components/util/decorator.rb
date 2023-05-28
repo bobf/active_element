@@ -27,7 +27,7 @@ module ActiveElement
           component.controller.render_to_string(partial: decorator_path(sti: sti), locals: locals)
         rescue ActionView::MissingTemplate
           if sti
-            component.controller.missing_template_store[decorator_path] = true
+            component.controller.active_element.missing_template_store[decorator_path] = true
             default_decorated_value
           else
             render(sti: true)
@@ -51,7 +51,7 @@ module ActiveElement
         end
 
         def missing_template?
-          component.controller.missing_template_store[decorator_path].present?
+          component.controller.active_element.missing_template_store[decorator_path].present?
         end
 
         def decorator_path(sti: false)

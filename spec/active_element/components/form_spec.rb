@@ -3,7 +3,13 @@
 RSpec.describe ActiveElement::Components::Form do
   subject(:form) { described_class.new(controller, fields: fields, submit: submit, item: item, **kwargs) }
 
-  let(:controller) { instance_double(ActionController::Base, action_name: 'new') }
+  let(:controller) do
+    instance_double(
+      ActionController::Base,
+      action_name: 'new',
+      request: instance_double(ActionDispatch::Request, path: '/request/path')
+    )
+  end
   let(:fields) { [] }
   let(:submit) { nil }
   let(:kwargs) { {} }

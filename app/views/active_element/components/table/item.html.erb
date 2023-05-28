@@ -1,13 +1,13 @@
 <% if destroy && item.present? %>
-  <%= active_element_component.destroy_button(item, destroy, float: 'end') %>
+  <%= active_element.component.destroy_button(item, destroy, float: 'end') %>
 <% end %>
 
 <% if edit && item.present? %>
-  <%= active_element_component.edit_button(item, edit, float: 'end') %>
+  <%= active_element.component.edit_button(item, edit, float: 'end') %>
 <% end %>
 
 <% if new %>
-  <%= active_element_component.new_button(item, float: 'end', class: 'mb-3') %>
+  <%= active_element.component.new_button(item, float: 'end', class: 'mb-3') %>
 <% end %>
 
 <table class="<%= class_name %> table" style="<%= style %>">

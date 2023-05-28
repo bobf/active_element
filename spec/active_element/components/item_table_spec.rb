@@ -15,13 +15,15 @@ RSpec.describe ActiveElement::Components::ItemTable do
     }
   end
 
-  let(:controller) { instance_double(ActiveElement::ApplicationController, missing_template_store: {}) }
+  let(:controller) { instance_double(ActiveElement::ApplicationController) }
   let(:class_name) { 'my-class' }
   let(:item) { Example.new(name: 'My Name') }
   let(:fields) { [:name] }
   let(:destroy) { false }
   let(:edit) { false }
   let(:style) { 'font-size: 1rem;' }
+
+  before { allow(controller).to receive(:active_element) { ActiveElement::ControllerInterface.new(controller) } }
 
   its(:template) { is_expected.to eql 'active_element/components/table/item' }
 

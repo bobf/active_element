@@ -1,10 +1,10 @@
 # frozen_string_literal: true
 
-class ExamplePermissionsController < ActiveElement::ApplicationController
-  permit_user :can_access_example, only: :custom
-  permit_user :can_access_admin, except: :protected
-
+class ExamplePermissionsController < ApplicationController
   skip_before_action :verify_authenticity_token
+
+  active_element.permit_action :custom, with: :can_access_example
+  active_element.permit_action :protected, with: :can_access_example
 
   def index
     render plain: 'List Access Granted'

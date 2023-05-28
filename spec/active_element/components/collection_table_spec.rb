@@ -18,7 +18,7 @@ RSpec.describe ActiveElement::Components::CollectionTable do
     }
   end
 
-  let(:controller) { instance_double(ActiveElement::ApplicationController, missing_template_store: {}) }
+  let(:controller) { instance_double(ActiveElement::ApplicationController) }
   let(:class_name) { 'my-class' }
   let(:collection) { [item] }
   let(:item) { Example.new(name: 'My Name') }
@@ -28,6 +28,8 @@ RSpec.describe ActiveElement::Components::CollectionTable do
   let(:destroy) { false }
   let(:style) { 'font-size: 1rem;' }
   let(:params) { {} }
+
+  before { allow(controller).to receive(:active_element) { ActiveElement::ControllerInterface.new(controller) } }
 
   its(:template) { is_expected.to eql 'active_element/components/table/collection' }
 

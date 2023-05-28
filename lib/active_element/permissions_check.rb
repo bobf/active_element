@@ -3,6 +3,8 @@
 module ActiveElement
   # Verifies provided permissions against required permissions.
   class PermissionsCheck
+    include Paintbrush
+
     def initialize(required:, actual:, controller_path:, action_name:, rails_component:)
       @required = required.presence || []
       @actual = normalized(actual)
@@ -18,19 +20,29 @@ module ActiveElement
 
     def message
       return development_environment_message if rails_component.environment == 'development'
-      return "User access granted for permission(s): #{applicable.join(', ')}" if permitted?
+      return permitted_message if permitted?
 
-      "User access forbidden. Missing user permission(s): #{missing.join(', ')}"
+      forbidden_message
     end
 
     def missing
       @missing ||= applicable.reject do |permission|
-        actual.include?(permission.to_s)
-      end.map(&:to_s)
+        next true if permission.fetch(:always, false)
+
+        actual.include?(permission.fetch(:with).to_s)
+      end
     end
 
     def applicable
       @applicable ||= default_permissions + required_permissions
+    end
+
+    def applicable_permissions
+      applicable.map { |permission| permission.fetch(:with) }
+    end
+
+    def missing_permissions
+      missing.map { |permission| permission.fetch(:with) }
     end
 
     private
@@ -38,21 +50,28 @@ module ActiveElement
     attr_reader :required, :actual, :controller_name, :action_name, :rails_component
 
     def development_environment_message
-      "Bypassed permission(s) in development environment: #{applicable.join(', ')}"
+      "Bypassed permission(s) in development environment: #{applicable_permissions.join(', ')}"
+    end
+
+    def permitted_message
+      paintbrush { green "User access granted for permission(s): #{cyan applicable_permissions.join(', ')}" }
+    end
+
+    def forbidden_message
+      paintbrush { red "User access forbidden. Missing user permission(s): #{cyan missing_permissions.join(', ')}" }
     end
 
     def default_permissions
       return [] if normalized_action.nil?
 
-      ["can_#{normalized_action}_#{rails_component.application_name}_#{controller_name}"]
+      [{
+        action: normalized_action,
+        with: "can_#{normalized_action}_#{rails_component.application_name}_#{controller_name}"
+      }]
     end
 
     def required_permissions
-      @required_permissions ||= required.map do |permission, options|
-        next nil unless applicable?(options)
-
-        permission
-      end.compact
+      @required_permissions ||= required.select { |options| applicable?(options) }
     end
 
     def normalized_action
@@ -74,28 +93,13 @@ module ActiveElement
     end
 
     def applicable?(options)
-      return true if !options.key?(:only) && !options.key?(:except)
-      return true if only_applicable?(options)
-      return false if except_applicable?(options)
-
-      false
-    end
-
-    def only_applicable?(options)
-      return false unless options.key?(:only)
-
-      normalized(options.fetch(:only)).include?(action_name)
-    end
-
-    def except_applicable?(options)
-      return false unless options.key?(:except)
-
-      normalized(options.fetch(:except)).include?(action_name)
+      options.fetch(:action).to_s == action_name
     end
 
     def raise_unprotected_route_error
       raise UnprotectedRouteError,
-            "#{controller_name.titleize.tr(' ', '')}##{action_name} must be protected with `permit_user`"
+            "#{controller_name.titleize.tr(' ', '')}##{action_name} must be protected with " \
+            '`active_element.permit_action`'
     end
   end
 end

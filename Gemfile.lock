@@ -1,10 +1,15 @@
 PATH
+  remote: ../paintbrush
+  specs:
+    paintbrush (0.1.1)
+
+PATH
   remote: .
   specs:
     active_element (0.0.3)
       bootstrap (~> 5.3.0alpha3)
-      faraday (~> 2.7)
       kaminari (~> 1.2)
+      paintbrush (~> 0.1.1)
       rails (~> 6.1)
       rouge (~> 4.1)
       sassc (~> 2.4)
@@ -102,10 +107,6 @@ GEM
     factory_bot_rails (5.2.0)
       factory_bot (~> 5.2.0)
       railties (>= 4.2.0)
-    faraday (2.7.5)
-      faraday-net_http (>= 2.0, < 3.1)
-      ruby2_keywords (>= 0.0.4)
-    faraday-net_http (3.0.2)
     ffi (1.15.5)
     globalid (1.1.0)
       activesupport (>= 5.0)
@@ -252,7 +253,6 @@ GEM
       rubocop-capybara (~> 2.17)
       rubocop-factory_bot (~> 2.22)
     ruby-progressbar (1.13.0)
-    ruby2_keywords (0.0.5)
     sassc (2.4.0)
       ffi (~> 1.9)
     sassc-rails (2.1.2)
@@ -298,6 +298,7 @@ DEPENDENCIES
   devise (~> 4.9)
   devpack (~> 0.4.1)
   factory_bot_rails (~> 5.2)
+  paintbrush!
   rake (~> 13.0)
   rspec (~> 3.12)
   rspec-file_fixtures (~> 0.1.6)

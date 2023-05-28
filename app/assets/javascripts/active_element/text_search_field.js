@@ -37,7 +37,7 @@
           resultsItem.innerText = attributes.length === 0 ? value : `${attributes.join(', ')} (${value})`;
           resultsItem.addEventListener('click', () => {
             hiddenInput.value = value;
-            element.value = attributes.length == 0 ? value : `${attributes.join(', ')} (${value})`;
+            element.value = value;
             searchResultsContainer.replaceChildren();
             searchResultsContainer.classList.add('d-none');
           });
@@ -97,7 +97,7 @@
         searchResultsContainer.replaceChildren();
 
         fetch(
-          '/_text_search/',
+          `/${ActiveElement.controller_path}/_active_element_text_search/`,
           {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },

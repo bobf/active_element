@@ -4,7 +4,7 @@ ActiveRecord::Migration.verbose = false
 
 # rubocop:disable Rails/ApplicationRecord
 class Example < ActiveRecord::Base
-  authorize_active_element_text_search_for :email, exposes: [:id]
+  authorize_active_element_text_search with: [:email], providing: %i[id email]
 
   validates :name, presence: true
   validates :email, presence: true

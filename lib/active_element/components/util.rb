@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require_relative 'util/i18n'
+require_relative 'util/record_path'
 require_relative 'util/record_mapping'
 require_relative 'util/field_mapping'
 require_relative 'util/form_field_mapping'
@@ -18,13 +19,17 @@ module ActiveElement
       end
 
       def self.record_name(record)
-        record&.try(:model_name)&.try(&:singular) || record.class.name.demodulize.underscore
+        record&.try(:model_name)&.try(&:singular) || default_record_name(record)
       end
 
       def self.sti_record_name(record)
-        return nil unless record.class.respond_to?(:inheritance_column)
+        return default_record_name(record) unless record.class.respond_to?(:inheritance_column)
 
         record&.class&.superclass&.model_name&.singular if record&.try(record.class.inheritance_column).present?
+      end
+
+      def self.default_record_name(record)
+        record.class.name.demodulize.underscore
       end
 
       def self.json_pretty_print(json)

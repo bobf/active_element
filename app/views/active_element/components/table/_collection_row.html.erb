@@ -12,19 +12,19 @@
 
   <% if show %>
     <td class="<%= "#{class_name}-show" %> action-column text-end">
-      <%= active_element_component.show_button(item, show, class: 'btn-sm') %>
+      <%= active_element.component.show_button(item, show, class: 'btn-sm') %>
     </td>
   <% end %>
 
   <% if edit %>
     <td class="<%= "#{class_name}-edit" %> action-column text-end">
-      <%= active_element_component.edit_button(item, show, class: 'btn-sm') %>
+      <%= active_element.component.edit_button(item, show, class: 'btn-sm') %>
     </td>
   <% end %>
 
   <% if destroy %>
     <td class="<%= "#{class_name}-destroy" %> action-column text-end">
-      <%= active_element_component.destroy_button(item, destroy, class: 'btn-sm') %>
+      <%= active_element.component.destroy_button(item, destroy, class: 'btn-sm') %>
     </td>
   <% end %>
 </tr>

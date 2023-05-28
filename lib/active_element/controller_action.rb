@@ -3,15 +3,17 @@
 module ActiveElement
   # Processes all controller actions, verifies permissions, issues redirects, etc.
   class ControllerAction
+    include Paintbrush
+
     def initialize(controller)
       @controller = controller
     end
 
     def process_action
-      Rails.logger.info("[#{log_tag}] #{colorized_permissions_message}")
+      Rails.logger.info("#{ActiveElement.log_tag} #{colorized_permissions_message}")
       return if verified_permissions?
 
-      warn "[#{log_tag}] #{colorized_permissions_message}" if Rails.env.test?
+      warn "#{log_tag} #{colorized_permissions_message}" if Rails.env.test?
       return controller.redirect_to redirect_path if redirect_to_default_landing_page?
 
       render_forbidden
@@ -22,6 +24,7 @@ module ActiveElement
     attr_reader :controller
 
     def verified_permissions?
+      return true unless controller.active_element.authorize?
       return @verified_permissions if defined?(@verified_permissions)
 
       (@verified_permissions = permissions_check.permitted?)
@@ -50,8 +53,8 @@ module ActiveElement
 
     def permissions_check
       @permissions_check ||= PermissionsCheck.new(
-        required: controller.class.active_element_permissions,
-        actual: controller.current_user&.permissions,
+        required: controller.class.active_element.permissions,
+        actual: controller.active_element.current_user&.permissions,
         controller_path: controller.controller_path,
         action_name: controller.action_name,
         rails_component: rails_component
@@ -60,7 +63,7 @@ module ActiveElement
 
     def routes
       @routes ||= Routes.new(
-        permissions: controller.current_user.permissions,
+        permissions: controller.active_element.current_user&.permissions,
         rails_component: rails_component
       )
     end
@@ -71,7 +74,7 @@ module ActiveElement
               else
                 (rails_component.environment == 'test' ? :yellow : :red)
               end
-      ColorizedString.new(permissions_check.message, color: color).value
+      paintbrush { public_send(color, permissions_check.message) }
     end
 
     def redirect_to_default_landing_page?
@@ -82,10 +85,6 @@ module ActiveElement
 
     def rails_component
       @rails_component ||= RailsComponent.new(::Rails)
-    end
-
-    def log_tag
-      ColorizedString.new('ActiveElement', color: :cyan).value
     end
   end
 end

@@ -17,25 +17,25 @@
 
     <select id="json-select-template" class="form-select m-1 json-select-field"></select>
 
-    <%= active_element_component.destroy_button id: 'json-delete-button-template',
+    <%= active_element.component.destroy_button id: 'json-delete-button-template',
                                           class: 'button-sm json-delete-button' %>
 
-    <%= active_element_component.button 'Delete Item', type: 'danger', id: 'json-delete-object-button-template',
+    <%= active_element.component.button 'Delete Item', type: 'danger', id: 'json-delete-object-button-template',
                                           class: 'json-delete-button w-25 float-end json-delete-object-button' %>
 
-    <%= active_element_component.button id: 'json-append-button-template',
+    <%= active_element.component.button id: 'json-append-button-template',
                                   class: 'btn-sm mt-3 mb-3 json-add-field-button' %>
 
-    <%= active_element_component.button 'Hide', id: 'json-expand-collapse-button-template',
+    <%= active_element.component.button 'Hide', id: 'json-expand-collapse-button-template',
                                   class: 'float-end expand-collapse-button' %>
 
   </div>
 
-  <%= active_element_component.button 'Expand Form', id: 'form-expand-button-template', class: 'mb-1 btn-sm' do %>
+  <%= active_element.component.button 'Expand Form', id: 'form-expand-button-template', class: 'mb-1 btn-sm' do %>
     <i class="fa-solid fa-fw fa-up-right-and-down-left-from-center"></i>
   <% end %>
 
-  <%= active_element_component.button 'Collapse Form', id: 'form-collapse-button-template', class: 'mb-1 btn-sm' do %>
+  <%= active_element.component.button 'Collapse Form', id: 'form-collapse-button-template', class: 'mb-1 btn-sm' do %>
     <i class="fa-solid fa-fw fa-down-left-and-up-right-to-center"></i>
   <% end %>
 
@@ -76,10 +76,10 @@
   </div>
 
   <div id="form-confirm-button-template">
-    <%= active_element_component.button 'Confirm' %>
+    <%= active_element.component.button 'Confirm' %>
   </div>
 
   <div id="form-cancel-button-template">
-    <%= active_element_component.button 'Cancel' %>
+    <%= active_element.component.button 'Cancel' %>
   </div>
 </div>

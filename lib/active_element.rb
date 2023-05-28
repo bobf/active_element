@@ -1,18 +1,17 @@
 # frozen_string_literal: true
 
-require 'faraday'
 require 'rouge'
 require 'kaminari'
 require 'sassc'
 require 'bootstrap'
 require 'active_record'
-# require 'rspec/documentation' # FIXME: Load dynamically when running rspec documentation command.
+require 'paintbrush'
 
 require_relative 'active_element/version'
-require_relative 'active_element/active_record_text_search_authorization'
-require_relative 'active_element/colorized_string'
 require_relative 'active_element/active_menu_link'
 require_relative 'active_element/permissions_check'
+require_relative 'active_element/permissions_report'
+require_relative 'active_element/controller_interface'
 require_relative 'active_element/controller_action'
 require_relative 'active_element/rails_component'
 require_relative 'active_element/route'
@@ -30,12 +29,22 @@ module ActiveElement
   class << self
     attr_writer :application_name, :navbar_items
 
+    include Paintbrush
+
     def application_title
       @application_name || RailsComponent.new(Rails).application_name.titleize
     end
 
     def navbar_items(user)
       @navbar_items || inferred_navbar_items(user)
+    end
+
+    def warning(message)
+      warn "#{log_tag} #{paintbrush { yellow(message) }}"
+    end
+
+    def log_tag
+      paintbrush { cyan "[#{blue 'ActiveElement'}]" }
     end
 
     def active_path_class(user:, current_navbar_item:, current_path:, controller_path:, action_name:)
@@ -71,12 +80,17 @@ module ActiveElement
       false
     end
 
+    def eager_load_models
+      eager_load(:models)
+    end
+
     def eager_load_controllers
-      Pathname.new(__dir__)
-              .join('../app/controllers/active_element')
-              .glob('**/*_controller.rb')
-              .each { |path| require path }
-      Rails.root.join('app/controllers/admin/').glob('**/*_controller.rb').each { |path| require path }
+      eager_load(:controllers)
+    end
+
+    def eager_load(resource)
+      suffix = resource == :controllers ? '_controller' : nil
+      Rails.root.join("app/#{resource}").glob("**/*#{suffix}.rb").each { |path| require path }
     end
 
     private
@@ -90,7 +104,7 @@ module ActiveElement
 
     def user_routes(user)
       ActiveElement::Routes.new(
-        permissions: user.permissions,
+        permissions: user&.permissions,
         rails_component: ActiveElement::RailsComponent.new(Rails)
       )
     end

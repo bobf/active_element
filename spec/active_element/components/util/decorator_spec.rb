@@ -7,13 +7,14 @@ RSpec.describe ActiveElement::Components::Util::Decorator do
   let(:controller) do
     instance_double(
       ActiveElement::ApplicationController,
-      missing_template_store: {},
       render_to_string: 'decorated value'
     )
   end
   let(:item) { Example.new }
   let(:field) { :example_field }
   let(:value) { 'example value' }
+
+  before { allow(controller).to receive(:active_element) { ActiveElement::ControllerInterface.new(controller) } }
 
   it { is_expected.to be_a described_class }
 

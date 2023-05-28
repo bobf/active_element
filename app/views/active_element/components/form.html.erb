@@ -1,5 +1,5 @@
 <% if destroy %>
-  <%= active_element_component.destroy_button(record, float: 'end') %>
+  <%= active_element.component.destroy_button(record, float: 'end') %>
 <% end %>
 
 <% if modal %>
@@ -7,7 +7,7 @@
   <div class="mt-4 mb-5 ms-3">
 
     <div class="p-3 pb-4 border-bottom d-inline">
-      <%= active_element_component.button(
+      <%= active_element.component.button(
             title: title.presence || 'Show Form',
             icon: 'arrow-up-right-dots',
             data: { field_type: 'form-modal', form_id: id, form_title: title }) %>
@@ -40,7 +40,7 @@
   <%= form_with local: true, **kwargs, method: method, id: id, class: "#{class_name} m-3 #{modal == false && expanded == false ? 'd-none' : nil}" do |form| %>
     <% if %i[top both].include?(submit_position) %>
       <div class="form-group sticky-top" style="top: 0.5rem;">
-        <%= form.submit submit_label, class: 'btn btn-success float-end' %>
+        <%= form.submit submit_label, class: "btn btn-#{method == :post ? 'success' : 'primary'} float-end" %>
       </div>
     <% end %>
 

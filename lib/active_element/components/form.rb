@@ -22,6 +22,7 @@ module ActiveElement
         @modal = modal
         @kwargs = kwargs
         @columns = columns
+        @action = kwargs.delete(:action) { default_action }
         @method = kwargs.delete(:method) { default_method }.to_s.downcase.to_sym
       end
       # rubocop:enable Metrics/MethodLength
@@ -30,7 +31,7 @@ module ActiveElement
         'active_element/components/form'
       end
 
-      def locals # rubocop:disable Metrics/MethodLength
+      def locals # rubocop:disable Metrics/MethodLength, Metrics/AbcSize
         {
           component: self,
           fields: Util::FormFieldMapping.new(record, fields, i18n).fields_with_types_and_options,
@@ -39,6 +40,7 @@ module ActiveElement
           submit_position: submit_position,
           class_name: class_name,
           method: method,
+          action: action,
           kwargs: kwargs,
           destroy: destroy,
           modal: modal,
@@ -130,7 +132,8 @@ module ActiveElement
 
       private
 
-      attr_reader :fields, :submit, :title, :kwargs, :item, :method, :destroy, :modal, :expanded, :columns
+      attr_reader :fields, :submit, :title, :kwargs, :item, :method, :action,
+                  :destroy, :modal, :expanded, :columns
 
       def valid_field?(field)
         return true if record.respond_to?("#{field}_changed?") && !record.public_send("#{field}_changed?")
@@ -197,13 +200,19 @@ module ActiveElement
 
       def default_method
         case controller.action_name
-        when 'edit'
+        when 'edit', 'update'
           'PATCH'
         when 'index'
           'GET'
         else
           'POST'
         end
+      end
+
+      def default_action
+        return controller.request.path unless record.is_a?(ActiveModel::Naming)
+
+        Util::RecordPath.new(record: record, controller: controller).path
       end
     end
   end

@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 module Admin
-  class ExamplesController < ActiveElement::ApplicationController
+  class ExamplesController < ApplicationController
     def index
       render plain: 'Admin Examples List Access Granted'
     end

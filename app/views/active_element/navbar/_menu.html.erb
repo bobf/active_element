@@ -7,14 +7,14 @@
     </button>
     <div class="collapse navbar-collapse" id="navbarSupportedContent">
       <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-        <% ActiveElement.navbar_items(current_user).each do |navbar_item| %>
+        <% ActiveElement.navbar_items(active_element.current_user).each do |navbar_item| %>
           <li class="nav-item">
             <%=
               link_to navbar_item.fetch(:title) { navbar_item.fetch(:label) },
                       navbar_item.fetch(:path),
                       class: "nav-link #{
                         ActiveElement.active_path_class(
-                          user: current_user,
+                          user: active_element.current_user,
                           current_navbar_item: navbar_item,
                           current_path: request.path,
                           controller_path: controller_path,

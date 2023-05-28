@@ -6,7 +6,8 @@ RSpec.describe '/_text_search' do
       create(:example, id: 1000, email: 'user@example.com')
       create(:example, id: 2000, email: 'other-user@example.com')
       sign_in(create(:user, permissions: ['can_list_dummy_examples'] + permissions))
-      post '/_text_search.json', headers: { 'Content-Type' => 'application/json' }, params: params.to_json
+      post '/examples/_active_element_text_search.json', headers: { 'Content-Type' => 'application/json' },
+                                                         params: params.to_json
     end
 
     let(:json) { JSON.parse(response.body, symbolize_names: true) }
@@ -32,24 +33,28 @@ RSpec.describe '/_text_search' do
     let(:query) { 'user@' }
 
     context 'with correct permission and authorized model/attribute/attribute' do
-      let(:permissions) { %w[can_create_dummy_active_element_text_searches] }
+      let(:permissions) do
+        %w[can_text_search_dummy_examples_with_email can_text_search_dummy_examples_with_id]
+      end
 
       it 'returns matching results' do
         expect(json.fetch(:results)).to eql [{ value: 1000, attributes: ['user@example.com'] }]
       end
 
-      it 'returns 200 OK' do
-        expect(response).to have_http_status :ok
+      it 'returns 201 Created' do
+        expect(response).to have_http_status :created
       end
     end
 
     context 'with correct permission and unknown model' do
-      let(:permissions) { %w[can_create_dummy_active_element_text_searches] }
+      let(:permissions) do
+        %w[can_text_search_dummy_examples_with_email can_text_search_dummy_examples_with_id]
+      end
       let(:model) { 'unknown_example' }
 
       it 'returns error message' do
-        expect(json[:message]).to eql 'Unpermitted or unavailable search for: ' \
-                                      '{ model: unknown_example, attributes: ["email"], value: id }'
+        expect(json[:message]).to eql 'Missing model authorization for unknown_example with: ' \
+                                      'email, providing: email, id'
       end
 
       it 'returns 422 Unprocessable Entity' do
@@ -58,16 +63,20 @@ RSpec.describe '/_text_search' do
     end
 
     context 'with correct permission and unauthorized model' do
-      let(:permissions) { %w[can_create_dummy_active_element_text_searches] }
+      let(:permissions) do
+        %w[can_text_search_dummy_examples_with_email can_text_search_dummy_examples_with_id]
+      end
       let(:model) { 'unauthorized_example' }
 
       it 'returns error message' do
-        expect(json[:message]).to eql 'Unpermitted or unavailable search for: ' \
-                                      '{ model: unauthorized_example, attributes: ["email"], value: id }'
+        expect(json[:message]).to eql 'Missing model authorization for UnauthorizedExample with: ' \
+                                      'email, providing: email, id. Missing permissions: ' \
+                                      'can_text_search_dummy_unauthorized_examples_with_email, ' \
+                                      'can_text_search_dummy_unauthorized_examples_with_id'
       end
 
-      it 'returns 422 Unprocessable Entity' do
-        expect(response).to have_http_status :unprocessable_entity
+      it 'returns 403 Forbidden Entity' do
+        expect(response).to have_http_status :forbidden
       end
     end
 
@@ -77,10 +86,11 @@ RSpec.describe '/_text_search' do
 
       it 'returns error message' do
         expect(json[:message])
-          .to eql 'Missing permission(s): ["can_create_dummy_active_element_text_searches"]'
+          .to eql 'Missing permissions: can_text_search_dummy_examples_with_email, ' \
+                  'can_text_search_dummy_examples_with_id'
       end
 
-      it 'returns 422 Unprocessable Entity' do
+      it 'returns 403 Forbidden' do
         expect(response).to have_http_status :forbidden
       end
     end

@@ -1,5 +1,5 @@
 # frozen_string_literal: true
 
-class ExamplesController < ActiveElement::ApplicationController
+class ExamplesController < ApplicationController
   def index; end
 end

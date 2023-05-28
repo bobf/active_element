@@ -49,7 +49,7 @@ module ActiveElement
     end
 
     def permissions
-      permissions_check.applicable.map(&:to_s)
+      permissions_check.applicable.map { |permission| permission.fetch(:with).to_s }
     end
 
     def rails_route?

@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 module Admin
-  class PermittedAlternativesController < ActiveElement::ApplicationController
+  class PermittedAlternativesController < ApplicationController
     def index; end
   end
 end
