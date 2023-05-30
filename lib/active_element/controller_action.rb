@@ -13,7 +13,7 @@ module ActiveElement
       Rails.logger.info("#{ActiveElement.log_tag} #{colorized_permissions_message}")
       return if verified_permissions?
 
-      warn "#{log_tag} #{colorized_permissions_message}" if Rails.env.test?
+      warn "#{ActiveElement.log_tag} #{colorized_permissions_message}" if Rails.env.test?
       return controller.redirect_to redirect_path if redirect_to_default_landing_page?
 
       render_forbidden
