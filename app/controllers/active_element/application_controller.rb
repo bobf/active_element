@@ -16,7 +16,7 @@ module ActiveElement
       @active_element ||= ActiveElement::ControllerInterface.new(self.class, self)
     end
 
-    before_action -> { active_element.authenticator&.call }
+    before_action -> { active_element.authenticate }
     before_action -> { ActiveElement::ControllerAction.new(self).process_action }
 
     helper_method :active_element

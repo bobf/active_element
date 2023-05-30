@@ -35,11 +35,14 @@ module ActiveElement
 
     def authorize_with(&block)
       @authorize = true
-      @current_user = block.call
+      state[:authorizor] = block
     end
 
     def authenticate
       authenticator&.call
+      @current_user = state[:authorizor]&.call
+
+      nil
     end
 
     def permit_action(action, with: nil, always: false)
