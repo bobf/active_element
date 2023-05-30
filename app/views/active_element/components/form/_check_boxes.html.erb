@@ -2,7 +2,7 @@
   <% options[:option_groups].each do |group_title, group, group_options| %>
     <div class="p-3">
       <a name="<%= ActiveElement::Components::Util::I18n.class_name(group_title) %>"></a>
-      <%= component.page_section_title group_title %>
+      <%= active_element.component.page_section_title group_title %>
       <%= form.fields_for field do |subform| %>
         <% group.each do |label, name, checked| %>
           <%= subform.check_box(name, checked: checked, class: 'me-2') %>
