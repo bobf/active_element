@@ -8,7 +8,6 @@ gemspec
 gem 'devise', '~> 4.9'
 gem 'devpack', '~> 0.4.1'
 gem 'factory_bot_rails', '~> 5.2'
-gem 'paintbrush', path: '../paintbrush'
 gem 'rake', '~> 13.0'
 gem 'rspec', '~> 3.12'
 gem 'rspec-file_fixtures', '~> 0.1.6'

@@ -1,15 +1,10 @@
 PATH
-  remote: ../paintbrush
-  specs:
-    paintbrush (0.1.1)
-
-PATH
   remote: .
   specs:
-    active_element (0.0.3)
+    active_element (0.0.5)
       bootstrap (~> 5.3.0alpha3)
       kaminari (~> 1.2)
-      paintbrush (~> 0.1.1)
+      paintbrush (~> 0.1.2)
       rails (~> 6.1)
       rouge (~> 4.1)
       sassc (~> 2.4)
@@ -154,6 +149,7 @@ GEM
       racc (~> 1.4)
     orm_adapter (0.5.0)
     paint (2.3.0)
+    paintbrush (0.1.2)
     parallel (1.23.0)
     parser (3.2.2.1)
       ast (~> 2.4.1)
@@ -298,7 +294,6 @@ DEPENDENCIES
   devise (~> 4.9)
   devpack (~> 0.4.1)
   factory_bot_rails (~> 5.2)
-  paintbrush!
   rake (~> 13.0)
   rspec (~> 3.12)
   rspec-file_fixtures (~> 0.1.6)
