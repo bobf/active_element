@@ -10,7 +10,7 @@
 <div>
   <ul style="list-style-type: none;">
     <% missing_permissions.each do |missing_permission| %>
-      <li class="font-monospace"><%= missing_permission %></li>
+      <li class="font-monospace"><%= missing_permission[:with] %></li>
     <% end %>
   </ul>
 </div>

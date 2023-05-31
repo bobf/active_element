@@ -38,7 +38,7 @@
     getAntiCsrfToken,
     cloneElement,
     components: {},
-    jsonData: {},
+    jsonData: window.ActiveElement?.jsonData || {},
     controller_path: document.querySelector('meta[name="active_element_controller_path"]').content
   };
 
