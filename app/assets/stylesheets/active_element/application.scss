@@ -6,6 +6,7 @@
   transition: height 0.5s ease-in-out, background-position 0.8s ease-in-out;
   background-position: right 1.2rem center;
   background-repeat: no-repeat;
+  z-index: 2000;
 
   &.shrink {
     height: 3rem;
@@ -17,6 +18,11 @@
     background-position: right 1.2rem center;
     background-repeat: no-repeat;
   }
+}
+
+.main.content {
+  top: 10rem;
+  position: relative;
 }
 
 td.action-column {

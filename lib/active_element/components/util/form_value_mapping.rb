@@ -33,10 +33,6 @@ module ActiveElement
 
         def boolean_value
           value_from_record
-          component.controller.render_to_string(
-            partial: 'active_element/components/fields/boolean',
-            locals: { value: value_from_record }
-          )
         end
 
         def geometry_value
