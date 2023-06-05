@@ -73,8 +73,11 @@ form {
 }
 
 .search-field-results {
-  min-width: 20rem;
-  position: absolute;
+  min-width: 25rem;
+  background-color: $white;
+  position: fixed;
+  height: 15rem;
+  overflow-y: auto;
   .search-field-result {
     cursor: pointer;
     &:hover {

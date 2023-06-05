@@ -9,7 +9,7 @@ ActiveElement.JsonField = (() => {
     return humanized.replace(/s$/, ''); // FIXME: Expose translations from back-end to make this more useful.
   };
 
-  const createStore = ({ data, store = { data: {}, paths: {} } }) => {
+  const createStore = ({ data, schema, store = { data: {}, paths: {} } }) => {
     const buildState = ({ data, store, path = [] }) => {
       const getPath = (key) => {
         return path.concat([key]);
@@ -34,32 +34,47 @@ ActiveElement.JsonField = (() => {
     const state = buildState({ data, store });
     const getValue = (key) => store.data[key];
     const setValue = (key, value) => store.data[key] = value;
+    const getState = () => {
+      const getStructure = ({ path }) => {
+        return path.reduce((structure, key, index) => {
+          let structureField;
 
-    return { state, store, getValue, setValue };
-  };
+          if (structure.type === 'object') {
+            structureField = structure.shape.fields.find((field) => field.name === key);
+          } else if (structure.type === 'array') {
+            structureField = structure.shape;
+          }
 
-  const getState = ({ store }) => {
-    const data = {};
-    const storeData = Object.entries(store.paths).forEach(([id, path]) => {
-      let value = data;
-      path.forEach((key, index) => {
-        if (index === path.length - 1) {
-          value[key] = store.data[id];
-        } else if (typeof(key) === 'string') {
-          value[key] = value[key] || {};
-          value = value[key];
-        } else {
-          value[key] = value[key] || [];
-          value = value[key];
-        }
+          if (index === path.length - 1) {
+            return { array: [], object: {} }[structureField?.type || structure.shape.type];
+          } else {
+            return structureField;
+          }
+        }, schema);
+      };
+
+      const data = { array: [], object: {} }[schema.type];
+
+      Object.entries(store.paths).forEach(([id, path]) => {
+        let value = data;
+
+        path.forEach((key, index) => {
+          if (index === path.length - 1) {
+            if (store.data[id]) value[key] = store.data[id];
+          } else {
+            value[key] = value[key] || getStructure({ path: path.slice(0, index + 1) });
+            value = value[key];
+          }
+        });
       });
 
-      return value;
-    },
-    {});
+      return data;
+    };
 
-    return data;
+
+    return { state, store, getValue, setValue, getState };
   };
+
 
   const getValueFromElement = ({ element }) => {
     if (element.type === 'checkbox') return element.checked;
@@ -79,20 +94,21 @@ ActiveElement.JsonField = (() => {
     return ActiveElement.jsonData[dataKey].schema;
   };
 
-  const trackState = ({ element, schema, getValue }) => {
-    element.addEventListener('change', (ev) => {
+  const trackState = ({ element, schema, getValue, setValue, onStateChanged }) => {
+    const handleUpdate = (ev) => {
       const key = ev.target.id;
       const previousValue = getValue(key);
       const newValue = getValueFromElement({ element: ev.target });
 
       if (previousValue !== newValue) {
-        // setValue(key, newValue);
-        // TODO: Trigger callbacks
+        setValue(key, newValue);
+        onStateChanged({ key, previousValue, newValue });
       }
-      console.log(`Previous: ${previousValue}`);
-      console.log(`Updated:  ${newValue}`);
       return true;
-    });
+    };
+
+    element.addEventListener('keyup', (ev) => handleUpdate(ev));
+    element.addEventListener('change', (ev) => handleUpdate(ev));
   };
 
   const Component = ({ getValue, schema, state, element }) => {
@@ -294,11 +310,14 @@ ActiveElement.JsonField = (() => {
   const JsonField = (element) => {
     const data = getData(element);
     const schema = getSchema(element);
-    const { state, store, getValue } = createStore({ data });
+    const { state, store, getValue, setValue, getState } = createStore({ data, schema });
 
-    console.log(getState({ store }));
-
-    trackState({ element, schema, getValue });
+    const onStateChanged = ({ state, previousValue, newValue }) => {
+      element.dataset.jsonState = JSON.stringify(getState());
+      ActiveElement.log(`Previous: ${previousValue}`);
+      ActiveElement.log(`Updated:  ${newValue}`);
+    };
+    trackState({ element, schema, getValue, setValue, onStateChanged });
     const component = Component({ getValue, schema, state, element });
 
     return component;
