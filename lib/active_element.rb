@@ -13,11 +13,13 @@ require_relative 'active_element/permissions_check'
 require_relative 'active_element/permissions_report'
 require_relative 'active_element/controller_interface'
 require_relative 'active_element/controller_action'
+require_relative 'active_element/pre_render_processors'
 require_relative 'active_element/rails_component'
 require_relative 'active_element/route'
 require_relative 'active_element/routes'
 require_relative 'active_element/component'
 require_relative 'active_element/components'
+require_relative 'active_element/json_field_schema'
 require_relative 'active_element/engine'
 
 # ActiveElement API Admin UI template and menu system.
@@ -91,6 +93,10 @@ module ActiveElement
     def eager_load(resource)
       suffix = resource == :controllers ? '_controller' : nil
       Rails.root.join("app/#{resource}").glob("**/*#{suffix}.rb").each { |path| require path }
+    end
+
+    def element_id
+      "active-element-#{SecureRandom.uuid}"
     end
 
     private

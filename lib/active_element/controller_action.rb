@@ -11,7 +11,7 @@ module ActiveElement
 
     def process_action
       Rails.logger.info("#{ActiveElement.log_tag} #{colorized_permissions_message}")
-      return if verified_permissions?
+      process_pre_render and return if verified_permissions?
 
       warn "#{ActiveElement.log_tag} #{colorized_permissions_message}" if Rails.env.test?
       return controller.redirect_to redirect_path if redirect_to_default_landing_page?
@@ -28,6 +28,12 @@ module ActiveElement
       return @verified_permissions if defined?(@verified_permissions)
 
       (@verified_permissions = permissions_check.permitted?)
+    end
+
+    def process_pre_render
+      PreRenderProcessors::Json.new(controller: controller).process
+
+      true
     end
 
     def redirect_path
@@ -72,7 +78,7 @@ module ActiveElement
       color = if permissions_check.permitted?
                 :green
               else
-                (rails_component.environment == 'test' ? :yellow : :red)
+                rails_component.environment == 'test' ? :yellow : :red
               end
       paintbrush { public_send(color, permissions_check.message) }
     end

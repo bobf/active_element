@@ -56,10 +56,89 @@ form {
   }
 }
 
+.modal-dialog.modal-dialog-scrollable .modal-content {
+  max-height: 80%;
+  min-height: 80%;
+  margin-top: 5rem;
+}
+
 .json-field {
-  .form-control, .form-select {
-    width: calc(100% - 2.5rem);
+  .focus {
     display: inline;
+  }
+
+  ol {
+    line-height: 2rem;
+    margin-top: 2.8rem;
+
+    ol {
+      margin-top: 1rem;
+    }
+  }
+
+  .form-group {
+    padding: 1rem;
+    background-color: #58575755;
+  }
+
+  .json-delete-object-button {
+    margin-top: 1rem;
+    margin-right: 1.8rem;
+  }
+
+  &.modal-body {
+    ol {
+      margin-top: 0;
+    }
+
+    .json-delete-object-button {
+      margin-top: 0;
+      margin-right: 0;
+    }
+
+    .form-group {
+      padding: 1rem;
+      margin-top: 0.8rem;
+    }
+  }
+
+  .focus {
+    .focus-field-name {
+    }
+
+    .focus-field-syntax {
+    }
+
+    .focus-field-value {
+      text-decoration: none;
+      font-weight: bold;
+
+      &:hover {
+        text-decoration: underline;
+      }
+    }
+
+    .expand-button {
+      margin-right: 0.4rem;
+    }
+  }
+
+
+  li .json-text-field, li .json-select-field {
+    width: calc(100% - 3.2rem);
+  }
+
+  .form-control, .form-select {
+    display: inline;
+    .append-button {
+      display: inline;
+    }
+  }
+
+  .form-group {
+    border-radius: 10px;
+    background-color: #dddada55;
+    border-radius: 10px;
   }
 
   .action-button {
@@ -73,8 +152,11 @@ form {
 }
 
 .search-field-results {
-  min-width: 20rem;
-  position: absolute;
+  min-width: 25rem;
+  background-color: $white;
+  position: fixed;
+  height: 15rem;
+  overflow-y: auto;
   .search-field-result {
     cursor: pointer;
     &:hover {
@@ -89,6 +171,7 @@ form {
   margin-top: 2rem;
   margin-right: 1rem;
   padding: 0;
+  z-index: 3000;
 
   &.notice {
     .toast-body {
@@ -117,6 +200,18 @@ form {
         color: #{$white};
         background: #{$red-700};
       }
+    }
+  }
+
+  .json-field {
+    .form-group {
+      background-color: #58575755;
+    }
+  }
+
+  .popover {
+    .popover-header {
+      background-color: #{$dark};
     }
   }
 }

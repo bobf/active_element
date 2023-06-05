@@ -11,13 +11,12 @@ module ActiveElement
 
       # rubocop:disable Metrics/MethodLength
       def initialize(controller, fields:, submit:, item:, title: nil, destroy: false,
-                     modal: false, columns: 1, expanded: true, **kwargs)
+                     modal: false, columns: 1, **kwargs)
         @controller = controller
         @fields = fields
         @title = title
         @submit = submit
         @destroy = destroy
-        @expanded = expanded
         @item = item
         @modal = modal
         @kwargs = kwargs
@@ -31,7 +30,7 @@ module ActiveElement
         'active_element/components/form'
       end
 
-      def locals # rubocop:disable Metrics/MethodLength, Metrics/AbcSize
+      def locals # rubocop:disable Metrics/MethodLength
         {
           component: self,
           fields: Util::FormFieldMapping.new(record, fields, i18n).fields_with_types_and_options,
@@ -44,7 +43,6 @@ module ActiveElement
           kwargs: kwargs,
           destroy: destroy,
           modal: modal,
-          expanded: expanded,
           columns: columns,
           title: title,
           id: form_id
@@ -133,7 +131,7 @@ module ActiveElement
       private
 
       attr_reader :fields, :submit, :title, :kwargs, :item, :method, :action,
-                  :destroy, :modal, :expanded, :columns
+                  :destroy, :modal, :columns
 
       def valid_field?(field)
         return true if record.respond_to?("#{field}_changed?") && !record.public_send("#{field}_changed?")
@@ -157,7 +155,7 @@ module ActiveElement
 
       def submit_label_from_model
         return "Create #{humanized_model_name}" if record.present? && method == :post
-        return "Update #{humanized_model_name}" if record.present? && %i[patch put].include?(method)
+        return "Save Changes" if record.present? && %i[patch put].include?(method)
 
         nil
       end
@@ -189,7 +187,7 @@ module ActiveElement
       end
 
       def form_id
-        kwargs.fetch(:id) { "form-#{SecureRandom.uuid}" }
+        kwargs.fetch(:id) { ActiveElement.element_id }
       end
 
       def autoformat(val, field_options)

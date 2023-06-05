@@ -1,8 +1,6 @@
 (() => {
   const generateId = () => {
-    ActiveElement._id += 1;
-
-    return `active-element-element-${ActiveElement._id}`;
+    return `ae-${crypto.randomUUID()}`;
   };
 
   const getAntiCsrfToken = () => {
@@ -33,7 +31,6 @@
 
   const ActiveElement = {
     log: (message) => { console.log(`[ActiveElement] ${message}`); },
-    _id: 0,
     generateId,
     getAntiCsrfToken,
     cloneElement,
