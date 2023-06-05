@@ -20,24 +20,14 @@
 
   </div>
 
-<% elsif title.present? && expanded == false %>
-
-  <div data-field-type="form-expand" data-form-id="<%= id %>" class="mb-3">
-    <span class="fs-4 align-bottom"><%= title %></span>
-  </div>
-
-<% elsif title.blank? && expanded == false %>
-
-  <div data-field-type="form-expand" data-form-id="<%= id %>" class="mb-3"></div>
-
 <% elsif title.present? %>
 
   <span class="fs-4 align-bottom"><%= title %></span>
 
 <% end %>
 
-<div class="expand-collapse-form <%= modal ? 'd-none' : nil %>" id="form-wrapper-<%= id %>">
-  <%= form_with local: true, **kwargs, method: method, id: id, class: "#{class_name} m-3 #{modal == false && expanded == false ? 'd-none' : nil}" do |form| %>
+<div class="form <%= modal ? 'd-none' : nil %>" id="form-wrapper-<%= id %>">
+  <%= form_with local: true, **kwargs, method: method, id: id, class: "#{class_name} m-3" do |form| %>
     <% if %i[top both].include?(submit_position) %>
       <div class="form-group sticky-top" style="top: 0.5rem;">
         <%= form.submit submit_label, class: "btn btn-#{method == :post ? 'success' : 'primary'} float-end" %>

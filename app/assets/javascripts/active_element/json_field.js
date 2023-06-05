@@ -24,7 +24,7 @@ ActiveElement.JsonField = (() => {
           )
         );
       } else {
-        const id = crypto.randomUUID();
+        const id = ActiveElement.generateId();
         store.data[id] = data;
         store.paths[id] = path;
         return id;
@@ -71,8 +71,7 @@ ActiveElement.JsonField = (() => {
       return data;
     };
 
-
-    return { state, store, getValue, setValue, getState };
+    return { state, getValue, setValue, getState };
   };
 
 
@@ -138,7 +137,6 @@ ActiveElement.JsonField = (() => {
         case 'array':
           element = cloneElement('form-group');
           const list = ArrayField({ schema, state });
-          element.append(ExpandCollapseButton({ element }));
           element.append(Label({ title: schema.name }));
           element.append(list);
           element.append(AppendButton({ list, schema, state }));
@@ -244,25 +242,6 @@ ActiveElement.JsonField = (() => {
       return group;
     };
 
-    const ExpandCollapseButton = ({ element }) => {
-      const button = cloneElement('expand-collapse-button');
-
-      button.onclick = (ev) => {
-        ev.stopPropagation();
-        element.classList.toggle('collapsed');
-
-        if (element.classList.contains('collapsed')) {
-          button.innerText = 'Show';
-        } else {
-          button.innerText = 'Hide';
-        }
-
-        return false;
-      };
-
-      return button;
-    };
-
     const DeleteButton = ({ rootElement, template = 'delete-button' }) => {
       const element = cloneElement(template);
 
@@ -310,7 +289,7 @@ ActiveElement.JsonField = (() => {
   const JsonField = (element) => {
     const data = getData(element);
     const schema = getSchema(element);
-    const { state, store, getValue, setValue, getState } = createStore({ data, schema });
+    const { state, getValue, setValue, getState } = createStore({ data, schema });
 
     const onStateChanged = ({ state, previousValue, newValue }) => {
       element.dataset.jsonState = JSON.stringify(getState());

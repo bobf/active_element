@@ -11,13 +11,12 @@ module ActiveElement
 
       # rubocop:disable Metrics/MethodLength
       def initialize(controller, fields:, submit:, item:, title: nil, destroy: false,
-                     modal: false, columns: 1, expanded: true, **kwargs)
+                     modal: false, columns: 1, **kwargs)
         @controller = controller
         @fields = fields
         @title = title
         @submit = submit
         @destroy = destroy
-        @expanded = expanded
         @item = item
         @modal = modal
         @kwargs = kwargs
@@ -44,7 +43,6 @@ module ActiveElement
           kwargs: kwargs,
           destroy: destroy,
           modal: modal,
-          expanded: expanded,
           columns: columns,
           title: title,
           id: form_id
@@ -133,7 +131,7 @@ module ActiveElement
       private
 
       attr_reader :fields, :submit, :title, :kwargs, :item, :method, :action,
-                  :destroy, :modal, :expanded, :columns
+                  :destroy, :modal, :columns
 
       def valid_field?(field)
         return true if record.respond_to?("#{field}_changed?") && !record.public_send("#{field}_changed?")
