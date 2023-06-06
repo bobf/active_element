@@ -24,11 +24,17 @@ ActiveElement.JsonField = (() => {
           )
         );
       } else {
-        const id = ActiveElement.generateId();
-        store.data[id] = data;
-        store.paths[id] = path;
-        return id;
+        return initializeState({ path, data });
       }
+    };
+
+    const initializeState = ({ state, path, data, defaultValue }) => {
+      if (state) return state;
+
+      const id = ActiveElement.generateId();
+      store.paths[id] = path;
+      store.data[id] = data === undefined ? defaultValue : data;
+      return id;
     };
 
     const state = buildState({ data, store });
@@ -80,7 +86,7 @@ ActiveElement.JsonField = (() => {
 
         path.forEach((key, index) => {
           if (index === path.length - 1) {
-            if (store.data[id]) value[key] = store.data[id];
+            if (store.data[id] !== undefined) value[key] = store.data[id];
           } else {
             value[key] = value[key] || getStructure({ path: path.slice(0, index + 1) });
             value = value[key];
@@ -91,7 +97,7 @@ ActiveElement.JsonField = (() => {
       return data;
     };
 
-    return { state, getValue, setValue, appendValue, getState };
+    return { state, getValue, setValue, initializeState, appendValue, getState };
   };
 
 
@@ -130,7 +136,7 @@ ActiveElement.JsonField = (() => {
     element.addEventListener('change', (ev) => handleUpdate(ev));
   };
 
-  const Component = ({ getValue, appendValue, schema, state, element }) => {
+  const Component = ({ getValue, appendValue, initializeState, schema, state, element }) => {
     const ObjectField = ({ schema, state, floating = true, omitLabel = false, path = [] }) => {
       const getPath = () => schema.name ? path.concat(schema.name) : path;
       const currentPath = getPath();
@@ -168,10 +174,10 @@ ActiveElement.JsonField = (() => {
       }
     };
 
-    const BooleanField = ({ omitLabel, schema, state }) => {
+    const BooleanField = ({ omitLabel, schema, state, path }) => {
       const checkbox = cloneElement('checkbox-field');
 
-      checkbox.id = state;
+      checkbox.id = initializeState({ state, path, defaultValue: false });
       checkbox.checked = getValue(state);
 
       if (omitLabel) return checkbox;
@@ -238,23 +244,25 @@ ActiveElement.JsonField = (() => {
       return element;
     };
 
-    const TextField = ({ template, state, schema }) => {
+    const TextField = ({ template, state, schema, path }) => {
       const element = cloneElement(template || 'text-field');
 
-      element.value = getValue(state) || '';
       element.id = state;
+      element.value = getValue(state);
       element.placeholder = schema.shape?.placeholder || ' ';
 
       return element;
     };
 
-    const StringField = ({ omitLabel, floating, schema, state }) => {
+    const StringField = ({ omitLabel, floating, schema, state, path }) => {
       let element;
 
+      state = initializeState({ state, path, data: '' });
+
       if (schema.options?.length) {
-        element = Select({ state, schema });
+        element = Select({ state, schema, path });
       } else {
-        element = TextField({ state, schema });
+        element = TextField({ state, schema, path });
       }
 
       if (omitLabel) return element;
@@ -317,7 +325,7 @@ ActiveElement.JsonField = (() => {
     const formId = element.dataset.formId;
     const formFieldElement = document.querySelector(`#${element.dataset.fieldId}`);
     const schema = getSchema(element);
-    const { state, getValue, setValue, appendValue, getState } = createStore({ data, schema });
+    const { state, getValue, setValue, appendValue, initializeState, getState } = createStore({ data, schema });
 
     const onStateChanged = ({ id, previousValue, newValue }) => {
       formFieldElement.value = JSON.stringify(getState());
@@ -325,7 +333,7 @@ ActiveElement.JsonField = (() => {
       ActiveElement.log(`Updated:  ${newValue}`);
     };
     trackState({ element, schema, getValue, setValue, onStateChanged });
-    const component = Component({ getValue, appendValue, schema, state, element });
+    const component = Component({ getValue, appendValue, initializeState, schema, state, element });
 
     return component;
   };

@@ -27,7 +27,9 @@ module ActiveElement
         json_fields.zip(json_values).each do |field, value|
           *nested_keys, field_key = field.split('.')
           param = nested_keys.reduce(permitted_params) { |params, key| params[key] }
-          param[field_key] = JSON.parse(value)
+          # If value is an empty string then something went wrong in front end code. Skip
+          # reassignment completely to prevent data loss.
+          param[field_key] = JSON.parse(value) unless value == ''
         end
       end
 
