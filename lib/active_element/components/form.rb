@@ -30,7 +30,7 @@ module ActiveElement
         'active_element/components/form'
       end
 
-      def locals # rubocop:disable Metrics/MethodLength, Metrics/AbcSize
+      def locals # rubocop:disable Metrics/MethodLength
         {
           component: self,
           fields: Util::FormFieldMapping.new(record, fields, i18n).fields_with_types_and_options,
@@ -187,7 +187,7 @@ module ActiveElement
       end
 
       def form_id
-        kwargs.fetch(:id) { "form-#{SecureRandom.uuid}" }
+        kwargs.fetch(:id) { ActiveElement.element_id }
       end
 
       def autoformat(val, field_options)

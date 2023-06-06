@@ -34,16 +34,23 @@ ActiveElement.JsonField = (() => {
     const state = buildState({ data, store });
     const getValue = (key) => store.data[key];
     const setValue = (key, value) => store.data[key] = value;
+    const getMaxIndex = (path) => {
+      const matchingPaths = Object.values(store.paths).filter((storePath) => {
+        const pathSlice = storePath.slice(0, path.length);
+        return path.every((item, index) => item === pathSlice[index]);
+      });
+
+      if (!matchingPaths.length) return undefined;
+
+      return Math.max(...matchingPaths.map((matchingPath) => matchingPath[matchingPath.length - 1]));
+    };
+
     const appendValue = (path) => {
       const id = ActiveElement.generateId();
-      const index = Object.entries(store.paths).filter(([key, value]) => {
-        console.log(path);
-        console.log(value);
-        path.every((item, index) => item === value.slice(0, path.length - 2)[index]);
-      });
-      console.log(index);
-      store.paths[id] = null;
-      store.paths[id] = path.concat([index + 1]);
+      const maxIndex = getMaxIndex(path);
+      const index = maxIndex === undefined ? 0 : maxIndex + 1;
+      store.data[id] = null; // TODO: Get structure, handle default values, option lists, placeholders
+      store.paths[id] = path.concat([index]);
       return id;
     };
 
@@ -108,13 +115,13 @@ ActiveElement.JsonField = (() => {
 
   const trackState = ({ element, schema, getValue, setValue, onStateChanged }) => {
     const handleUpdate = (ev) => {
-      const key = ev.target.id;
-      const previousValue = getValue(key);
+      const id = ev.target.id;
+      const previousValue = getValue(id);
       const newValue = getValueFromElement({ element: ev.target });
 
       if (previousValue !== newValue) {
-        setValue(key, newValue);
-        onStateChanged({ key, previousValue, newValue });
+        setValue(id, newValue);
+        onStateChanged({ id, previousValue, newValue });
       }
       return true;
     };
@@ -126,17 +133,18 @@ ActiveElement.JsonField = (() => {
   const Component = ({ getValue, appendValue, schema, state, element }) => {
     const ObjectField = ({ schema, state, floating = true, omitLabel = false, path = [] }) => {
       const getPath = () => schema.name ? path.concat(schema.name) : path;
+      const currentPath = getPath();
+
       let element;
-      // console.log(getPath(schema.name));
+
       switch (schema.type) {
         case 'boolean':
-          return BooleanField({ state, omitLabel, schema, path: getPath() });
+          return BooleanField({ state, omitLabel, schema, path: currentPath });
         case 'string':
-          return StringField({ state, omitLabel, floating, schema, path: getPath() });
+          return StringField({ state, omitLabel, floating, schema, path: currentPath });
           break;
         case 'object':
           element = cloneElement('form-group-floating');
-
           (schema.shape.fields).forEach((field) => {
             element.append(
               ObjectField({
@@ -144,7 +152,7 @@ ActiveElement.JsonField = (() => {
                 floating: false,
                 schema: field,
                 state: state ? state[field.name] : null,
-                path: getPath(),
+                path: currentPath,
               })
             );
           });
@@ -152,10 +160,10 @@ ActiveElement.JsonField = (() => {
           return element;
         case 'array':
           element = cloneElement('form-group');
-          const list = ArrayField({ schema, state, path: getPath() });
+          const list = ArrayField({ schema, state, path: currentPath });
           element.append(Label({ title: schema.name }));
           element.append(list);
-          element.append(AppendButton({ list, schema, state, path: getPath() }));
+          element.append(AppendButton({ list, schema, state, path: currentPath }));
           return element;
       }
     };
@@ -184,7 +192,7 @@ ActiveElement.JsonField = (() => {
           const listItem = cloneElement('list-item');
           const objectField = ObjectField({
             omitLabel: true,
-            schema: { ...schema, ...schema.shape },
+            schema: { ...schema.shape },
             state: value,
             path: path.concat([index]),
           });
@@ -219,7 +227,7 @@ ActiveElement.JsonField = (() => {
 
       element.id = state;
 
-      schema.shape.options.forEach((option) => {
+      schema.options.forEach((option) => {
         const optionElement = document.createElement('option');
         optionElement.value = option;
         optionElement.append(option);
@@ -243,7 +251,7 @@ ActiveElement.JsonField = (() => {
     const StringField = ({ omitLabel, floating, schema, state }) => {
       let element;
 
-      if (schema.shape?.options?.length) {
+      if (schema.options?.length) {
         element = Select({ state, schema });
       } else {
         element = TextField({ state, schema });
@@ -280,10 +288,10 @@ ActiveElement.JsonField = (() => {
       element.append(`Add ${humanName}`);
       element.onclick = (ev) => {
         ev.preventDefault();
-        appendValue(path);
+        const appendState = appendValue(path);
         const listItem = cloneElement('list-item');
         const objectField = ObjectField(
-          { name: schema.name, omitLabel: true, state, schema: { ...schema, ...schema.shape } }
+          { name: schema.name, omitLabel: true, state: appendState, schema: { ...schema.shape } }
         );
 
         if (schema.shape.type == 'object') {
@@ -306,11 +314,13 @@ ActiveElement.JsonField = (() => {
 
   const JsonField = (element) => {
     const data = getData(element);
+    const formId = element.dataset.formId;
+    const formFieldElement = document.querySelector(`#${element.dataset.fieldId}`);
     const schema = getSchema(element);
     const { state, getValue, setValue, appendValue, getState } = createStore({ data, schema });
 
-    const onStateChanged = ({ state, previousValue, newValue }) => {
-      element.dataset.jsonState = JSON.stringify(getState());
+    const onStateChanged = ({ id, previousValue, newValue }) => {
+      formFieldElement.value = JSON.stringify(getState());
       ActiveElement.log(`Previous: ${previousValue}`);
       ActiveElement.log(`Updated:  ${newValue}`);
     };

@@ -33,14 +33,13 @@ module ActiveElement
       end
 
       def self.json_pretty_print(json)
-        theme = Rouge::Themes::Base16.mode(:light)
-        formatter = Rouge::Formatters::HTMLLinewise.new(Rouge::Formatters::HTMLInline.new(theme))
+        formatter = Rouge::Formatters::HTML.new
         lexer = Rouge::Lexers::JSON.new
         content = JSON.pretty_generate(json.is_a?(String) ? JSON.parse(json) : json)
-        formatted = formatter.format(lexer.lex(content)).gsub('  ', '&nbsp;&nbsp;')
+        formatted = formatter.format(lexer.lex(content)).gsub('  ', '&nbsp;&nbsp;').gsub("\n", '<br/>')
         # rubocop:disable Rails/OutputSafety
         # TODO: Move to a template.
-        "<div style='font-family: monospace;'>#{formatted}</div>".html_safe
+        "<div class='json-highlight' style='font-family: monospace;'>#{formatted}</div>".html_safe
         # rubocop:enable Rails/OutputSafety
       end
     end

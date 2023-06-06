@@ -71,19 +71,34 @@ module ActiveElement
         def numeric_value
           value_from_record
         end
-        alias integer_value numeric_value
-        alias decimal_value numeric_value
-        alias float_value numeric_value
+
+        def integer_value
+          numeric_value
+        end
+
+        def decimal_value
+          numeric_value
+        end
+
+        def float_value
+          numeric_value
+        end
 
         def json_value
           value_from_record
         end
-        alias jsonb_value json_value
+
+        def jsonb_value
+          json_value
+        end
 
         def string_value
           value_from_record
         end
-        alias text_value string_value
+
+        def text_value
+          string_value
+        end
 
         def datetime_value
           value_from_record
@@ -100,7 +115,10 @@ module ActiveElement
         def boolean_value
           value_from_record
         end
-        alias binary_value boolean_value
+
+        def binary_value
+          boolean_value
+        end
 
         def geometry_value
           value_from_record
