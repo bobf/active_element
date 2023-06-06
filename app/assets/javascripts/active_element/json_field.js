@@ -34,6 +34,19 @@ ActiveElement.JsonField = (() => {
     const state = buildState({ data, store });
     const getValue = (key) => store.data[key];
     const setValue = (key, value) => store.data[key] = value;
+    const appendValue = (path) => {
+      const id = ActiveElement.generateId();
+      const index = Object.entries(store.paths).filter(([key, value]) => {
+        console.log(path);
+        console.log(value);
+        path.every((item, index) => item === value.slice(0, path.length - 2)[index]);
+      });
+      console.log(index);
+      store.paths[id] = null;
+      store.paths[id] = path.concat([index + 1]);
+      return id;
+    };
+
     const getState = () => {
       const getStructure = ({ path }) => {
         return path.reduce((structure, key, index) => {
@@ -71,7 +84,7 @@ ActiveElement.JsonField = (() => {
       return data;
     };
 
-    return { state, getValue, setValue, getState };
+    return { state, getValue, setValue, appendValue, getState };
   };
 
 
@@ -110,14 +123,16 @@ ActiveElement.JsonField = (() => {
     element.addEventListener('change', (ev) => handleUpdate(ev));
   };
 
-  const Component = ({ getValue, schema, state, element }) => {
-    const ObjectField = ({ schema, state, floating = true, omitLabel = false }) => {
+  const Component = ({ getValue, appendValue, schema, state, element }) => {
+    const ObjectField = ({ schema, state, floating = true, omitLabel = false, path = [] }) => {
+      const getPath = () => schema.name ? path.concat(schema.name) : path;
       let element;
+      // console.log(getPath(schema.name));
       switch (schema.type) {
         case 'boolean':
-          return BooleanField({ state, omitLabel, schema });
+          return BooleanField({ state, omitLabel, schema, path: getPath() });
         case 'string':
-          return StringField({ state, omitLabel, floating, schema });
+          return StringField({ state, omitLabel, floating, schema, path: getPath() });
           break;
         case 'object':
           element = cloneElement('form-group-floating');
@@ -129,6 +144,7 @@ ActiveElement.JsonField = (() => {
                 floating: false,
                 schema: field,
                 state: state ? state[field.name] : null,
+                path: getPath(),
               })
             );
           });
@@ -136,10 +152,10 @@ ActiveElement.JsonField = (() => {
           return element;
         case 'array':
           element = cloneElement('form-group');
-          const list = ArrayField({ schema, state });
+          const list = ArrayField({ schema, state, path: getPath() });
           element.append(Label({ title: schema.name }));
           element.append(list);
-          element.append(AppendButton({ list, schema, state }));
+          element.append(AppendButton({ list, schema, state, path: getPath() }));
           return element;
       }
     };
@@ -160,16 +176,17 @@ ActiveElement.JsonField = (() => {
       return element;
     };
 
-    const ArrayField = ({ schema, state }) => {
+    const ArrayField = ({ schema, state, path }) => {
       const element = cloneElement('list-group');
 
       if (state) {
-        state.forEach((value) => {
+        state.forEach((value, index) => {
           const listItem = cloneElement('list-item');
           const objectField = ObjectField({
             omitLabel: true,
             schema: { ...schema, ...schema.shape },
             state: value,
+            path: path.concat([index]),
           });
 
           if (schema.shape.type == 'object') {
@@ -246,8 +263,8 @@ ActiveElement.JsonField = (() => {
       const element = cloneElement(template);
 
       element.onclick = (ev) => {
-        ev.stopPropagation();
-        rootElement.remove();
+        ev.preventDefault();
+        rootElement.remove(); // TODO: Handle confirmation callback.
 
         return false;
       };
@@ -255,14 +272,15 @@ ActiveElement.JsonField = (() => {
       return element;
     };
 
-    const AppendButton = ({ list, schema, state }) => {
+    const AppendButton = ({ list, schema, state, path }) => {
       const element = cloneElement('append-button');
 
       const humanName = humanize({ string: schema.name, singular: true });
 
       element.append(`Add ${humanName}`);
       element.onclick = (ev) => {
-        ev.stopPropagation();
+        ev.preventDefault();
+        appendValue(path);
         const listItem = cloneElement('list-item');
         const objectField = ObjectField(
           { name: schema.name, omitLabel: true, state, schema: { ...schema, ...schema.shape } }
@@ -289,7 +307,7 @@ ActiveElement.JsonField = (() => {
   const JsonField = (element) => {
     const data = getData(element);
     const schema = getSchema(element);
-    const { state, getValue, setValue, getState } = createStore({ data, schema });
+    const { state, getValue, setValue, appendValue, getState } = createStore({ data, schema });
 
     const onStateChanged = ({ state, previousValue, newValue }) => {
       element.dataset.jsonState = JSON.stringify(getState());
@@ -297,7 +315,7 @@ ActiveElement.JsonField = (() => {
       ActiveElement.log(`Updated:  ${newValue}`);
     };
     trackState({ element, schema, getValue, setValue, onStateChanged });
-    const component = Component({ getValue, schema, state, element });
+    const component = Component({ getValue, appendValue, schema, state, element });
 
     return component;
   };
