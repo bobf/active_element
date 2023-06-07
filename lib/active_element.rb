@@ -19,6 +19,7 @@ require_relative 'active_element/route'
 require_relative 'active_element/routes'
 require_relative 'active_element/component'
 require_relative 'active_element/components'
+require_relative 'active_element/json_field_schema'
 require_relative 'active_element/engine'
 
 # ActiveElement API Admin UI template and menu system.

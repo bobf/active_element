@@ -31,6 +31,7 @@ module ExamplesTable
         t.string :email
         t.string :password
         t.string :secret
+        t.json :json
       end
     end
     ActiveRecord::Migration.class_eval do
