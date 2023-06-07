@@ -9,7 +9,18 @@ ActiveElement.JsonField = (() => {
     return humanized.replace(/s$/, ''); // FIXME: Expose translations from back-end to make this more useful.
   };
 
+  const isObject = (object) => object && typeof(object) === 'object';
+
   const createStore = ({ data, schema, store = { data: {}, paths: {} } }) => {
+    const initializeState = ({ state, path, data, defaultValue }) => {
+      if (state) return state;
+
+      const id = ActiveElement.generateId();
+      store.paths[id] = path;
+      store.data[id] = data === undefined ? defaultValue : data;
+      return id;
+    };
+
     const buildState = ({ data, store, path = [] }) => {
       const getPath = (key) => {
         return path.concat([key]);
@@ -17,7 +28,7 @@ ActiveElement.JsonField = (() => {
 
       if (Array.isArray(data)) {
         return data.map((value, index) => buildState({ data: value, store, path: getPath(index) }));
-      } else if (data && typeof(data) === 'object') {
+      } else if (isObject(data)) {
         return Object.fromEntries(
           Object.entries(data).map(
             ([key, value]) => [key, buildState({ data: value, store, path: getPath(key) })]
@@ -28,36 +39,58 @@ ActiveElement.JsonField = (() => {
       }
     };
 
-    const initializeState = ({ state, path, data, defaultValue }) => {
-      if (state) return state;
+    const state = buildState({ data, store });
+    const stateChangedCallbacks = [];
+    const stateChanged = (callback) => stateChangedCallbacks.push(callback);
+    const notifyStateChanged = ({ id, previousValue, newValue }) => {
+      stateChangedCallbacks.forEach((callback) => callback({ id, previousValue, newValue, getState }));
+    };
+    const getValue = (id) => store.data[id];
+    const deleteValue = (state) => {
+      const deleteObject = (id) => {
+        console.log(id);
+        if (Array.isArray(id)) {
+          id.forEach((item) => deleteObject(item));
+        } else if (isObject(id)) {
+          Object.entries(id).forEach(([key, value]) => deleteObject(value));
+        } else {
+          store.data[id] = undefined;
+          store.paths[id] = undefined;
+        }
+      };
 
-      const id = ActiveElement.generateId();
-      store.paths[id] = path;
-      store.data[id] = data === undefined ? defaultValue : data;
-      return id;
+      deleteObject(state);
+      notifyStateChanged({ id: state });
     };
 
-    const state = buildState({ data, store });
-    const getValue = (key) => store.data[key];
-    const setValue = (key, value) => store.data[key] = value;
-    const getMaxIndex = (path) => {
-      const matchingPaths = Object.values(store.paths).filter((storePath) => {
-        const pathSlice = storePath.slice(0, path.length);
-        return path.every((item, index) => item === pathSlice[index]);
-      });
+    const setValue = (id, value) => {
+      const previousValue = getValue(id);
 
-      if (!matchingPaths.length) return undefined;
-
-      return Math.max(...matchingPaths.map((matchingPath) => matchingPath[path.length]));
+      if (previousValue !== value) {
+        store.data[id] = value;
+        notifyStateChanged({ id, previousValue, newValue: value });
+      }
     };
 
     const appendValue = ({ path, schema }) => {
+      const getMaxIndex = (path) => {
+        const matchingPaths = Object.values(store.paths).filter((storePath) => {
+          const pathSlice = storePath.slice(0, path.length);
+          return path.every((item, index) => item === pathSlice[index]);
+        });
+
+        if (!matchingPaths.length) return undefined;
+
+        return Math.max(...matchingPaths.map((matchingPath) => matchingPath[path.length]));
+      };
+
       const id = ActiveElement.generateId();
       const maxIndex = getMaxIndex(path);
       const index = maxIndex === undefined ? 0 : maxIndex + 1;
+      const appendPath = path.concat([index]);
       store.data[id] = null; // XXX: Do we need to do anything else here ?
-      store.paths[id] = path.concat([index]);
-      return { state: id, index };
+      store.paths[id] = appendPath;
+      return { state: id, path: appendPath };
     };
 
     const getState = () => {
@@ -79,12 +112,28 @@ ActiveElement.JsonField = (() => {
         }, schema);
       };
 
+      const cleanEmpty = ((object) => {
+        if (Array.isArray(object)) {
+          const cleanedArray = Array.from(object.filter((item) => item !== undefined));
+          return cleanedArray.map((item) => cleanEmpty(item));
+        } else if (isObject(object)) {
+          const cleanedObject = Object.fromEntries(
+            Object.entries(object).filter(([key, value]) => value !== undefined)
+          );
+          return Object.fromEntries(
+            Object.entries(cleanedObject).map(([key, value]) => [key, cleanEmpty(value)])
+          );
+        } else {
+          return object;
+        }
+      });
+
       const data = { array: [], object: {} }[schema.type];
 
       Object.entries(store.paths).forEach(([id, path]) => {
         let value = data;
 
-        path.forEach((key, index) => {
+        path?.forEach((key, index) => {
           if (index === path.length - 1) {
             if (store.data[id] !== undefined) value[key] = store.data[id];
           } else {
@@ -94,10 +143,26 @@ ActiveElement.JsonField = (() => {
         });
       });
 
-      return data;
+      return cleanEmpty(data);
     };
 
-    return { state, getValue, setValue, initializeState, appendValue, getState };
+    const handleEvent = (ev) => {
+      const id = ev.target.id;
+      setValue(id, getValueFromElement({ element: ev.target }));
+
+      return true;
+    };
+
+    const connectState = ({ element }) => {
+      element.addEventListener('keyup', (ev) => handleEvent(ev));
+      element.addEventListener('change', (ev) => handleEvent(ev));
+    };
+
+    return {
+      stateChanged,
+      connectState,
+      store: { state, getValue, setValue, deleteValue, initializeState, appendValue },
+    };
   };
 
 
@@ -119,24 +184,7 @@ ActiveElement.JsonField = (() => {
     return ActiveElement.jsonData[dataKey].schema;
   };
 
-  const trackState = ({ element, schema, getValue, setValue, onStateChanged }) => {
-    const handleUpdate = (ev) => {
-      const id = ev.target.id;
-      const previousValue = getValue(id);
-      const newValue = getValueFromElement({ element: ev.target });
-
-      if (previousValue !== newValue) {
-        setValue(id, newValue);
-        onStateChanged({ id, previousValue, newValue });
-      }
-      return true;
-    };
-
-    element.addEventListener('keyup', (ev) => handleUpdate(ev));
-    element.addEventListener('change', (ev) => handleUpdate(ev));
-  };
-
-  const Component = ({ getValue, appendValue, initializeState, schema, state, element }) => {
+  const Component = ({ store, schema, element }) => {
     const ObjectField = ({ schema, state, path, floating = true, omitLabel = false }) => {
       const getPath = () => schema.name ? path.concat(schema.name) : path;
       const currentPath = getPath();
@@ -177,8 +225,8 @@ ActiveElement.JsonField = (() => {
     const BooleanField = ({ omitLabel, schema, state, path }) => {
       const checkbox = cloneElement('checkbox-field');
 
-      checkbox.id = initializeState({ state, path, defaultValue: false });
-      checkbox.checked = getValue(state);
+      checkbox.id = store.initializeState({ state, path, defaultValue: false });
+      checkbox.checked = store.getValue(state);
 
       if (omitLabel) return checkbox;
 
@@ -190,27 +238,33 @@ ActiveElement.JsonField = (() => {
       return element;
     };
 
-    const ArrayField = ({ schema, state, path }) => {
+    const ArrayField = ({ schema, state, path: objectPath }) => {
       const element = cloneElement('list-group');
 
       if (state) {
-        state.forEach((value, index) => {
+        state.forEach((eachState, index) => {
+          const path = objectPath.concat([index]);
           const listItem = cloneElement('list-item');
           const objectField = ObjectField({
+            path,
             omitLabel: true,
             schema: { ...schema.shape },
-            state: value,
-            path: path.concat([index]),
+            state: eachState
           });
 
+          // TODO: Use same template etc. for all delete buttons, use presentation layer to
+          // handle UI differences.
           if (schema.shape.type == 'object') {
             const group = cloneElement('form-group');
-            group.append(DeleteButton({ rootElement: listItem, template: 'delete-object-button' }));
+            const deleteObjectButton = DeleteButton(
+              { path, state: eachState, rootElement: listItem, template: 'delete-object-button' }
+            );
+            group.append(deleteObjectButton);
             group.append(objectField);
             listItem.append(group);
           } else {
             listItem.append(objectField);
-            listItem.append(DeleteButton({ rootElement: listItem }));
+            listItem.append(DeleteButton({ path, state: eachState, rootElement: listItem }));
           }
 
           element.append(listItem);
@@ -228,17 +282,23 @@ ActiveElement.JsonField = (() => {
       return element;
     }
 
+    const Option = ({ value, label, selected }) => {
+      const element = document.createElement('option');
+      element.value = value;
+      element.append(label || value);
+      element.selected = selected || false;
+      return element;
+    };
+
     const Select = ({ state, schema }) => {
       const element = cloneElement('select')
 
       element.id = state;
 
-      schema.options.forEach((option) => {
-        const optionElement = document.createElement('option');
-        optionElement.value = option;
-        optionElement.append(option);
-        optionElement.selected = option === getValue(state);
-        element.append(optionElement);
+      element.append(Option({ value: '' }));
+
+      schema.options.forEach((value) => {
+        element.append(Option({ value, selected: value === store.getValue(state) }));
       });
 
       return element;
@@ -248,7 +308,7 @@ ActiveElement.JsonField = (() => {
       const element = cloneElement(template || 'text-field');
 
       element.id = state;
-      element.value = getValue(state);
+      element.value = store.getValue(state);
       element.placeholder = schema.shape?.placeholder || ' ';
 
       return element;
@@ -257,7 +317,7 @@ ActiveElement.JsonField = (() => {
     const StringField = ({ omitLabel, floating, schema, state, path }) => {
       let element;
 
-      state = initializeState({ state, path, data: '' });
+      state = store.initializeState({ state, path, data: '' });
 
       if (schema.options?.length) {
         element = Select({ state, schema, path });
@@ -275,12 +335,13 @@ ActiveElement.JsonField = (() => {
       return group;
     };
 
-    const DeleteButton = ({ rootElement, template = 'delete-button' }) => {
+    const DeleteButton = ({ path, state, rootElement, template = 'delete-button' }) => {
       const element = cloneElement(template);
 
       element.onclick = (ev) => {
         ev.preventDefault();
         rootElement.remove(); // TODO: Handle confirmation callback.
+        store.deleteValue(state);
 
         return false;
       };
@@ -288,7 +349,7 @@ ActiveElement.JsonField = (() => {
       return element;
     };
 
-    const AppendButton = ({ list, schema, state, path }) => {
+    const AppendButton = ({ list, schema, state, path: objectPath }) => {
       const element = cloneElement('append-button');
 
       const humanName = humanize({ string: schema.name, singular: true });
@@ -296,22 +357,22 @@ ActiveElement.JsonField = (() => {
       element.append(`Add ${humanName}`);
       element.onclick = (ev) => {
         ev.preventDefault();
-        const { index, state: appendState } = appendValue({ path, schema });
+        const { path, state: appendState } = store.appendValue({ path: objectPath, schema });
         const listItem = cloneElement('list-item');
         const objectField = ObjectField({
+          path,
           name: schema.name,
           omitLabel: true,
           state: appendState,
           schema: { ...schema.shape },
-          path: path.concat([index]),
         });
 
         if (schema.shape.type == 'object') {
-          listItem.append(DeleteButton({ rootElement: listItem, template: 'delete-object-button' }));
+          listItem.append(DeleteButton({ path, state: appendState, rootElement: listItem, template: 'delete-object-button' }));
           listItem.append(objectField);
         } else {
           listItem.append(objectField);
-          listItem.append(DeleteButton({ rootElement: listItem }));
+          listItem.append(DeleteButton({ path, state: appendState, rootElement: listItem }));
         }
         list.append(listItem);
 
@@ -321,7 +382,7 @@ ActiveElement.JsonField = (() => {
       return element;
     };
 
-    element.append(ObjectField({ omitLabel: true, schema, state, getValue, path: [] }));
+    element.append(ObjectField({ schema, omitLabel: true, state: store.state, path: [] }));
   };
 
   const JsonField = (element) => {
@@ -329,15 +390,18 @@ ActiveElement.JsonField = (() => {
     const formId = element.dataset.formId;
     const formFieldElement = document.querySelector(`#${element.dataset.fieldId}`);
     const schema = getSchema(element);
-    const { state, getValue, setValue, appendValue, initializeState, getState } = createStore({ data, schema });
+    const { store, stateChanged, connectState } = createStore({ data, schema });
 
-    const onStateChanged = ({ id, previousValue, newValue }) => {
+    connectState({ element });
+
+    stateChanged(({ id, previousValue, newValue, getState }) => {
       formFieldElement.value = JSON.stringify(getState());
+      console.log(getState());
       ActiveElement.log(`Previous: ${previousValue}`);
       ActiveElement.log(`Updated:  ${newValue}`);
-    };
-    trackState({ element, schema, getValue, setValue, onStateChanged });
-    const component = Component({ getValue, appendValue, initializeState, schema, state, element });
+    });
+    // trackState({ element, schema, getValue, setValue, onStateChanged });
+    const component = Component({ store, schema, element });
 
     return component;
   };
