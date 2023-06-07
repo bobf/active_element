@@ -48,16 +48,16 @@ ActiveElement.JsonField = (() => {
 
       if (!matchingPaths.length) return undefined;
 
-      return Math.max(...matchingPaths.map((matchingPath) => matchingPath[matchingPath.length - 1]));
+      return Math.max(...matchingPaths.map((matchingPath) => matchingPath[path.length]));
     };
 
-    const appendValue = (path) => {
+    const appendValue = ({ path, schema }) => {
       const id = ActiveElement.generateId();
       const maxIndex = getMaxIndex(path);
       const index = maxIndex === undefined ? 0 : maxIndex + 1;
-      store.data[id] = null; // TODO: Get structure, handle default values, option lists, placeholders
+      store.data[id] = null; // XXX: Do we need to do anything else here ?
       store.paths[id] = path.concat([index]);
-      return id;
+      return { state: id, index };
     };
 
     const getState = () => {
@@ -137,7 +137,7 @@ ActiveElement.JsonField = (() => {
   };
 
   const Component = ({ getValue, appendValue, initializeState, schema, state, element }) => {
-    const ObjectField = ({ schema, state, floating = true, omitLabel = false, path = [] }) => {
+    const ObjectField = ({ schema, state, path, floating = true, omitLabel = false }) => {
       const getPath = () => schema.name ? path.concat(schema.name) : path;
       const currentPath = getPath();
 
@@ -296,11 +296,15 @@ ActiveElement.JsonField = (() => {
       element.append(`Add ${humanName}`);
       element.onclick = (ev) => {
         ev.preventDefault();
-        const appendState = appendValue(path);
+        const { index, state: appendState } = appendValue({ path, schema });
         const listItem = cloneElement('list-item');
-        const objectField = ObjectField(
-          { name: schema.name, omitLabel: true, state: appendState, schema: { ...schema.shape } }
-        );
+        const objectField = ObjectField({
+          name: schema.name,
+          omitLabel: true,
+          state: appendState,
+          schema: { ...schema.shape },
+          path: path.concat([index]),
+        });
 
         if (schema.shape.type == 'object') {
           listItem.append(DeleteButton({ rootElement: listItem, template: 'delete-object-button' }));
@@ -317,7 +321,7 @@ ActiveElement.JsonField = (() => {
       return element;
     };
 
-    element.append(ObjectField({ omitLabel: true, schema, state, getValue }));
+    element.append(ObjectField({ omitLabel: true, schema, state, getValue, path: [] }));
   };
 
   const JsonField = (element) => {
