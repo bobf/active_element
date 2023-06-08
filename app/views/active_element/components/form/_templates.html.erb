@@ -7,8 +7,8 @@
     <label id="json-form-check-label-template" class="form-check-label"></label>
     <label id="json-label-template" class="mb-4 fw-bold"></label>
 
-    <div id="json-form-group-template" class="form-group p-3 text-wrap m-3"></div>
-    <div id="json-form-group-floating-template" class="form-floating m-3 text-wrap"></div>
+    <div id="json-form-group-template" class="form-group p-3 pb-4 text-wrap m-3"></div>
+    <div id="json-form-group-floating-template" class="form-floating m-3 text-wrap collapsed"></div>
     <div id="json-form-check-template" class="form-check m-3"></div>
 
     <input id="json-checkbox-field-template" type="checkbox" class="form-check-input json-checkbox-field" />
@@ -24,10 +24,14 @@
                                           class: 'json-delete-button w-25 float-end json-delete-object-button' %>
 
     <%= active_element.component.button id: 'json-append-button-template',
-                                  class: 'btn-sm mt-3 mb-3 json-add-field-button' %>
+                                  class: 'btn-sm mb-3 json-add-field-button' %>
 
     <%= active_element.component.button 'Hide', id: 'json-expand-collapse-button-template',
                                   class: 'float-end expand-collapse-button' %>
+
+    <div id="json-focus-template" class="focus m-1"></div>
+    <i id="json-focus-expand-template" class="fa-solid fa-fw fa-plus"></i>
+    <i id="json-focus-collapse-template" class="fa-solid fa-fw fa-minus d-none"></i>
 
   </div>
 

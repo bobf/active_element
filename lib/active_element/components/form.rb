@@ -155,7 +155,7 @@ module ActiveElement
 
       def submit_label_from_model
         return "Create #{humanized_model_name}" if record.present? && method == :post
-        return "Update #{humanized_model_name}" if record.present? && %i[patch put].include?(method)
+        return "Save Changes" if record.present? && %i[patch put].include?(method)
 
         nil
       end

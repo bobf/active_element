@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    active_element (0.0.9)
+    active_element (0.0.10)
       bootstrap (~> 5.3.0alpha3)
       kaminari (~> 1.2)
       paintbrush (~> 0.1.2)
@@ -270,7 +270,7 @@ GEM
       i18n (>= 0.5)
       paint (~> 2.0)
     thor (1.2.2)
-    tilt (2.1.0)
+    tilt (2.2.0)
     timeout (0.3.2)
     tzinfo (2.0.6)
       concurrent-ruby (~> 1.0)

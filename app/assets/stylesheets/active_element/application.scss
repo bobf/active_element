@@ -57,9 +57,46 @@ form {
 }
 
 .json-field {
-  .form-control, .form-select {
-    width: calc(100% - 2.5rem);
+  .focus {
     display: inline;
+  }
+
+  ol {
+    line-height: 2rem;
+    margin-top: 0.8rem;
+  }
+
+  .focus {
+    .focus-field-name {
+    }
+
+    .focus-field-syntax {
+    }
+
+    .focus-field-value {
+      text-decoration: none;
+      font-weight: bold;
+
+      &:hover {
+        text-decoration: underline;
+      }
+    }
+
+    .expand-button {
+      margin-right: 0.4rem;
+    }
+  }
+
+
+  li .json-text-field, li .json-select-field {
+    width: calc(100% - 3.2rem);
+  }
+
+  .form-control, .form-select {
+    display: inline;
+    .append-button {
+      display: inline;
+    }
   }
 
   .form-group {
@@ -133,6 +170,12 @@ form {
   .json-field {
     .form-group {
       background-color: #58575755;
+    }
+  }
+
+  .popover {
+    .popover-header {
+      background-color: #{$dark};
     }
   }
 }

@@ -28,7 +28,7 @@
         themeSelect.append(element);
 
         element.addEventListener('click', (ev) => {
-          event.stopPropagation();
+          ev.preventDefault();
           setTheme(element.dataset.themeSwitchTo);
           return false;
         });

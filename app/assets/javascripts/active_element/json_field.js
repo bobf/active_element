@@ -9,7 +9,7 @@ ActiveElement.JsonField = (() => {
     return humanized.replace(/s$/, ''); // FIXME: Expose translations from back-end to make this more useful.
   };
 
-  const isObject = (object) => object && typeof(object) === 'object';
+  const isObject = (object) => object && typeof object === 'object';
 
   const createStore = ({ data, schema, store = { data: {}, paths: {} } }) => {
     const initializeState = ({ state, path, data, defaultValue }) => {
@@ -185,7 +185,7 @@ ActiveElement.JsonField = (() => {
   };
 
   const Component = ({ store, schema, element }) => {
-    const ObjectField = ({ schema, state, path, floating = true, omitLabel = false }) => {
+    const ObjectField = ({ schema, state, path, omitLabel = false }) => {
       const getPath = () => schema.name ? path.concat(schema.name) : path;
       const currentPath = getPath();
 
@@ -195,7 +195,7 @@ ActiveElement.JsonField = (() => {
         case 'boolean':
           return BooleanField({ state, omitLabel, schema, path: currentPath });
         case 'string':
-          return StringField({ state, omitLabel, floating, schema, path: currentPath });
+          return StringField({ state, omitLabel, schema, path: currentPath });
           break;
         case 'object':
           element = cloneElement('form-group-floating');
@@ -203,7 +203,6 @@ ActiveElement.JsonField = (() => {
             element.append(
               ObjectField({
                 name: field.name,
-                floating: false,
                 schema: field,
                 state: state ? state[field.name] : null,
                 path: currentPath,
@@ -215,9 +214,9 @@ ActiveElement.JsonField = (() => {
         case 'array':
           element = cloneElement('form-group');
           const list = ArrayField({ schema, state, path: currentPath });
+          element.append(AppendButton({ list, schema, state, path: currentPath }));
           element.append(Label({ title: schema.name }));
           element.append(list);
-          element.append(AppendButton({ list, schema, state, path: currentPath }));
           return element;
       }
     };
@@ -261,6 +260,12 @@ ActiveElement.JsonField = (() => {
             );
             group.append(deleteObjectButton);
             group.append(objectField);
+
+            if (schema.focus) {
+              listItem.append(Focus({ state: eachState, schema, group }));
+              group.classList.add('d-none');
+            }
+
             listItem.append(group);
           } else {
             listItem.append(objectField);
@@ -270,6 +275,35 @@ ActiveElement.JsonField = (() => {
           element.append(listItem);
         });
       }
+
+      return element;
+    };
+
+    const Focus = ({ state, schema, group }) => {
+      const element = cloneElement('focus');
+      const expandButton = cloneElement('focus-expand');
+      const collapseButton = cloneElement('focus-collapse');
+      const valueElement = document.createElement('a');
+      const pairs = schema.focus
+                          .map((field) => [field, store.getValue(state[field])])
+                          .filter(([_field, value]) => value)
+
+      const [field, value] = (pairs.length && pairs[0]) || ['...', '...'];
+      const isBoolean = typeof value === 'boolean';
+
+      valueElement.href = '#';
+      valueElement.classList.add('focus-field-value', isBoolean ? 'text-success' : 'text-primary');
+      valueElement.append(expandButton);
+      valueElement.append(collapseButton);
+      valueElement.append(isBoolean ? humanize({ string: field }) : value);
+      valueElement.addEventListener('click', (ev) => {
+        ev.preventDefault();
+        group.classList.toggle('d-none');
+        document.querySelector(`#${expandButton.id}`).classList.toggle('d-none');
+        document.querySelector(`#${collapseButton.id}`).classList.toggle('d-none');
+      });
+      element.append(valueElement);
+      element.classList.add('focus', 'json-highlight');
 
       return element;
     };
@@ -314,7 +348,7 @@ ActiveElement.JsonField = (() => {
       return element;
     };
 
-    const StringField = ({ omitLabel, floating, schema, state, path }) => {
+    const StringField = ({ omitLabel, schema, state, path }) => {
       let element;
 
       state = store.initializeState({ state, path, data: '' });
@@ -355,6 +389,7 @@ ActiveElement.JsonField = (() => {
       const humanName = humanize({ string: schema.name, singular: true });
 
       element.append(`Add ${humanName}`);
+      element.classList.add('append-button', 'float-end');
       element.onclick = (ev) => {
         ev.preventDefault();
         const { path, state: appendState } = store.appendValue({ path: objectPath, schema });
