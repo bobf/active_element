@@ -26,13 +26,13 @@ RSpec.configure do |config|
   config.include ExamplesTable
   config.include UsersTable
   config.include Devise::Test::IntegrationHelpers, type: :request
-  config.around { |example| Paintbrush::Configuration.with_configuration(colorize: false) { example.call } }
+  config.around { |example| Paintbrush.with_configuration(colorize: false) { example.call } }
   config.around do |example|
     next example.run unless example.metadata[:type] == :request
 
+    create_example_tables
     truncate_example_tables
     truncate_users_table
-    create_example_tables
     create_users_table
     example.run
   end
