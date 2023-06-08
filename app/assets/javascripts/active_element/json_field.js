@@ -41,9 +41,9 @@ ActiveElement.JsonField = (() => {
 
     const state = buildState({ data, store });
     const stateChangedCallbacks = [];
-    const stateChanged = (callback) => stateChangedCallbacks.push(callback);
-    const notifyStateChanged = ({ id, previousValue, newValue }) => {
-      stateChangedCallbacks.forEach((callback) => callback({ id, previousValue, newValue, getState }));
+    const stateChanged = (callback, state) => stateChangedCallbacks.push([callback, state]);
+    const notifyStateChanged = () => {
+      stateChangedCallbacks.forEach(([callback, state]) => callback({ getState, value: state && getValue(state) }));
     };
     const getValue = (id) => store.data[id];
     const deleteValue = (state) => {
@@ -60,7 +60,7 @@ ActiveElement.JsonField = (() => {
       };
 
       deleteObject(state);
-      notifyStateChanged({ id: state });
+      notifyStateChanged();
     };
 
     const setValue = (id, value) => {
@@ -68,15 +68,16 @@ ActiveElement.JsonField = (() => {
 
       if (previousValue !== value) {
         store.data[id] = value;
-        notifyStateChanged({ id, previousValue, newValue: value });
+        notifyStateChanged();
       }
     };
 
     const appendValue = ({ path, schema }) => {
       const getMaxIndex = (path) => {
         const matchingPaths = Object.values(store.paths).filter((storePath) => {
-          const pathSlice = storePath.slice(0, path.length);
-          return path.every((item, index) => item === pathSlice[index]);
+          const pathSlice = storePath?.slice(0, path.length);
+
+          return pathSlice && path.every((item, index) => item === pathSlice[index]);
         });
 
         if (!matchingPaths.length) return undefined;
@@ -156,8 +157,10 @@ ActiveElement.JsonField = (() => {
     const connectState = ({ element }) => {
       element.addEventListener('keyup', (ev) => handleEvent(ev));
       element.addEventListener('change', (ev) => handleEvent(ev));
+      notifyStateChanged();
     };
 
+    console.log(store.paths);
     return {
       stateChanged,
       connectState,
@@ -184,7 +187,7 @@ ActiveElement.JsonField = (() => {
     return ActiveElement.jsonData[dataKey].schema;
   };
 
-  const Component = ({ store, schema, element }) => {
+  const Component = ({ store, stateChanged, connectState, schema, element }) => {
     const ObjectField = ({ schema, state, path, omitLabel = false }) => {
       const getPath = () => schema.name ? path.concat(schema.name) : path;
       const currentPath = getPath();
@@ -262,11 +265,10 @@ ActiveElement.JsonField = (() => {
             group.append(objectField);
 
             if (schema.focus) {
-              listItem.append(Focus({ state: eachState, schema, group }));
-              group.classList.add('d-none');
+              listItem.append(Focus({ state: eachState, schema, group, deleteObjectButton }));
+            } else {
+              listItem.append(group);
             }
-
-            listItem.append(group);
           } else {
             listItem.append(objectField);
             listItem.append(DeleteButton({ path, state: eachState, rootElement: listItem }));
@@ -279,28 +281,36 @@ ActiveElement.JsonField = (() => {
       return element;
     };
 
-    const Focus = ({ state, schema, group }) => {
+    const Focus = ({ state, schema, group, deleteObjectButton }) => {
       const element = cloneElement('focus');
-      const expandButton = cloneElement('focus-expand');
-      const collapseButton = cloneElement('focus-collapse');
       const valueElement = document.createElement('a');
+      const modal = cloneElement('modal');
+      const modalBody = modal.querySelector('[data-field-type="modal-body"]');
+      const titleElement = modal.querySelector('[data-field-type="modal-title"]');
       const pairs = schema.focus
                           .map((field) => [field, store.getValue(state[field])])
                           .filter(([_field, value]) => value)
 
       const [field, value] = (pairs.length && pairs[0]) || ['...', '...'];
-      const isBoolean = typeof value === 'boolean';
+      const bootstrapModal = new bootstrap.Modal(modal);
+
+      stateChanged(({ value }) => {
+        const isBoolean = typeof value === 'boolean';
+        const fieldTitle = isBoolean ? humanize({ string: field }) : value;
+        titleElement.innerText = fieldTitle;
+        valueElement.innerText = fieldTitle;
+        valueElement.classList.add('focus-field-value', isBoolean ? 'text-success' : 'text-primary');
+      }, state[field]);
+
+      connectState({ element: modal });
 
       valueElement.href = '#';
-      valueElement.classList.add('focus-field-value', isBoolean ? 'text-success' : 'text-primary');
-      valueElement.append(expandButton);
-      valueElement.append(collapseButton);
-      valueElement.append(isBoolean ? humanize({ string: field }) : value);
+      modalBody.append(group);
+      modalBody.classList.add('json-field');
+
       valueElement.addEventListener('click', (ev) => {
         ev.preventDefault();
-        group.classList.toggle('d-none');
-        document.querySelector(`#${expandButton.id}`).classList.toggle('d-none');
-        document.querySelector(`#${collapseButton.id}`).classList.toggle('d-none');
+        bootstrapModal.toggle();
       });
       element.append(valueElement);
       element.classList.add('focus', 'json-highlight');
@@ -429,14 +439,12 @@ ActiveElement.JsonField = (() => {
 
     connectState({ element });
 
-    stateChanged(({ id, previousValue, newValue, getState }) => {
+    stateChanged(({ getState }) => {
       formFieldElement.value = JSON.stringify(getState());
       console.log(getState());
-      ActiveElement.log(`Previous: ${previousValue}`);
-      ActiveElement.log(`Updated:  ${newValue}`);
     });
-    // trackState({ element, schema, getValue, setValue, onStateChanged });
-    const component = Component({ store, schema, element });
+
+    const component = Component({ store, stateChanged, connectState, schema, element });
 
     return component;
   };

@@ -63,7 +63,23 @@ form {
 
   ol {
     line-height: 2rem;
-    margin-top: 0.8rem;
+    margin-top: 1.8rem;
+  }
+
+  .form-group {
+    padding: 1rem;
+    background-color: #58575755;
+  }
+
+  &.modal-body {
+    ol {
+      margin-top: 0;
+    }
+
+    .form-group {
+      padding: 1rem;
+      margin-top: 0.8rem;
+    }
   }
 
   .focus {
