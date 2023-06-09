@@ -21,7 +21,8 @@
                                           class: 'button-sm json-delete-button' %>
 
     <%= active_element.component.button 'Delete Item', type: 'danger', id: 'json-delete-object-button-template',
-                                          class: 'json-delete-button float-end json-delete-object-button' %>
+                                          style: 'z-index: 3000',
+                                          class: 'json-delete-button float-end position-relative json-delete-object-button' %>
 
     <%= active_element.component.button id: 'json-append-button-template',
                                   class: 'btn-sm mb-3 json-add-field-button' %>
@@ -37,20 +38,20 @@
          tabindex="-1"
          aria-hidden="true">
       <div class="modal-dialog modal-dialog-centered modal-xl modal-dialog-scrollable">
-        <div class="modal-content">
+        <div class="modal-content" style="max-height: 80%; margin-top: 5rem;">
           <div class="modal-header">
             <h5 class="modal-title" data-field-type="modal-title"></h5>
-            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
-              <i class="fa-solid fa-xmark"></i>
-            </button>
+            <div class="modal-buttons">
+              <button type="button" class="btn btn-primary me-2" data-bs-dismiss="modal" aria-label="Finish Editing">
+                Finish Editing
+              </button>
+            </div>
           </div>
           <div class="modal-body" data-field-type="modal-body"></div>
           <div class="modal-footer" data-field-type="modal-footer"></div>
         </div>
       </div>
     </div>
-
-
   </div>
 
   <%= active_element.component.button 'Collapse Form', id: 'form-collapse-button-template', class: 'mb-1 btn-sm' do %>

@@ -2,6 +2,8 @@ ActiveElement.JsonField = (() => {
   const cloneElement = (id) => ActiveElement.cloneElement('json', id);
 
   const humanize = ({ string, singular = false }) => {
+    if (!string) return '';
+
     const humanized = string.split('_').map(item => item.charAt(0).toUpperCase() + item.substring(1)).join(' ');
 
     if (!singular) return humanized;
@@ -19,6 +21,21 @@ ActiveElement.JsonField = (() => {
       store.paths[id] = path;
       store.data[id] = data === undefined ? defaultValue : data;
       return id;
+    };
+
+    const defaultState = ({ schema, path }) => {
+      if (schema.type === 'object') {
+        return Object.fromEntries(schema.shape.fields.map((field) => (
+          [field.name, defaultState({ schema: field, path: path.concat([field.name]) })]
+        )));
+      } else if (schema.type === 'array') {
+        return [];
+      } else {
+        const id = ActiveElement.generateId();
+        store.data[id] = null; // XXX Default value from schema
+        store.paths[id] = path;
+        return id;
+      }
     };
 
     const buildState = ({ data, store, path = [] }) => {
@@ -39,7 +56,8 @@ ActiveElement.JsonField = (() => {
       }
     };
 
-    const state = buildState({ data, store });
+    store.state = data ? buildState({ data, store }) : { object: {}, array: [] }[schema.type];
+
     const stateChangedCallbacks = [];
     const stateChanged = (callback, state) => stateChangedCallbacks.push([callback, state]);
     const notifyStateChanged = () => {
@@ -48,7 +66,6 @@ ActiveElement.JsonField = (() => {
     const getValue = (id) => store.data[id];
     const deleteValue = (state) => {
       const deleteObject = (id) => {
-        console.log(id);
         if (Array.isArray(id)) {
           id.forEach((item) => deleteObject(item));
         } else if (isObject(id)) {
@@ -89,9 +106,9 @@ ActiveElement.JsonField = (() => {
       const maxIndex = getMaxIndex(path);
       const index = maxIndex === undefined ? 0 : maxIndex + 1;
       const appendPath = path.concat([index]);
-      store.data[id] = null; // XXX: Do we need to do anything else here ?
-      store.paths[id] = appendPath;
-      return { state: id, path: appendPath };
+      store.state[id] = defaultState({ schema: schema.shape, path: appendPath });
+      store.paths[id] = appendPath; // XXX Needed ?
+      return { state: store.state[id], path: appendPath };
     };
 
     const getState = () => {
@@ -160,11 +177,10 @@ ActiveElement.JsonField = (() => {
       notifyStateChanged();
     };
 
-    console.log(store.paths);
     return {
       stateChanged,
       connectState,
-      store: { state, getValue, setValue, deleteValue, initializeState, appendValue },
+      store: { state: store.state, getValue, setValue, deleteValue, initializeState, appendValue },
     };
   };
 
@@ -187,7 +203,7 @@ ActiveElement.JsonField = (() => {
     return ActiveElement.jsonData[dataKey].schema;
   };
 
-  const Component = ({ store, stateChanged, connectState, schema, element }) => {
+  const Component = ({ store, stateChanged, connectState, schema, element, fieldName }) => {
     const ObjectField = ({ schema, state, path, omitLabel = false }) => {
       const getPath = () => schema.name ? path.concat(schema.name) : path;
       const currentPath = getPath();
@@ -246,67 +262,82 @@ ActiveElement.JsonField = (() => {
       if (state) {
         state.forEach((eachState, index) => {
           const path = objectPath.concat([index]);
-          const listItem = cloneElement('list-item');
-          const objectField = ObjectField({
-            path,
-            omitLabel: true,
-            schema: { ...schema.shape },
-            state: eachState
-          });
-
-          // TODO: Use same template etc. for all delete buttons, use presentation layer to
-          // handle UI differences.
-          if (schema.shape.type == 'object') {
-            const group = cloneElement('form-group');
-            const deleteObjectButton = DeleteButton(
-              { path, state: eachState, rootElement: listItem, template: 'delete-object-button' }
-            );
-            group.append(deleteObjectButton);
-            group.append(objectField);
-
-            if (schema.focus) {
-              listItem.append(Focus({ state: eachState, schema, group, deleteObjectButton }));
-            } else {
-              listItem.append(group);
-            }
-          } else {
-            listItem.append(objectField);
-            listItem.append(DeleteButton({ path, state: eachState, rootElement: listItem }));
-          }
-
-          element.append(listItem);
+          element.append(ArrayItem({ state: eachState, path, schema }));
         });
       }
 
       return element;
     };
 
-    const Focus = ({ state, schema, group, deleteObjectButton }) => {
+    const ArrayItem = ({ state, path, schema, newItem = false }) => {
+      const element = cloneElement('list-item');
+      const objectField = ObjectField({
+        path,
+        omitLabel: true,
+        schema: { ...schema.shape },
+        state: state
+      });
+
+      // TODO: Use same template etc. for all delete buttons, use presentation layer to
+      // handle UI differences.
+      if (schema.shape.type == 'object') {
+        const group = cloneElement('form-group');
+        const deleteObjectButton = DeleteButton(
+          { path, state, rootElement: element, template: 'delete-object-button' }
+        );
+        group.append(objectField);
+
+        if (schema.focus) {
+          element.append(Focus({ state, schema, group, deleteObjectButton, newItem }));
+        } else {
+          group.append(deleteObjectButton);
+          element.append(group);
+        }
+      } else {
+        element.append(objectField);
+        element.append(DeleteButton({ path, state, rootElement: element }));
+      }
+
+      return element;
+    };
+
+    const Focus = ({ state, schema, group, deleteObjectButton, newItem }) => {
       const element = cloneElement('focus');
       const valueElement = document.createElement('a');
       const modal = cloneElement('modal');
       const modalBody = modal.querySelector('[data-field-type="modal-body"]');
+      const modalHeader = modal.querySelector('.modal-header .modal-buttons');
       const titleElement = modal.querySelector('[data-field-type="modal-title"]');
-      const pairs = schema.focus
-                          .map((field) => [field, store.getValue(state[field])])
-                          .filter(([_field, value]) => value)
-
-      const [field, value] = (pairs.length && pairs[0]) || ['...', '...'];
       const bootstrapModal = new bootstrap.Modal(modal);
 
-      stateChanged(({ value }) => {
+      stateChanged(() => {
+        const pairs = schema.focus
+                            .map((field) => [field, store.getValue(state[field])])
+                            .filter(([_field, value]) => value)
+
+        const [field, value] = (pairs.length && pairs[0]) || [null, '[New item]'];
         const isBoolean = typeof value === 'boolean';
         const fieldTitle = isBoolean ? humanize({ string: field }) : value;
         titleElement.innerText = fieldTitle;
         valueElement.innerText = fieldTitle;
-        valueElement.classList.add('focus-field-value', isBoolean ? 'text-success' : 'text-primary');
-      }, state[field]);
+        if (isBoolean) {
+          valueElement.classList.add('text-success');
+          valueElement.classList.remove('text-primary');
+        } else {
+          valueElement.classList.add('text-primary');
+          valueElement.classList.remove('text-success');
+        }
+      });
 
       connectState({ element: modal });
 
+      valueElement.classList.add('focus-field-value');
       valueElement.href = '#';
       modalBody.append(group);
       modalBody.classList.add('json-field');
+      titleElement.append(deleteObjectButton);
+      modalHeader.append(deleteObjectButton);
+      deleteObjectButton.addEventListener('click', () => bootstrapModal.hide());
 
       valueElement.addEventListener('click', (ev) => {
         ev.preventDefault();
@@ -314,6 +345,8 @@ ActiveElement.JsonField = (() => {
       });
       element.append(valueElement);
       element.classList.add('focus', 'json-highlight');
+
+      if (newItem) bootstrapModal.toggle();
 
       return element;
     };
@@ -395,31 +428,16 @@ ActiveElement.JsonField = (() => {
 
     const AppendButton = ({ list, schema, state, path: objectPath }) => {
       const element = cloneElement('append-button');
-
-      const humanName = humanize({ string: schema.name, singular: true });
+      const humanName = humanize({ string: schema.name || fieldName, singular: true });
 
       element.append(`Add ${humanName}`);
       element.classList.add('append-button', 'float-end');
       element.onclick = (ev) => {
         ev.preventDefault();
-        const { path, state: appendState } = store.appendValue({ path: objectPath, schema });
-        const listItem = cloneElement('list-item');
-        const objectField = ObjectField({
-          path,
-          name: schema.name,
-          omitLabel: true,
-          state: appendState,
-          schema: { ...schema.shape },
-        });
 
-        if (schema.shape.type == 'object') {
-          listItem.append(DeleteButton({ path, state: appendState, rootElement: listItem, template: 'delete-object-button' }));
-          listItem.append(objectField);
-        } else {
-          listItem.append(objectField);
-          listItem.append(DeleteButton({ path, state: appendState, rootElement: listItem }));
-        }
-        list.append(listItem);
+        const { path, state: appendState } = store.appendValue({ path: objectPath, schema });
+
+        list.append(ArrayItem({ path, state: appendState, schema, newItem: true }));
 
         return false;
       };
@@ -434,6 +452,7 @@ ActiveElement.JsonField = (() => {
     const data = getData(element);
     const formId = element.dataset.formId;
     const formFieldElement = document.querySelector(`#${element.dataset.fieldId}`);
+    const fieldName = element.dataset.fieldName;
     const schema = getSchema(element);
     const { store, stateChanged, connectState } = createStore({ data, schema });
 
@@ -444,7 +463,7 @@ ActiveElement.JsonField = (() => {
       console.log(getState());
     });
 
-    const component = Component({ store, stateChanged, connectState, schema, element });
+    const component = Component({ store, stateChanged, connectState, schema, element, fieldName });
 
     return component;
   };
