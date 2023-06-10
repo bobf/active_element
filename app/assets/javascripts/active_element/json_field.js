@@ -19,44 +19,32 @@ ActiveElement.JsonField = (() => {
 
       const id = ActiveElement.generateId();
       store.paths[id] = path;
-      store.data[id] = data === undefined ? defaultValue : data;
+      store.data[id] = data === undefined ? (defaultValue || null) : data;
       return id;
     };
 
-    const defaultState = ({ schema, path }) => {
+    const defaultState = ({ schema, path, defaultValue = null }) => {
       if (schema.type === 'object') {
         return Object.fromEntries(schema.shape.fields.map((field) => (
-          [field.name, defaultState({ schema: field, path: path.concat([field.name]) })]
+          [field.name, defaultState({
+                         schema: field, path: path.concat([field.name]),
+                         defaultValue: defaultValue && defaultValue[field.name],
+                       })]
         )));
       } else if (schema.type === 'array') {
-        return [];
+        return (defaultValue || []).map((item, index) => (
+          defaultState({ schema: schema.shape, path: path.concat([index]), defaultValue: item })
+        ));
       } else {
         const id = ActiveElement.generateId();
-        store.data[id] = null; // XXX Default value from schema
+        store.data[id] = defaultValue; // TODO: Default value from schema
         store.paths[id] = path;
         return id;
       }
     };
 
-    const buildState = ({ data, store, path = [] }) => {
-      const getPath = (key) => {
-        return path.concat([key]);
-      };
-
-      if (Array.isArray(data)) {
-        return data.map((value, index) => buildState({ data: value, store, path: getPath(index) }));
-      } else if (isObject(data)) {
-        return Object.fromEntries(
-          Object.entries(data).map(
-            ([key, value]) => [key, buildState({ data: value, store, path: getPath(key) })]
-          )
-        );
-      } else {
-        return initializeState({ path, data });
-      }
-    };
-
-    store.state = data ? buildState({ data, store }) : { object: {}, array: [] }[schema.type];
+    store.state = defaultState({ schema, path: [], defaultValue: data });
+    console.log(store.state)
 
     const stateChangedCallbacks = [];
     const stateChanged = (callback, state) => stateChangedCallbacks.push([callback, state]);
@@ -107,7 +95,7 @@ ActiveElement.JsonField = (() => {
       const index = maxIndex === undefined ? 0 : maxIndex + 1;
       const appendPath = path.concat([index]);
       store.state[id] = defaultState({ schema: schema.shape, path: appendPath });
-      store.paths[id] = appendPath; // XXX Needed ?
+      // store.paths[id] = appendPath; // XXX Needed ?
       return { state: store.state[id], path: appendPath };
     };
 

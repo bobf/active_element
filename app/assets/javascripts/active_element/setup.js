@@ -1,6 +1,6 @@
 (() => {
   const generateId = () => {
-    return `active-element-${crypto.randomUUID()}`;
+    return `ae-${crypto.randomUUID()}`;
   };
 
   const getAntiCsrfToken = () => {
