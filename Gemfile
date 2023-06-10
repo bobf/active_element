@@ -5,6 +5,7 @@ source 'https://rubygems.org'
 # Specify your gem's dependencies in active_element.gemspec
 gemspec
 
+gem 'brakeman', '~> 5.4'
 gem 'devise', '~> 4.9'
 gem 'devpack', '~> 0.4.1'
 gem 'factory_bot_rails', '~> 5.2'

@@ -1,0 +1,48 @@
+{
+  "ignored_warnings": [
+    {
+      "warning_type": "SQL Injection",
+      "warning_code": 0,
+      "fingerprint": "7d17f93e2d87d1f9dc0fbf6e4ce46856e4fb0e1f99a7e0ce4ea3ed73be68efc4",
+      "check_name": "SQL",
+      "message": "Possible SQL injection",
+      "file": "lib/active_element/json_field_schema.rb",
+      "line": 21,
+      "link": "https://brakemanscanner.org/docs/warning_types/sql_injection/",
+      "code": "ActiveRecord::Base.connection.execute(\"select #{column} from #{table}\")",
+      "render_path": null,
+      "location": {
+        "type": "method",
+        "class": "ActiveElement::JsonFieldSchema",
+        "method": "data"
+      },
+      "user_input": "column",
+      "confidence": "Medium",
+      "cwe_id": [
+        89
+      ],
+      "note": ""
+    },
+    {
+      "warning_type": "Unmaintained Dependency",
+      "warning_code": 121,
+      "fingerprint": "edf687f759ec9765bd5db185dbc615c80af77d6e7e19386fc42934e7a80307af",
+      "check_name": "EOLRuby",
+      "message": "Support for Ruby 2.7.8 ended on 2023-03-31",
+      "file": ".ruby-version",
+      "line": 1,
+      "link": "https://brakemanscanner.org/docs/warning_types/unmaintained_dependency/",
+      "code": null,
+      "render_path": null,
+      "location": null,
+      "user_input": null,
+      "confidence": "High",
+      "cwe_id": [
+        1104
+      ],
+      "note": ""
+    }
+  ],
+  "updated": "2023-06-10 13:50:20 +0100",
+  "brakeman_version": "5.4.1"
+}

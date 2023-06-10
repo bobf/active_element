@@ -92,7 +92,9 @@ module ActiveElement
         end
 
         def model
-          @model ||= params[:model].camelize(:upper).safe_constantize
+          @model ||= ActiveRecord::Base.descendants.find do |descendant|
+            descendant.name == params[:model].camelize(:upper)
+          end
         end
 
         def authorization

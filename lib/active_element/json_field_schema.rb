@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 module ActiveElement
+  # Generates a schema for a JSON form field based on values stored in the database.
   class JsonFieldSchema
     def initialize(table:, column:)
       @table = table
@@ -44,7 +45,7 @@ module ActiveElement
     def schema_shape(val)
       return nil unless %w[array object].include?(schema_type(val))
       return val.map { |item| structure(item).compact } if schema_type(val) == 'array'
-      return val.map { |key, value| (structure(value)).compact } if schema_type(val) == 'object'
+      return val.map { |_key, value| structure(value).compact } if schema_type(val) == 'object'
 
       { type: schema_type(val) }
     end

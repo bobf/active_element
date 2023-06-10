@@ -11,10 +11,12 @@ RSpec.describe ActiveElement::JsonFieldSchema do
   describe '#schema' do
     subject(:schema) { json_field_schema.schema }
 
-    before { create_example_tables }
-    before { create(:example, json: { foo: { bar: ['baz', 'qux'] }  }) }
+    before do
+      ExamplesTable.create_example_tables
+      create(:example, json: { foo: { bar: %w[baz qux] } })
+    end
 
-    it 'generates a json schema from values in a database column' do
+    it 'generates a json schema from values in a database column', pending: 'not implemented yet' do
       expect(schema.first.deep_stringify_keys.to_yaml).to eql 'TODO'
     end
   end

@@ -24,7 +24,19 @@ module ExamplesTable
     nil
   end
 
-  def create_example_tables # rubocop:disable Metrics/MethodLength
+  def self.drop_example_tables
+    ActiveRecord::Migration.class_eval do
+      drop_table :examples
+    end
+    ActiveRecord::Migration.class_eval do
+      drop_table :unauthorized_examples
+    end
+  rescue ActiveRecord::StatementInvalid => e
+    Rails.logger.debug { "Skipping table DROP: #{e}" }
+    nil
+  end
+
+  def self.create_example_tables # rubocop:disable Metrics/MethodLength
     ActiveRecord::Migration.class_eval do
       create_table :examples do |t|
         t.string :name
