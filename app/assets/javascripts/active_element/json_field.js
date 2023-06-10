@@ -278,7 +278,7 @@ ActiveElement.JsonField = (() => {
         if (schema.focus) {
           element.append(Focus({ state, schema, group, deleteObjectButton, newItem }));
         } else {
-          group.append(deleteObjectButton);
+          element.append(deleteObjectButton);
           element.append(group);
         }
       } else {

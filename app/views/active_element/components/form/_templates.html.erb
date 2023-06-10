@@ -18,14 +18,14 @@
     <select id="json-select-template" class="form-select m-1 json-select-field"></select>
 
     <%= active_element.component.destroy_button id: 'json-delete-button-template',
-                                          class: 'button-sm json-delete-button' %>
+                                          class: 'button-sm json-delete-button', data: { 'confirm-action': 'false' } %>
 
     <%= active_element.component.button 'Delete Item', type: 'danger', id: 'json-delete-object-button-template',
-                                          style: 'z-index: 3000',
+                                          style: 'z-index: 1500',
                                           class: 'json-delete-button float-end position-relative json-delete-object-button' %>
 
     <%= active_element.component.button id: 'json-append-button-template',
-                                  class: 'btn-sm mb-3 json-add-field-button' %>
+                                  class: 'btn-sm json-add-field-button' %>
 
     <%= active_element.component.button 'Hide', id: 'json-expand-collapse-button-template',
                                   class: 'float-end expand-collapse-button' %>
@@ -38,7 +38,7 @@
          tabindex="-1"
          aria-hidden="true">
       <div class="modal-dialog modal-dialog-centered modal-xl modal-dialog-scrollable">
-        <div class="modal-content" style="max-height: 80%; margin-top: 5rem;">
+        <div class="modal-content" style="max-height: 80%; min-height: 80%; margin-top: 5rem;">
           <div class="modal-header">
             <h5 class="modal-title" data-field-type="modal-title"></h5>
             <div class="modal-buttons">

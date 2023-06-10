@@ -63,7 +63,11 @@ form {
 
   ol {
     line-height: 2rem;
-    margin-top: 1.8rem;
+    margin-top: 2.8rem;
+
+    ol {
+      margin-top: 1rem;
+    }
   }
 
   .form-group {
@@ -71,9 +75,19 @@ form {
     background-color: #58575755;
   }
 
+  .json-delete-object-button {
+    margin-top: 1rem;
+    margin-right: 1.8rem;
+  }
+
   &.modal-body {
     ol {
       margin-top: 0;
+    }
+
+    .json-delete-object-button {
+      margin-top: 0;
+      margin-right: 0;
     }
 
     .form-group {
