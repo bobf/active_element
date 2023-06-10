@@ -1,0 +1,24 @@
+<a data-modal-id="<%= "#json-modal-#{field_id}" %>"
+   data-json-modal-link="true"
+   data-bs-toggle="modal"
+   data-bs-target="#json-modal-<%= field_id %>"
+   class="text-decoration-none"
+   href="#">Inspect JSON <i class="fa-solid fa-magnifying-glass"></i></a>
+<div id="json-modal-<%= field_id %>" class="modal fade"
+     tabindex="-1"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal-xl modal-dialog-scrollable">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" data-field-type="modal-title">JSON Inspector</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+      <div class="modal-body p-3" data-field-type="modal-body">
+        <%= ActiveElement.json_pretty_print(value) %>
+      </div>
+      <div class="modal-footer" data-field-type="modal-footer"></div>
+    </div>
+  </div>
+</div>
