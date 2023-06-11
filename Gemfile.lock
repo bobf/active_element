@@ -1,4 +1,17 @@
 PATH
+  remote: ../rspec-documentation
+  specs:
+    rspec-documentation (0.0.7)
+      htmlbeautifier (~> 1.4)
+      kramdown (~> 2.4)
+      kramdown-parser-gfm (~> 1.1)
+      nokogiri (~> 1.15)
+      paintbrush (~> 0.1.3)
+      redcarpet (~> 3.6)
+      rouge (~> 4.1)
+      rspec (~> 3.12)
+
+PATH
   remote: .
   specs:
     active_element (0.0.10)
@@ -107,6 +120,7 @@ GEM
     globalid (1.1.0)
       activesupport (>= 5.0)
     hashdiff (1.0.1)
+    htmlbeautifier (1.4.2)
     i18n (1.13.0)
       concurrent-ruby (~> 1.0)
     json (2.6.3)
@@ -122,6 +136,10 @@ GEM
       activerecord
       kaminari-core (= 1.2.2)
     kaminari-core (1.2.2)
+    kramdown (2.4.0)
+      rexml
+    kramdown-parser-gfm (1.1.0)
+      kramdown (~> 2.0)
     loofah (2.21.3)
       crass (~> 1.0.2)
       nokogiri (>= 1.12.0)
@@ -188,6 +206,7 @@ GEM
       thor (~> 1.0)
     rainbow (3.1.1)
     rake (13.0.6)
+    redcarpet (3.6.0)
     regexp_parser (2.8.0)
     responders (3.1.0)
       actionpack (>= 5.2)
@@ -298,6 +317,7 @@ DEPENDENCIES
   factory_bot_rails (~> 5.2)
   rake (~> 13.0)
   rspec (~> 3.12)
+  rspec-documentation!
   rspec-file_fixtures (~> 0.1.6)
   rspec-html (~> 0.3.2)
   rspec-its (~> 1.3)

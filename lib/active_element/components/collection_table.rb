@@ -61,7 +61,7 @@ module ActiveElement
       end
 
       def model
-        return collection.klass if collection.is_a?(ActiveRecord::Relation)
+        return collection.first.klass if collection.first&.is_a?(ActiveRecord::Relation)
 
         collection&.first.class.is_a?(ActiveModel::Naming) ? collection.first.class : nil
       end

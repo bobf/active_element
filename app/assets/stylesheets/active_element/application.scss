@@ -1,5 +1,6 @@
 @import "variables";
 @import "bootstrap";
+@import "dark";
 
 .navbar.application-menu {
   height: 5rem;
@@ -46,6 +47,22 @@ table {
 
     .button-title {
       display: none;
+    }
+  }
+
+  tbody {
+    tr {
+      &.odd {
+        td, th { background-color: #{rgba($light, 0.3)}; }
+      }
+
+      &.even {
+        td, th { background-color: #{darken(rgba($light, 0.3), 10%)}; }
+      }
+
+      &:hover {
+        td, th { background-color: #{rgba($primary, 0.2)}; }
+      }
     }
   }
 }
@@ -182,36 +199,6 @@ form {
   &.alert {
     .toast-body {
       background: #{$red-100};
-    }
-  }
-}
-
-[data-bs-theme="dark"] {
-  .flash.toast {
-    &.notice {
-      .toast-body {
-        color: #{$white};
-        background: #{$blue-700};
-      }
-    }
-
-    &.alert {
-      .toast-body {
-        color: #{$white};
-        background: #{$red-700};
-      }
-    }
-  }
-
-  .json-field {
-    .form-group {
-      background-color: #58575755;
-    }
-  }
-
-  .popover {
-    .popover-header {
-      background-color: #{$dark};
     }
   }
 }

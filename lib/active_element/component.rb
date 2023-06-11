@@ -94,7 +94,9 @@ module ActiveElement
     end
 
     def default_class(collection, item, model_name)
-      class_from_collection(collection, model_name) || class_from_item(item, model_name)
+      return class_from_collection(collection, model_name) if collection.present?
+
+      class_from_item(item, model_name)
     end
 
     def class_from_collection(collection, model_name)
@@ -105,7 +107,7 @@ module ActiveElement
     end
 
     def class_from_item(item, model_name)
-      return model_name.pluralize if model_name.present?
+      return model_name.singularize if model_name.present?
       return nil if item.nil?
 
       Components::Util::I18n.class_name(class_name_from_item(item))

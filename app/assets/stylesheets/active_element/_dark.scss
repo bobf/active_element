@@ -1,0 +1,47 @@
+[data-bs-theme="dark"] {
+  .flash.toast {
+    &.notice {
+      .toast-body {
+        color: #{$white};
+        background: #{$blue-700};
+      }
+    }
+
+    &.alert {
+      .toast-body {
+        color: #{$white};
+        background: #{$red-700};
+      }
+    }
+  }
+
+  .json-field {
+    .form-group {
+      background-color: #58575755;
+    }
+  }
+
+  .popover {
+    .popover-header {
+      background-color: #{$dark};
+    }
+  }
+
+  table {
+    tbody {
+      tr {
+        &.odd {
+          td, th { background-color: #{rgba($dark, 0.3)}; }
+        }
+
+        &.even {
+          td, th { background-color: #{lighten(rgba($dark, 0.3), 8%)}; }
+        }
+
+        &:hover {
+          td, th { background-color: #{rgba($primary, 0.2)}; }
+        }
+      }
+    }
+  }
+}

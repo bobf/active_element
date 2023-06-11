@@ -13,6 +13,10 @@ module ActiveElement
 
         def path
           record_path || sti_record_path
+        rescue NoMethodError
+          raise Error,
+                "Unable to map #{record.inspect} to a Rails route. Tried:\n" \
+                "#{[default_record_path, sti_record_path].compact.join("\n")}"
         end
 
         private
@@ -38,6 +42,7 @@ module ActiveElement
 
           controller.helpers.public_send(default_record_path, record)
         rescue NoMethodError
+          raise NoMethodError if sti_record_name.nil?
           controller.helpers.public_send(sti_record_path, record)
         end
 
@@ -46,6 +51,8 @@ module ActiveElement
         end
 
         def sti_record_path
+          return nil if sti_record_name.nil?
+
           "#{record_path_prefix}#{namespace_prefix}#{sti_record_name}_path"
         end
 

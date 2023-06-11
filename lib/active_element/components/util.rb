@@ -29,7 +29,7 @@ module ActiveElement
       end
 
       def self.default_record_name(record)
-        record.class.name.demodulize.underscore
+        (record.is_a?(Class) ? record.name : record.class.name).demodulize.underscore
       end
 
       def self.json_pretty_print(json)
