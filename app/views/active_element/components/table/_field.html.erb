@@ -1,0 +1,8 @@
+<% if value.is_a?(Array) %>
+  <% value.each_with_index do |each_value, index| %>
+    <%= each_value %>
+    <%= index < value.size - 1 ? '|' : nil %>
+  <% end %>
+<% else %>
+  <%= value %>
+<% end %>

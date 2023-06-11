@@ -36,6 +36,7 @@ module ActiveElement
     def primary?
       return false if rails_non_index_action?
       return false unless resourceless_get_request?
+      return false if excluded_ancestor?
 
       true
     end
@@ -91,6 +92,17 @@ module ActiveElement
 
         true
       end
+    end
+
+    def excluded_ancestor?
+      ancestors = controller.class.ancestors.map(&:name)
+      excluded_ancestors.any? { |excluded_ancestor| ancestors.include?(excluded_ancestor) }
+    end
+
+    def excluded_ancestors
+      # This will likely end up a config setting, for now we exclude Devise so its controllers
+      # don't appear in the Navbar.
+      %w[DeviseController]
     end
 
     def permitted_action?

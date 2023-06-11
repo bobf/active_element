@@ -20,12 +20,12 @@ module ActiveElement
           end
         end
 
-        def initialize(model:, params:, user:, search_columns:, result_columns:)
+        def initialize(model:, params:, user:, search_columns:, value_column:)
           @model = model
           @params = params
           @user = user
           @search_columns = search_columns
-          @result_columns = result_columns
+          @value_column = value_column
         end
 
         def authorized?
@@ -45,14 +45,15 @@ module ActiveElement
 
         private
 
-        attr_reader :model, :params, :user, :search_columns, :result_columns
+        attr_reader :model, :params, :user, :search_columns, :value_column
 
         def development_message
           paintbrush { green "Bypassed text search authorization in development environment: #{yellow message}" }
         end
 
         def missing_permissions
-          (search_columns + result_columns).reject { |column| user_permitted?(column) }
+          (search_columns + [value_column]).reject { |column| user_permitted?(column) }
+                                           .compact_blank
                                            .map { |column| permission_for(column.name) }
                                            .uniq
                                            .sort
@@ -87,6 +88,8 @@ module ActiveElement
         end
 
         def user_permitted?(column)
+          return false if column.blank?
+
           user&.permissions&.include?(permission_for(column.name))
         end
 
@@ -99,10 +102,10 @@ module ActiveElement
         end
 
         def authorized_model?
-          TextSearch.authorized_text_searches.any? do |authorized_model, search_fields, result_fields|
+          TextSearch.authorized_text_searches.any? do |authorized_model, search_fields, value_field|
             next false unless authorized_model == model
             next false unless authorized_fields?(search_columns, Array(search_fields))
-            next false unless authorized_fields?(result_columns, Array(result_fields))
+            next false unless authorized_fields?(Array(value_column), Array(value_field))
 
             true
           end

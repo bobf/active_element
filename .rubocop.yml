@@ -3,13 +3,14 @@ require:
 - rubocop-rspec
 - rubocop-rails
 - rubocop-factory_bot
+- rubocop-rspec-documentation
 
 AllCops:
   NewCops: enable
   Exclude:
   - 'bin/**/*'
   - 'spec/dummy/bin/**/*'
-  - 'rspec-documentation/**/*'
+  - 'rspec-documentation/dummy/**/*'
 
 RSpec/MultipleMemoizedHelpers:
   Max: 8

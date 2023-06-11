@@ -1,0 +1,4 @@
+---
+type: array
+shape:
+  type: string

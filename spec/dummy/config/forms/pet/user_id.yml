@@ -1,0 +1,9 @@
+---
+type: text_search_field
+options:
+  search:
+    model: user
+    with:
+    - name
+    - email
+    providing: id

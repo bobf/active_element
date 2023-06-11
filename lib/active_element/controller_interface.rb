@@ -5,7 +5,7 @@ module ActiveElement
   # Encapsulates core functionality such as `authenticate_with`, `permit_action`, and `component`
   # without polluting application controller namespace.
   class ControllerInterface
-    attr_reader :missing_template_store, :current_user
+    attr_reader :missing_template_store, :current_user, :assigned_editable_fields
 
     @state = {}
 
@@ -25,6 +25,22 @@ module ActiveElement
       @authorize
     end
 
+    def listable_fields(*args)
+      state[:listable_fields] = args.map(&:to_sym)
+    end
+
+    def viewable_fields(*args)
+      state[:viewable_fields] = args.map(&:to_sym)
+    end
+
+    def editable_fields(*args)
+      state[:editable_fields] = args.map(&:to_sym)
+    end
+
+    def searchable_fields(*args)
+      state[:searchable_fields] = args.map(&:to_sym)
+    end
+
     def application_name
       RailsComponent.new(::Rails).application_name
     end
@@ -36,6 +52,32 @@ module ActiveElement
     def authorize_with(&block)
       @authorize = true
       state[:authorizor] = block
+    end
+
+    def sign_out_with(method: :get, &block)
+      state[:sign_out_method] = method
+      state[:sign_out_path] = block
+    end
+
+    def sign_out_path
+      state[:sign_out_path]&.call
+    end
+
+    def sign_out_method
+      state[:sign_out_method]
+    end
+
+    def sign_in_with(method: :get, &block)
+      state[:sign_in_method] = method
+      state[:sign_in_path] = block
+    end
+
+    def sign_in_path
+      state[:sign_in_path]&.call
+    end
+
+    def sign_in_method
+      state[:sign_in_method]
     end
 
     def authenticate
@@ -66,16 +108,16 @@ module ActiveElement
       raise ArgumentError, 'Attempted to use ActiveElement component from a controller class method.'
     end
 
+    def state
+      self.class.state[controller_class]
+    end
+
     private
 
     attr_reader :controller_class, :controller_instance
 
     def initialize_state
       self.class.state[controller_class] ||= { permissions: [], authenticator: nil }
-    end
-
-    def state
-      self.class.state[controller_class]
     end
   end
 end

@@ -14,6 +14,9 @@ Rails.application.routes.draw do
     end
   end
 
+  resources :users
+  resources :pets
+
   namespace :admin do
     resources :examples
     resources :permitted_alternatives

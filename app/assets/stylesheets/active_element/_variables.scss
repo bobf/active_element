@@ -79,6 +79,7 @@ $nav-pills-link-active-bg:          $gray-200 !default;
 // Navbar
 
 $navbar-dark-hover-color:           $white !default;
+$navbar-light-hover-color:          $green !default;
 $navbar-light-hover-color:          $black !default;
 $navbar-light-active-color:         $black !default;
 
@@ -137,6 +138,6 @@ $breadcrumb-border-radius:          .25rem !default;
 
 // Close
 
-$btn-close-color:            $white !default;
+$btn-close-color:            $dark !default;
 $btn-close-opacity:          .8 !default;
 $btn-close-hover-opacity:    1 !default;

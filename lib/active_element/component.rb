@@ -24,6 +24,10 @@ module ActiveElement
       render Components::PageDescription.new(controller, content: content)
     end
 
+    def navbar(**kwargs)
+      render Components::Navbar.new(controller, **kwargs)
+    end
+
     def show_button(record = nil, flag_or_options = true, **kwargs) # rubocop:disable Style/OptionalBooleanParameter
       render Components::Button.new(controller, record, flag_or_options, type: :show, **kwargs)
     end
@@ -94,7 +98,10 @@ module ActiveElement
     end
 
     def default_class(collection, item, model_name)
-      class_from_collection(collection, model_name) || class_from_item(item, model_name)
+      return collection.model.name.underscore.pluralize if collection.respond_to?(:model)
+      return class_from_collection(collection, model_name) if collection.present?
+
+      class_from_item(item, model_name)
     end
 
     def class_from_collection(collection, model_name)
@@ -105,7 +112,7 @@ module ActiveElement
     end
 
     def class_from_item(item, model_name)
-      return model_name.pluralize if model_name.present?
+      return model_name.singularize if model_name.present?
       return nil if item.nil?
 
       Components::Util::I18n.class_name(class_name_from_item(item))

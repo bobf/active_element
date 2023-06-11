@@ -40,7 +40,7 @@
 
   <body>
     <%= render_active_element_hook 'active_element/before_navbar' %>
-    <%= render partial: 'active_element/navbar/menu' %>
+    <%= active_element.component.navbar(items: ActiveElement.navbar_items) %>
     <%= render_active_element_hook 'active_element/after_navbar' %>
 
     <% flash.each do |type, message| %>

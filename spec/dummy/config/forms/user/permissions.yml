@@ -1,0 +1,8 @@
+---
+type: array
+shape:
+  type: string
+  options:
+  - can_make_coffee
+  - can_drink_coffee
+  - can_discuss_coffee

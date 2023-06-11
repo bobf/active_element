@@ -3,19 +3,18 @@
      data-field-name="<%= field %>"
      data-form-id="<%= form_id %>"
      data-field-id="<%= field_id %>"
+     data-schema-field-id="<%= field_id %>-schema"
 >
 
 </div>
 
-<%= form.hidden_field field,
-                      name: "#{form.object_name}[#{field}]",
-                      value: component.value_for(field, options)&.to_json,
-                      id: field_id %>
+<%= form.hidden_field field, name: "#{form.object_name}[#{field}]", value: '', id: field_id %>
+<%= form.hidden_field field, name: "__json_field_schemas[#{form.object_name}][#{field}]", value: '', id: "#{field_id}-schema" %>
 <%= form.hidden_field field, name: '__json_fields[]', value: "#{form.object_name}.#{field}" %>
 
 <%=
   active_element.component.json(
     ActiveElement::Components::Util.json_name("#{form.object_name}.#{field}"),
-    { data: component.value_for(field, options), schema: component.schema_for(field, options) }
+    { data: component.value_for(field, default: options), schema: component.schema_for(field, options) }
   )
 %>

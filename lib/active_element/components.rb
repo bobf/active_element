@@ -2,8 +2,11 @@
 
 require_relative 'components/translations'
 require_relative 'components/secret_fields'
+require_relative 'components/email_fields'
+require_relative 'components/phone_fields'
 require_relative 'components/util'
 require_relative 'components/link_helpers'
+require_relative 'components/navbar'
 require_relative 'components/page_description'
 require_relative 'components/form'
 require_relative 'components/collection_table'

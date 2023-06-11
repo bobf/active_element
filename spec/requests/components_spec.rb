@@ -82,8 +82,9 @@ RSpec.describe '/components' do
     end
 
     it 'renders a form with input fields' do
-      expect(document.form('.example').input(type: 'text').all.pluck(:value))
-        .to eql ['My Name', 'user@example.com']
+      text_fields = document.form('.example').input(type: 'text').all
+      email_fields = document.form('.example').input(type: 'email').all
+      expect((text_fields + email_fields).pluck(:value)).to eql ['My Name', 'user@example.com']
     end
 
     it 'renders tabs with tab headings' do

@@ -33,7 +33,8 @@ module ActiveElement
 
     def available_routes
       @available_routes ||= descendants_with_permissions.map do |descendant, required_permissions|
-        descendant.public_methods(false).map do |action|
+        action_methods = descendant.public_methods(false)
+        ([:index] + action_methods).uniq.map do |action|
           route(descendant, action, required_permissions)
         end
       end.flatten.compact.select(&:rails_route?).sort

@@ -5,7 +5,8 @@
         <%= controller.helpers.render partial: 'active_element/components/secret/field',
                                       locals: { secret: value_mapper.call(item), label: label } %>
       <% else %>
-        <%= value_mapper.call(item) %>
+        <%= controller.helpers.render partial: 'active_element/components/table/field',
+                                      locals: { value: value_mapper.call(item) } %>
       <% end %>
     </td>
   <% end %>

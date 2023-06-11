@@ -7,7 +7,7 @@
 <% end %>
 
 <% if new %>
-  <%= active_element.component.new_button(item, float: 'end', class: 'mb-3') %>
+  <%= active_element.component.new_button(component.model, float: 'end', class: 'mb-3') %>
 <% end %>
 
 <table class="<%= class_name %> table" style="<%= style %>">
@@ -27,10 +27,11 @@
         </th>
         <td class="<%= class_mapper.call(item) %>">
           <% if component.secret_field?(field) %>
-            <%= controller.helpers.render partial: 'active_element/components/secret/field',
-                                          locals: { secret: value_mapper.call(item), label: label } %>
+            <%= render partial: 'active_element/components/secret/field',
+                       locals: { secret: value_mapper.call(item), label: label } %>
           <% else %>
-            <%= value_mapper.call(item) %>
+            <%= render partial: 'active_element/components/table/field',
+                       locals: { value: value_mapper.call(item) } %>
           <% end %>
         </td>
       </tr>

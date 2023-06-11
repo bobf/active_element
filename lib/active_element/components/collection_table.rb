@@ -19,8 +19,8 @@ module ActiveElement
         @controller = controller
         @class_name = class_name
         @model_name = model_name
-        @collection = collection || []
         @fields = fields
+        @collection = with_includes(collection) || []
         @style = style
         @params = params
         @show = show
@@ -61,7 +61,7 @@ module ActiveElement
       end
 
       def model
-        return collection.klass if collection.is_a?(ActiveRecord::Relation)
+        return collection.model if collection.is_a?(ActiveRecord::Relation)
 
         collection&.first.class.is_a?(ActiveModel::Naming) ? collection.first.class : nil
       end
@@ -112,6 +112,13 @@ module ActiveElement
 
       def row_class_mapper
         row_class.is_a?(Proc) ? row_class : proc { row_class }
+      end
+
+      def with_includes(collection)
+        return collection unless collection.respond_to?(:includes_values)
+        return collection if collection.includes_values.present? || collection.select_values.present?
+
+        collection.includes(fields.select { |field| collection.model.reflect_on_association(field).present? })
       end
     end
   end

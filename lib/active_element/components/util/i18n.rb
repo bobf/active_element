@@ -7,7 +7,7 @@ module ActiveElement
       # descriptions, placeholders, etc. for various components in locales files.
       class I18n
         def self.class_name(val, plural: false)
-          base = val&.to_s&.underscore&.tr('_', '-')&.tr('/', '-')
+          base = val&.to_s&.underscore&.tr('/', '_')
           plural ? base&.pluralize : base
         end
 

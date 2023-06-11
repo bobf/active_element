@@ -1,9 +1,20 @@
 <%= form.label field do %>
   <%= options[:label] %>
-  <% if options[:description].present? %>
+  <% if options[:required] %>
     <button type="button"
             style="background: none; border: none; outline: 0; position: absolute; margin-top: 0.3rem"
+            data-bs-trigger="focus"
             data-bs-toggle="popover"
+            title="Required"
+            data-bs-content="<%= "#{options.fetch(:label)} is a required field." %>"
+            <i class="text-secondary fa-solid fa-star-of-life"></i>
+    </button>
+  <% end %>
+  <% if options[:description].present? %>
+    <button type="button"
+            style="background: none; border: none; outline: 0; position: absolute; <%= options[:required] ? 'margin-left: 1.4rem;' : nil %> margin-top: 0.3rem"
+            data-bs-toggle="popover"
+            data-bs-trigger="focus"
             title="<%= options.fetch(:label) %>"
             data-bs-content="<%= options[:description] %>">
             <i class="text-secondary fa-solid fa-circle-info"></i>

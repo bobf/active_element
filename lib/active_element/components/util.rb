@@ -29,7 +29,15 @@ module ActiveElement
       end
 
       def self.default_record_name(record)
-        record.class.name.demodulize.underscore
+        (record.is_a?(Class) ? record.name : record.class.name).demodulize.underscore
+      end
+
+      def self.relation_controller(model, controller, relation)
+        namespace = controller.controller_path.rpartition('/').first.presence
+        base = "#{model.reflect_on_association(relation).klass.name.pluralize}Controller"
+        return base.safe_constantize if namespace.nil?
+
+        "#{namespace.classify}::#{base}".safe_constantize || base.safe_constantize
       end
 
       def self.json_pretty_print(json)

@@ -1,16 +1,20 @@
 <%=
-  form.text_field field, value: component.value_for(field),
+  form.text_field field, value: options.fetch(:display_value) { component.value_for(field) },
                          id: "#{form_id}-#{field}-text-search",
                          class: "form-control #{component.valid?(field) ? nil : 'is-invalid'}",
                          autocomplete: 'off',
                          placeholder: options[:placeholder].presence || 'Search...',
+                         tabindex: component.tabindex,
                          data: {
                            field_type: 'text-search',
                            form_id: form_id,
                            search_attributes: (
-                             options.dig(:search, :attributes) || [options.dig(:search, :attribute)]
+                             options.dig(:search, :with) || [options.dig(:search, :with)]
                            )&.to_json,
-                           search_value: options.dig(:search, :value),
+                           search_value: options.dig(:search, :providing),
                            search_model: options.dig(:search, :model)
                          }
 %>
+
+<%= form.hidden_field field, id: "#{form_id}-#{field}-text-search-hidden-value",
+                             value: component.value_for(field) %>

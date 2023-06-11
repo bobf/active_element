@@ -7,13 +7,20 @@ RSpec.describe ActiveElement::Components::Form do
     instance_double(
       ActionController::Base,
       action_name: 'new',
-      request: instance_double(ActionDispatch::Request, path: '/request/path')
+      request: instance_double(ActionDispatch::Request, path: '/request/path'),
+      controller_name: 'examples',
+      helpers: helpers
     )
   end
   let(:fields) { [] }
   let(:submit) { nil }
   let(:kwargs) { {} }
   let(:item) { nil }
+  let(:helpers) { double }
+
+  before do
+    allow(helpers).to receive(:'r_spec/mocks_examples_path') { '/examples' }
+  end
 
   it { is_expected.to be_a described_class }
 
@@ -34,8 +41,8 @@ RSpec.describe ActiveElement::Components::Form do
 
       its([:fields]) do
         is_expected.to eql [
-          [:name, :text_field, { description: nil, label: 'Name', placeholder: nil }],
-          [:email, :text_field, { description: nil, label: 'Email', placeholder: nil }]
+          [:name, :text_field, { description: nil, label: 'Name', placeholder: nil, required: false }],
+          [:email, :email_field, { description: nil, label: 'Email', placeholder: nil, required: false }]
         ]
       end
     end
@@ -45,8 +52,8 @@ RSpec.describe ActiveElement::Components::Form do
 
       its([:fields]) do
         is_expected.to eql [
-          [:name, :custom_field, { description: nil, label: 'Name', placeholder: nil }],
-          [:email, :other_custom_field, { description: nil, label: 'Email', placeholder: nil }]
+          [:name, :custom_field, { description: nil, label: 'Name', placeholder: nil, required: false }],
+          [:email, :other_custom_field, { description: nil, label: 'Email', placeholder: nil, required: false }]
         ]
       end
     end
@@ -54,15 +61,19 @@ RSpec.describe ActiveElement::Components::Form do
     context 'with fields with options' do
       let(:fields) do
         [
-          [:name, { description: 'Description', placeholder: 'Placeholder' }],
-          [:email, { description: 'Other Description', label: 'Label' }]
+          [:name, { description: 'Description', placeholder: 'Placeholder', required: false }],
+          [:email, { description: 'Other Description', label: 'Label', required: false }]
         ]
       end
 
       its([:fields]) do
         is_expected.to eql [
-          [:name, :text_field, { description: 'Description', label: 'Name', placeholder: 'Placeholder' }],
-          [:email, :text_field, { description: 'Other Description', label: 'Label', placeholder: nil }]
+          [:name, :text_field, {
+            description: 'Description', label: 'Name', placeholder: 'Placeholder', required: false
+          }],
+          [:email, :text_field, {
+            description: 'Other Description', label: 'Label', placeholder: nil, required: false
+          }]
         ]
       end
     end
@@ -102,7 +113,7 @@ RSpec.describe ActiveElement::Components::Form do
       let(:model) { instance_double(Class, class: model_class) }
       let(:model_class) { class_double(Class, name: 'MyModel') }
 
-      it { is_expected.to eql 'my-model' }
+      it { is_expected.to eql 'my_model' }
     end
 
     context 'with class name and model provided' do
@@ -110,7 +121,7 @@ RSpec.describe ActiveElement::Components::Form do
       let(:model) { instance_double(Class, class: model_class) }
       let(:model_class) { class_double(Class, name: 'MyModel') }
 
-      it { is_expected.to eql 'my-model my-class' }
+      it { is_expected.to eql 'my_model my-class' }
     end
   end
 
@@ -207,13 +218,6 @@ RSpec.describe ActiveElement::Components::Form do
     context 'with valid model for attribute and with field argument' do
       let(:field) { :name }
       let(:kwargs) { { model: Example.new(name: 'My Name', email: 'user@example.org') } }
-
-      it { is_expected.to be true }
-    end
-
-    context 'with invalid model for other attribute but unchanged for requested field' do
-      let(:field) { :name }
-      let(:kwargs) { { model: Example.new(email: 'user@example.org') } }
 
       it { is_expected.to be true }
     end

@@ -32,7 +32,7 @@ ActiveElement.JsonField = (() => {
                        })]
         )));
       } else if (schema.type === 'array') {
-        return (defaultValue || []).map((item, index) => (
+        return (Array.isArray(defaultValue) ? defaultValue : []).map((item, index) => (
           defaultState({ schema: schema.shape, path: path.concat([index]), defaultValue: item })
         ));
       } else {
@@ -51,7 +51,26 @@ ActiveElement.JsonField = (() => {
     const notifyStateChanged = () => {
       stateChangedCallbacks.forEach(([callback, state]) => callback({ getState, value: state && getValue(state) }));
     };
-    const getValue = (id) => store.data[id];
+
+    const getValueAsDateTime = (value) => {
+      // TODO: Deal with timezone offset ?
+      const datetime = new Date(value);
+
+      // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input/datetime-local
+      const isoString = datetime.toISOString();
+      return isoString.substring(0, isoString.indexOf("T") + 6);
+    };
+
+    const getValueWithSchema = (value, schema) => {
+      switch (schema.type) {
+      case 'datetime':
+        return value ? getValueAsDateTime(value) : '';
+      default:
+        return value;
+      }
+    };
+
+    const getValue = (id, schema) => schema ? getValueWithSchema(store.data[id], schema) : store.data[id];
     const deleteValue = (state) => {
       const deleteObject = (id) => {
         if (Array.isArray(id)) {
@@ -203,7 +222,18 @@ ActiveElement.JsonField = (() => {
           return BooleanField({ state, omitLabel, schema, path: currentPath });
         case 'string':
           return StringField({ state, omitLabel, schema, path: currentPath });
-          break;
+        case 'date':
+          return DateField({ state, omitLabel, schema, path: currentPath });
+        case 'time':
+          return TimeField({ state, omitLabel, schema, path: currentPath });
+        case 'datetime':
+          return DateTimeField({ state, omitLabel, schema, path: currentPath });
+        case 'integer':
+          return IntegerField({ state, omitLabel, schema, path: currentPath });
+        case 'float':
+          return FloatField({ state, omitLabel, schema, path: currentPath });
+        case 'decimal':
+          return DecimalField({ state, omitLabel, schema, path: currentPath });
         case 'object':
           element = cloneElement('form-group-floating');
           (schema.shape.fields).forEach((field) => {
@@ -221,6 +251,7 @@ ActiveElement.JsonField = (() => {
         case 'array':
           element = cloneElement('form-group');
           const list = ArrayField({ schema, state, path: currentPath });
+          if (schema.shape?.type === 'object') list.classList.add('array-of-objects');
           element.append(AppendButton({ list, schema, state, path: currentPath }));
           element.append(Label({ title: schema.name }));
           element.append(list);
@@ -247,6 +278,9 @@ ActiveElement.JsonField = (() => {
     const ArrayField = ({ schema, state, path: objectPath }) => {
       const element = cloneElement('list-group');
 
+      if (schema.focus) element.classList.add('focus');
+      element.classList.add('json-array-field');
+
       if (state) {
         state.forEach((eachState, index) => {
           const path = objectPath.concat([index]);
@@ -259,6 +293,7 @@ ActiveElement.JsonField = (() => {
 
     const ArrayItem = ({ state, path, schema, newItem = false }) => {
       const element = cloneElement('list-item');
+      const wrapper = document.createElement('div');
       const objectField = ObjectField({
         path,
         omitLabel: true,
@@ -273,18 +308,26 @@ ActiveElement.JsonField = (() => {
         const deleteObjectButton = DeleteButton(
           { path, state, rootElement: element, template: 'delete-object-button' }
         );
-        group.append(objectField);
 
         if (schema.focus) {
-          element.append(Focus({ state, schema, group, deleteObjectButton, newItem }));
+          group.append(objectField);
+          wrapper.append(Focus({ state, schema, group, deleteObjectButton, newItem }));
         } else {
-          element.append(deleteObjectButton);
-          element.append(group);
+          // TODO: Tidy this up.
+          const deleteObjectButtonWrapper = document.createElement('div');
+          deleteObjectButtonWrapper.classList.add('delete-object-button-wrapper');
+          deleteObjectButtonWrapper.append(deleteObjectButton);
+          group.append(deleteObjectButtonWrapper);
+          group.append(objectField);
+          wrapper.append(group);
         }
       } else {
-        element.append(objectField);
-        element.append(DeleteButton({ path, state, rootElement: element }));
+        wrapper.append(objectField);
+        objectField.classList.add('deletable');
+        wrapper.append(DeleteButton({ path, state, rootElement: element }));
       }
+
+      element.append(wrapper);
 
       return element;
     };
@@ -339,10 +382,15 @@ ActiveElement.JsonField = (() => {
       return element;
     };
 
-    const Label = ({ title, template }) => {
+    const Label = ({ title, template, labelFor }) => {
       const element = cloneElement(template || 'label');
 
       element.append(humanize({ string: title }));
+
+      if (labelFor) {
+        element.htmlFor = labelFor.id;
+        element.classList.add(`json-${labelFor.type}-field-label`);
+      }
 
       return element;
     }
@@ -374,7 +422,7 @@ ActiveElement.JsonField = (() => {
 
       element.id = state;
       element.value = store.getValue(state);
-      element.placeholder = schema.shape?.placeholder || ' ';
+      element.placeholder = schema.placeholder || schema.shape?.placeholder || ' ';
 
       return element;
     };
@@ -395,9 +443,58 @@ ActiveElement.JsonField = (() => {
       const group = cloneElement('form-group-floating');
 
       group.append(element);
-      group.append(Label({ title: schema.name }));
+      group.append(Label({ title: schema.name, labelFor: element }));
 
       return group;
+    };
+
+    const CommonField = ({ template, omitLabel, schema, state, path, floating = true }) => {
+      const element = cloneElement(template);
+      const placeholder = schema.placeholder || schema.shape?.placeholder || ' ';
+
+      element.id = state;
+
+      if (placeholder) element.placeholder = placeholder;
+
+      element.value = store.getValue(state, schema);
+
+      if (omitLabel) return element;
+
+      const group = cloneElement('form-group-floating');
+
+      if (floating) {
+        group.append(element);
+        group.append(Label({ title: schema.name, labelFor: element }));
+      } else {
+        group.append(Label({ title: schema.name, labelFor: element }));
+        group.append(element);
+      }
+
+      return group;
+    };
+
+    const DateTimeField = ({ omitLabel, schema, state, path }) => {
+      return CommonField({ template: 'datetime-field', floating: false, omitLabel, schema, state, path });
+    };
+
+    const DateField = ({ omitLabel, schema, state, path }) => {
+      return CommonField({ template: 'date-field', floating: false, omitLabel, schema, state, path });
+    };
+
+    const TimeField = ({ omitLabel, schema, state, path }) => {
+      return CommonField({ template: 'time-field', floating: false, omitLabel, schema, state, path });
+    };
+
+    const IntegerField = ({ omitLabel, schema, state, path }) => {
+      return CommonField({ template: 'integer-field', omitLabel, schema, state, path });
+    };
+
+    const FloatField = ({ omitLabel, schema, state, path }) => {
+      return CommonField({ template: 'float-field', omitLabel, schema, state, path });
+    };
+
+    const DecimalField = ({ omitLabel, schema, state, path }) => {
+      return CommonField({ template: 'decimal-field', omitLabel, schema, state, path });
     };
 
     const DeleteButton = ({ path, state, rootElement, template = 'delete-button' }) => {
@@ -424,8 +521,10 @@ ActiveElement.JsonField = (() => {
         ev.preventDefault();
 
         const { path, state: appendState } = store.appendValue({ path: objectPath, schema });
+        const item = ArrayItem({ path, state: appendState, schema, newItem: true })
 
-        list.append(ArrayItem({ path, state: appendState, schema, newItem: true }));
+        list.append(item);
+        item.scrollIntoView();
 
         return false;
       };
@@ -440,16 +539,21 @@ ActiveElement.JsonField = (() => {
     const data = getData(element);
     const formId = element.dataset.formId;
     const formFieldElement = document.querySelector(`#${element.dataset.fieldId}`);
+    const schemaFieldElement = document.querySelector(`#${element.dataset.schemaFieldId}`);
     const fieldName = element.dataset.fieldName;
     const schema = getSchema(element);
     const { store, stateChanged, connectState } = createStore({ data, schema });
 
-    connectState({ element });
+    schemaFieldElement.value = JSON.stringify(schema);
 
     stateChanged(({ getState }) => {
-      formFieldElement.value = JSON.stringify(getState());
-      console.log(getState());
+      const state = getState();
+
+      formFieldElement.value = JSON.stringify(state);
+      ActiveElement.log.debug(state);
     });
+
+    connectState({ element });
 
     const component = Component({ store, stateChanged, connectState, schema, element, fieldName });
 

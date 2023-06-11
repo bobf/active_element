@@ -1,4 +1,5 @@
 <%= form.text_area field,
                    value: component.value_for(field),
-                   rows: 5,
+                   rows: options.fetch(:rows, 5),
+                   tabindex: component.tabindex,
                    class: "form-control #{component.valid?(field) ? nil : 'is-invalid'}" %>

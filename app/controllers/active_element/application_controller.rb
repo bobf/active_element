@@ -5,11 +5,16 @@ module ActiveElement
   # authentication as Superuser, and standardised HTML widgets.
   class ApplicationController < ActionController::Base
     include ActionView::Helpers::TagHelper
+    include ActiveElement::DefaultControllerActions
 
     layout 'active_element'
 
     def self.active_element
       @active_element ||= ActiveElement::ControllerInterface.new(self)
+    end
+
+    def self.active_element_editable_fields(*args)
+      @active_element_assigned_editable_fields = args
     end
 
     def active_element

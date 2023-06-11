@@ -1,0 +1,21 @@
+---
+type: array
+focus:
+- name
+- estranged
+shape:
+  type: object
+  shape:
+    fields:
+    - name: relation
+      type: string
+      options:
+      - Cousin
+      - Aunt
+      - Uncle
+    - name: name
+      type: string
+    - name: date_of_birth
+      type: date
+    - name: estranged
+      type: boolean

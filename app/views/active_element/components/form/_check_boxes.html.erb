@@ -21,7 +21,7 @@
         <div class="row w-100">
           <% slice.each do |label, name, checked| %>
             <div class="col">
-              <%= subform.check_box(name, checked: checked, class: 'me-2') %>
+              <%= subform.check_box(name, checked: checked, class: 'me-2', tabindex: component.tabindex) %>
               <%= subform.label name, label %>
             </div>
             <br/>

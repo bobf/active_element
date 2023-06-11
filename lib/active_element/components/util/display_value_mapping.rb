@@ -7,6 +7,10 @@ module ActiveElement
       class DisplayValueMapping
         include RecordMapping
 
+        def mapped_association_from_record
+          association_mapping.link_tag
+        end
+
         def numeric_value
           value_from_record
         end
@@ -25,15 +29,15 @@ module ActiveElement
         end
 
         def datetime_value
-          value_from_record.strftime('%Y-%m-%d %H:%M:%S')
+          with_timezone_offset(value_from_record).strftime('%Y-%m-%d %H:%M:%S')
         end
 
         def time_value
-          value_from_record.strftime('%H:%M:%S')
+          with_timezone_offset(value_from_record).strftime('%H:%M:%S')
         end
 
         def date_value
-          value_from_record.strftime('%Y-%m-%d')
+          with_timezone_offset(value_from_record).strftime('%Y-%m-%d')
         end
 
         def boolean_value
