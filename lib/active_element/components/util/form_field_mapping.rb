@@ -6,6 +6,8 @@ module ActiveElement
       # Normalizes Form `fields` parameter from various supported input formats.
       class FormFieldMapping
         include SecretFields
+        include PhoneFields
+        include EmailFields
 
         def initialize(record, fields, i18n)
           @record = record
@@ -65,7 +67,13 @@ module ActiveElement
             boolean: :check_box,
             json: :json_field,
             jsonb: :json_field,
-            geometry: :text_area
+            geometry: :text_area,
+            datetime: :datetime_field,
+            date: :date_field,
+            time: :time_field,
+            integer: :number_field,
+            decimal: :number_field,
+            float: :number_field
           }.fetch(column_type.to_sym, default_field_type(field))
         end
 
@@ -95,6 +103,8 @@ module ActiveElement
 
         def default_field_type(field)
           return :password_field if secret_field?(field)
+          return :email_field if email_field?(field)
+          return :phone_field if phone_field?(field)
 
           :text_field
         end

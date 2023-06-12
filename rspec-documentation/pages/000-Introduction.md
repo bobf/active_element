@@ -6,7 +6,7 @@ An [authorization framework](access-control.html) is provided, intended to work 
 
 ## Highlights
 
-* Feature-rich [forms](components/forms.html) including a powerful [JSON form field component](components/forms/json.html).
+* Feature-rich [forms](components/forms.html) including a powerful [JSON form field component](components/forms/fields/json.html).
 * [Tables](components/tables.html) with built-in pagination and action buttons for viewing/editing/deleting records.
 * [Decorators](decorators.html) for overriding default display fields with simple _Rails_ view partials.
 * Automated [permissions](access-control/authorization/permissions.html) that can be applied to all application endpoints with minimal effort.

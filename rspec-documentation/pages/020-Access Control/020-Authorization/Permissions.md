@@ -16,6 +16,8 @@ Permission names are based on the following templates:
 e.g. if your application is defined as:
 
 ```ruby
+# config/application.rb
+
 module BookingSystem
   class Application < Rails::Application
   end

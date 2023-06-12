@@ -6,4 +6,6 @@ _ActiveElement_ does not attempt to replace the functionality of such frameworks
 
 If any controller inherits from `ActiveElement::ApplicationController` then it will automatically have permissions applied to all of its controller actions and, if authorization is enabled, users must have the required permissions to access. This provides an automated [least-privelege model](https://en.wikipedia.org/wiki/Principle_of_least_privilege) to all of your application's endpoints with minimal effort.
 
+Note that actions that exist out of the standard set of _Rails_ _RESTful_ resources (i.e. `index`, `show`, `new`, `create`, `edit`, `update`, `destroy`) **must** have an explicit permission configuration defined using `active_element.permit_action`. See [Custom Routes](authorization/permissions/custom-routes.html) for more information.
+
 See the [Setup](authorization/setup.html) and [Permissions](authorization/permissions.html) sections to get started.

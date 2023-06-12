@@ -1,0 +1,9 @@
+<span class="name">
+  <%= default %>
+</span>
+
+<% if record.created_at.present? %>
+  <span class="created-at">
+    (Created: <%= time_ago_in_words(record.created_at) %> ago)
+  </span>
+<% end %>

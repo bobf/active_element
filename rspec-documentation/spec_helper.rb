@@ -15,6 +15,11 @@ class UsersController < ActiveElement::ApplicationController
   def helpers
     @helpers ||= Helpers.new
   end
+
+  def request
+    @_request = Session.new
+    @request ||= Request.new
+  end
 end
 
 class Helpers
@@ -27,12 +32,40 @@ class Helpers
   end
 
   def new_user_path(*args)
-    p args
     '/users/new'
   end
 end
 
-class User < ApplicationRecord
+class Request
+  def path
+    '/users/new'
+  end
+
+  def host
+    'www.example.com'
+  end
+
+  def optional_port
+    80
+  end
+
+  def protocol
+    'http'
+  end
+
+  def path_parameters
+    {}
+  end
+
+  def method_missing(*)
+    nil
+  end
+end
+
+class Session
+  def session
+    {}
+  end
 end
 
 RSpec::Documentation.configure do |config|
@@ -50,6 +83,8 @@ RSpec::Documentation.configure do |config|
       t.string :email
       t.text :overview
       t.boolean :enabled
+      t.date :date_of_birth
+      t.datetime :created_at
     end
   end
 
