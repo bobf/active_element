@@ -61,7 +61,7 @@ module ActiveElement
           default_type_from_column_type(field, column.type)
         end
 
-        def default_type_from_column_type(field, column_type)
+        def default_type_from_column_type(field, column_type) # rubocop:disable Metrics/MethodLength
           {
             string: default_field_type(field),
             boolean: :check_box,

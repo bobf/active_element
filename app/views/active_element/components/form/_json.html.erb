@@ -9,7 +9,7 @@
 
 <%= form.hidden_field field,
                       name: "#{form.object_name}[#{field}]",
-                      value: component.value_for(field, options)&.to_json,
+                      value: '',
                       id: field_id %>
 <%= form.hidden_field field, name: '__json_fields[]', value: "#{form.object_name}.#{field}" %>
 

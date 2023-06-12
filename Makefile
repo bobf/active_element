@@ -6,6 +6,7 @@ test:
 	bundle exec rubocop
 	bundle exec strong_versions
 	bundle exec brakeman
+	bundle exec rspec-documentation
 
 .PHONY: publish
 publish:

@@ -80,10 +80,6 @@ form {
 }
 
 .json-field {
-  .focus {
-    display: inline;
-  }
-
   ol {
     line-height: 2rem;
     margin-top: 2.8rem;
@@ -91,6 +87,10 @@ form {
     ol {
       margin-top: 1rem;
     }
+  }
+
+  ol.focus {
+    margin-top: 0;
   }
 
   .form-group {
@@ -101,6 +101,13 @@ form {
   .json-delete-object-button {
     margin-top: 1rem;
     margin-right: 1.8rem;
+  }
+
+  .form-floating {
+    .json-date-field-label, .json-time-field-label, .json-datetime-local-field-label, .json-datetime-field-label {
+      position: relative;
+      display: inline;
+    }
   }
 
   &.modal-body {

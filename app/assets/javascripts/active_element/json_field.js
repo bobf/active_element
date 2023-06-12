@@ -204,6 +204,12 @@ ActiveElement.JsonField = (() => {
         case 'string':
           return StringField({ state, omitLabel, schema, path: currentPath });
           break;
+        case 'date':
+          return DateField({ state, omitLabel, schema, path: currentPath });
+        case 'time':
+          return TimeField({ state, omitLabel, schema, path: currentPath });
+        case 'datetime':
+          return DateTimeField({ state, omitLabel, schema, path: currentPath });
         case 'object':
           element = cloneElement('form-group-floating');
           (schema.shape.fields).forEach((field) => {
@@ -246,6 +252,8 @@ ActiveElement.JsonField = (() => {
 
     const ArrayField = ({ schema, state, path: objectPath }) => {
       const element = cloneElement('list-group');
+
+      if (schema.focus) element.classList.add('focus');
 
       if (state) {
         state.forEach((eachState, index) => {
@@ -339,10 +347,15 @@ ActiveElement.JsonField = (() => {
       return element;
     };
 
-    const Label = ({ title, template }) => {
+    const Label = ({ title, template, labelFor }) => {
       const element = cloneElement(template || 'label');
 
       element.append(humanize({ string: title }));
+
+      if (labelFor) {
+        element.htmlFor = labelFor.id;
+        element.classList.add(`json-${labelFor.type}-field-label`);
+      }
 
       return element;
     }
@@ -400,6 +413,48 @@ ActiveElement.JsonField = (() => {
       return group;
     };
 
+    const DateTimeField = ({ omitLabel, schema, state, path }) => {
+      const element = cloneElement('datetime-field');
+
+      element.id = state;
+      element.value = store.getValue(state);
+
+      const group = cloneElement('form-group-floating');
+
+      group.append(Label({ title: schema.name, labelFor: element }));
+      group.append(element);
+
+      return group;
+    };
+
+    const DateField = ({ omitLabel, schema, state, path }) => {
+      const element = cloneElement('date-field');
+
+      element.id = state;
+      element.value = store.getValue(state);
+
+      const group = cloneElement('form-group-floating');
+
+      group.append(Label({ title: schema.name, labelFor: element }));
+      group.append(element);
+
+      return group;
+    };
+
+    const TimeField = ({ omitLabel, schema, state, path }) => {
+      const element = cloneElement('time-field');
+
+      element.id = state;
+      element.value = store.getValue(state);
+
+      const group = cloneElement('form-group-floating');
+
+      group.append(Label({ title: schema.name, labelFor: element }));
+      group.append(element);
+
+      return group;
+    };
+
     const DeleteButton = ({ path, state, rootElement, template = 'delete-button' }) => {
       const element = cloneElement(template);
 
@@ -424,8 +479,10 @@ ActiveElement.JsonField = (() => {
         ev.preventDefault();
 
         const { path, state: appendState } = store.appendValue({ path: objectPath, schema });
+        const item = ArrayItem({ path, state: appendState, schema, newItem: true })
 
-        list.append(ArrayItem({ path, state: appendState, schema, newItem: true }));
+        list.append(item);
+        item.scrollIntoView();
 
         return false;
       };
@@ -447,8 +504,10 @@ ActiveElement.JsonField = (() => {
     connectState({ element });
 
     stateChanged(({ getState }) => {
-      formFieldElement.value = JSON.stringify(getState());
-      console.log(getState());
+      const state = getState();
+
+      formFieldElement.value = JSON.stringify(state);
+      ActiveElement.log.debug(state);
     });
 
     const component = Component({ store, stateChanged, connectState, schema, element, fieldName });

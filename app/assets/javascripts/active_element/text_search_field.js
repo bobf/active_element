@@ -7,7 +7,7 @@
     try {
       return JSON.parse(json);
     } catch (error) {
-      ActiveElement.log(error);
+      ActiveElement.log.error(error);
       return defaultValue;
     }
   };

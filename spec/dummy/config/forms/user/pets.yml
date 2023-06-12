@@ -1,0 +1,22 @@
+---
+type: array
+shape:
+  type: object
+  shape:
+    fields:
+    - name: name
+      type: string
+    - name: animal
+      type: string
+      options:
+      - Cat
+      - Dog
+      - Polar Bear
+    - name: favorite_foods
+      type: array
+      shape:
+        type: string
+        options:
+        - Biscuits
+        - Plants
+        - Carpet

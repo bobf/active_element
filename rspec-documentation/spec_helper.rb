@@ -1,80 +1,26 @@
 require 'active_element'
 require_relative 'dummy/config/environment'
-
-class UsersController < ActiveElement::ApplicationController
-  def initialize(*args, &block)
-    append_view_path File.expand_path(File.join(__dir__, '../app/views/'))
-
-    super
-  end
-
-  def params
-    {}
-  end
-
-  def helpers
-    @helpers ||= Helpers.new
-  end
-
-  def request
-    @_request = Session.new
-    @request ||= Request.new
-  end
-end
-
-class Helpers
-  def user_path(record)
-    "/user/#{record.id}"
-  end
-
-  def edit_user_path(record)
-    "/user/#{record.id}/edit"
-  end
-
-  def new_user_path(*args)
-    '/users/new'
-  end
-end
-
-class Request
-  def path
-    '/users/new'
-  end
-
-  def host
-    'www.example.com'
-  end
-
-  def optional_port
-    80
-  end
-
-  def protocol
-    'http'
-  end
-
-  def path_parameters
-    {}
-  end
-
-  def method_missing(*)
-    nil
-  end
-end
-
-class Session
-  def session
-    {}
-  end
-end
+require_relative 'support'
 
 RSpec::Documentation.configure do |config|
-  config.hook(:after_head) { File.read('rspec-documentation/_head.html') }
+  config.hook(:before_content) do
+    active_element = OpenStruct.new(component: ActiveElement::Component.new(UsersController.new))
+    application_css = Rails.application
+                           .assets
+                           .find_asset('active_element/application.css')
+                           .source.split("\n")
+                           .drop_while { |line| !line.include?('app/assets/stylesheets/active_element') }
+                           .join("\n")
+    [
+      ERB.new(File.read('app/views/active_element/components/form/_templates.html.erb')).result(binding),
+      ERB.new(File.read('rspec-documentation/_head.html.erb')).result(binding)
+    ].join("\n")
+  end
 
   ActiveRecord::Migration.class_eval do
     drop_table :users
-  rescue ActiveRecord::StatementInvalid
-    # Skip
+  rescue ActiveRecord::StatementInvalid => e
+    warn e.message
   end
 
   ActiveRecord::Migration.class_eval do
@@ -85,6 +31,12 @@ RSpec::Documentation.configure do |config|
       t.boolean :enabled
       t.date :date_of_birth
       t.datetime :created_at
+      t.json :pets
+      t.json :nicknames
+      t.json :permissions
+      t.json :family
+      t.json :extended_family
+      t.json :user_data
     end
   end
 

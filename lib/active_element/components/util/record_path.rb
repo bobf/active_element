@@ -43,6 +43,7 @@ module ActiveElement
           controller.helpers.public_send(default_record_path, record)
         rescue NoMethodError
           raise NoMethodError if sti_record_name.nil?
+
           controller.helpers.public_send(sti_record_path, record)
         end
 

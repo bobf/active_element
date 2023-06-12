@@ -35,7 +35,7 @@ RSpec.describe ActiveElement::Components::Form do
       its([:fields]) do
         is_expected.to eql [
           [:name, :text_field, { description: nil, label: 'Name', placeholder: nil }],
-          [:email, :text_field, { description: nil, label: 'Email', placeholder: nil }]
+          [:email, :email_field, { description: nil, label: 'Email', placeholder: nil }]
         ]
       end
     end

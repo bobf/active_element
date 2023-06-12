@@ -21,6 +21,8 @@
   const navbar = document.querySelector('.navbar.application-menu');
 
   window.addEventListener('scroll', () => {
+    if (!navbar) return;
+
     if (window.scrollY > 50) {
       navbar.classList.add('shrink');
     } else {
@@ -30,7 +32,12 @@
 
 
   const ActiveElement = {
-    log: (message) => { console.log(`[ActiveElement] ${message}`); },
+    debug: false,
+    log: {
+      debug: (message) => { ActiveElement.debug && console.log(`[ActiveElement:debug]`, message); },
+      info: (message) => { console.log(`[ActiveElement:info] ${message}`); },
+      error: (message) => { console.log(`[ActiveElement:error] ${message}`); },
+    },
     generateId,
     getAntiCsrfToken,
     cloneElement,
@@ -42,4 +49,4 @@
   window.ActiveElement = ActiveElement;
 })();
 
-ActiveElement.log('Initialized');
+ActiveElement.log.info('Initialized');
