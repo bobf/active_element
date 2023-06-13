@@ -3,14 +3,13 @@
      data-field-name="<%= field %>"
      data-form-id="<%= form_id %>"
      data-field-id="<%= field_id %>"
+     data-schema-field-id="<%= field_id %>-schema"
 >
 
 </div>
 
-<%= form.hidden_field field,
-                      name: "#{form.object_name}[#{field}]",
-                      value: '',
-                      id: field_id %>
+<%= form.hidden_field field, name: "#{form.object_name}[#{field}]", value: '', id: field_id %>
+<%= form.hidden_field field, name: "__json_field_schemas[#{form.object_name}][#{field}]", value: '', id: "#{field_id}-schema" %>
 <%= form.hidden_field field, name: '__json_fields[]', value: "#{form.object_name}.#{field}" %>
 
 <%=

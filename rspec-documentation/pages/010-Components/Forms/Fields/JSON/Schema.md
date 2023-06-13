@@ -188,6 +188,39 @@ Since we're in debug mode for this documentation, the state is logged to the _Ja
 
 Make sure you read the [Controller Parameters](controller-parameters.html) section to see how to use [Rails StrongParameters](https://api.rubyonrails.org/classes/ActionController/StrongParameters.html) in conjunction with _ActiveElement_ _JSON_ fields.
 
+### Form
+
+```rspec:html
+let(:user) do
+  User.new(
+    email: 'user@example.com',
+    user_data: {
+      nicknames: ['Buster', 'Coffee Guy'],
+      permissions: ['can_make_coffee', 'can_drink_coffee', 'can_discuss_coffee'],
+      extended_family: extended_family
+    }
+  )
+end
+
+let(:extended_family) do
+  20.times.map do
+    estranged = (rand(3) % 3).zero?
+    { name: estranged ? nil : Faker::Name.unique.name,
+      relation: ['Cousin', 'Aunt', 'Uncle'].sample,
+      date_of_birth: Faker::Date.birthday,
+      estranged: estranged }
+  end
+end
+
+subject do
+  active_element.component.form model: user, fields: [:email, :user_data]
+end
+
+it { is_expected.to include 'Coffee Guy' }
+```
+
+### Schema
+
 ```yaml
 # config/forms/user/user_data.yml
 ---
@@ -248,31 +281,3 @@ shape:
           type: boolean
 ```
 
-```rspec:html
-let(:user) do
-  User.new(
-    email: 'user@example.com',
-    user_data: {
-      nicknames: ['Buster', 'Coffee Guy'],
-      permissions: ['can_make_coffee', 'can_drink_coffee', 'can_discuss_coffee'],
-      extended_family: extended_family
-    }
-  )
-end
-
-let(:extended_family) do
-  20.times.map do
-    estranged = (rand(3) % 3).zero?
-    { name: estranged ? nil : Faker::Name.unique.name,
-      relation: ['Cousin', 'Aunt', 'Uncle'].sample,
-      date_of_birth: Faker::Date.birthday,
-      estranged: estranged }
-  end
-end
-
-subject do
-  active_element.component.form model: user, fields: [:email, :user_data]
-end
-
-it { is_expected.to include 'Coffee Guy' }
-```

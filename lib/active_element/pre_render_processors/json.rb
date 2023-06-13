@@ -15,7 +15,7 @@ module ActiveElement
         return if json_fields.blank?
 
         process_json_fields
-        delete_meta_param
+        delete_meta_params
         rebuild_action_controller_parameters
       end
 
@@ -27,14 +27,18 @@ module ActiveElement
         json_fields.zip(json_values).each do |field, value|
           *nested_keys, field_key = field.split('.')
           param = nested_keys.reduce(permitted_params) { |params, key| params[key] }
-          # If value is an empty string then something went wrong in front end code. Skip
-          # reassignment completely to prevent data loss.
-          param[field_key] = JSON.parse(value) unless value == ''
+          schema = schema_for(nested_keys + [field_key])
+          param[field_key] = if value == ''
+                               { 'array' => [], 'object' => {} }.fetch(schema['type'])
+                             else
+                               coerced_value(JSON.parse(value), schema: schema)
+                             end
         end
       end
 
-      def delete_meta_param
+      def delete_meta_params
         permitted_params.delete('__json_fields')
+        permitted_params.delete('__json_field_schemas')
       end
 
       def rebuild_action_controller_parameters
@@ -53,6 +57,37 @@ module ActiveElement
 
       def permitted_params
         @permitted_params ||= controller.params.permit!.to_h
+      end
+
+      def coerced_value(val, schema:)
+        return val if val.nil?
+
+        case schema['type']
+        when 'array'
+          val.map { |item| coerced_value(item, schema: schema['shape']) }
+        when 'object'
+          val.to_h { |key, value| [key, coerced_value(value, schema: schema_field(schema, key))] }
+        when 'string', 'boolean', 'time'
+          val
+        when 'float'
+          Float(val)
+        when 'integer'
+          Integer(val)
+        when 'decimal'
+          BigDecimal(val)
+        when 'datetime'
+          DateTime.parse(val)
+        when 'date'
+          Date.parse(val)
+        end
+      end
+
+      def schema_for(path)
+        JSON.parse(path.reduce(permitted_params['__json_field_schemas']) { |schema, key| schema[key] })
+      end
+
+      def schema_field(schema, key)
+        schema['shape']['fields'].find { |each_field| each_field['name'] == key }
       end
     end
   end

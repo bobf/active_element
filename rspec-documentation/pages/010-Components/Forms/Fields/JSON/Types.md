@@ -17,7 +17,7 @@ And the following extensions are provided:
 |-|-|
 | `date` | An [iso8601 date](https://en.wikipedia.org/wiki/ISO_8601#Dates) stored as `YYYY-MM-DD`. | `Date`
 | `datetime` | An [iso8601-1:2019 combined date and time](https://en.wikipedia.org/wiki/ISO_8601#Combined_date_and_time_representations) stored as `YYYY-MM-DDThh:mm:ss` | `DateTime`
-| `time` | An [iso8601-1:2019 time](https://en.wikipedia.org/wiki/ISO_8601#Times) stored as `hh:mm:ss` | `Time`
+| `time` | An [iso8601-1:2019 time](https://en.wikipedia.org/wiki/ISO_8601#Times) stored as `hh:mm` | `String` ([*](#time-of-day))
 | `decimal` | An infinite-precision decimal object stored as a string, e.g. `"3.141592653589793"` | `BigDecimal`
 | `integer` | A whole number, stored as a _JSON_ `float`. | `Integer`
 
@@ -28,3 +28,9 @@ irb(main):001:0> puts({ time: Time.now.utc }.to_json)
 
 {"time":"2023-06-12T20:13:11.308Z"}
 ```
+
+## Time of Day
+
+Note that _Ruby_ has no native way to store a time of day without a date, so `time` fields are coerced to `String` (`hh:mm`) when processed into controller params.
+
+You may find the [Tod](https://github.com/JackC/tod) gem useful when working with these values.

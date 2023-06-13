@@ -51,6 +51,8 @@ shape:
     fields:
     - name: name
       type: string
+    - name: age
+      type: integer
     - name: animal
       type: string
       options:
