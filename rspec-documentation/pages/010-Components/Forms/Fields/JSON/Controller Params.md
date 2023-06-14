@@ -1,14 +1,16 @@
 # Controller Params
 
-_JSON_ fields are processed by _ActiveElement_ before they arrive as controller `params`. Read the [Behind the Scenes](#behind-the-scenes) section if you want to know exactly what happens during this processing.
+_JSON_ fields are pre-processed by _ActiveElement_ before they arrive as controller `params`. Read the [Behind the Scenes](#behind-the-scenes) section if you want to know exactly what happens during this pre-processing.
 
-The result of processing the _JSON_ parameters is that you get a regular _Rails_ controller `params` object (i.e. an instance of `ActionController::Parameters`) so you can use `params.require(...).permit(...)` to manage your _JSON_ objects.
+Pre-processing _JSON_ parameters means that you get a regular _Rails_ controller `params` object (i.e. an instance of `ActionController::Parameters`) with all of the _JSON_ parameters available as though they were normal form parameters, so you can use them with `params.require(...).permit(...)`, pass them to `create` or `update` and let _ActiveRecord_ translate them back to _JSON_.
 
-_ActiveElement_ does not automatically permit parameters but it does map types for you based on the defined [schema](schema.html). This means you don't have to manually parse dates, decimals, etc. if you need to work with them in your controller.
+_ActiveElement_ does not automatically `permit` parameters but it does map types for you based on the defined [schema](schema.html). This means you don't have to manually parse dates, decimals, etc. if you need to work with them in your controller.
 
-Each mapped type is specifically chosen to be safe to serialize back into _JSON_, so you can create a _JSON_ field, work with familiar _Ruby_ objects, and then save the objects back to your database transparently. Those saved objects can then be edited in your front end forms in the same format they were originally entered.
+Each mapped type is specifically chosen to be safe to serialize back into _JSON_. This _JSON_ data can then be edited by _ActiveElement's_ `json_field` in your forms, allowing you to build complex forms with minimal effort and without having to work directly with the underlying _JSON_.
 
-If you have the following schema:
+## Example Schema and Controller
+
+### Schema
 
 ```yaml
 # config/forms/user/pets.yml
@@ -38,7 +40,11 @@ shape:
         - Carpet
 ```
 
-Then your controller would look exactly like it would if you were working with vanilla _Rails_ forms:
+### Controller
+
+Below you can see that the `email` param (a regular _Rails_ `email_field` or `text_field`) is used in conjunction with the `pets` param (an _ActiveElemen_ `json_field`).
+
+See the official _Rails_ [ActionController::Parameters documentation](https://api.rubyonrails.org/classes/ActionController/Parameters.html) for more details.
 
 ```ruby
 class UsersController < ActiveElement::ApplicationController
@@ -56,7 +62,7 @@ class UsersController < ActiveElement::ApplicationController
   private
 
   def user_params
-    params.require(:user).permit(pets: [:name, :age, :animal, favorite_foods: []])
+    params.require(:user).permit(:email, pets: [:name, :age, :animal, favorite_foods: []])
   end
 end
 ```

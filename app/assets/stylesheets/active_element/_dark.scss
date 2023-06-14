@@ -27,6 +27,20 @@
     }
   }
 
+  .search-field-results {
+    background-color: $dark;
+    .search-field-result {
+      color: #{$light};
+    }
+    .search-field-result {
+      cursor: pointer;
+      &:hover {
+        background-color: #{$light};
+        color: #{$blue};
+      }
+    }
+  }
+
   table {
     tbody {
       tr {

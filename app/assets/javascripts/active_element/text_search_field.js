@@ -37,7 +37,7 @@
           resultsItem.innerText = attributes.length === 0 ? value : `${attributes.join(', ')} (${value})`;
           resultsItem.addEventListener('click', () => {
             hiddenInput.value = value;
-            element.value = value;
+            element.value = attributes.length === 1 && attributes[0] === value ? value : `${value} (${attributes.join(', ')})`;
             searchResultsContainer.replaceChildren();
             searchResultsContainer.classList.add('d-none');
           });
@@ -48,7 +48,7 @@
       });
     } else {
       response.json().then((json) => responseErrorContainer.innerText = json.message)
-                     .catch(() => responseErrorContainer.innerText = 'An unepxected error occurred');
+                     .catch(() => responseErrorContainer.innerText = 'An unexpected error occurred');
     }
   };
 
@@ -81,7 +81,7 @@
 
       element.addEventListener('keyup', () => {
         const query = element.value;
-        const requestId = crypto.randomUUID();
+        const requestId = ActiveElement.getRequestId();
         lastRequestId = requestId;
 
         clearButton.classList.add('invisible');
@@ -102,12 +102,14 @@
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
-              request_id: requestId,
-              model,
-              value,
-              attributes,
-              query,
-              [token.param]: token.value,
+              ...{
+                request_id: requestId,
+                model,
+                value,
+                attributes,
+                query,
+              },
+              ...(token.param && token.value ? { [token.param]: token.value } : {})
             }),
           }
         ).then((response) => processResponse(

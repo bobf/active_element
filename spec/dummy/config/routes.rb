@@ -15,6 +15,7 @@ Rails.application.routes.draw do
   end
 
   resources :users
+  resources :pets
 
   namespace :admin do
     resources :examples

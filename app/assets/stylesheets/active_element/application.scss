@@ -99,8 +99,9 @@ form {
   }
 
   .json-delete-object-button {
-    margin-top: 1rem;
-    margin-right: 1.8rem;
+    // margin-top: 1rem;
+    // margin-right: 1.8rem;
+    // margin-bottom: 1rem;
   }
 
   .form-floating {
@@ -148,8 +149,24 @@ form {
   }
 
 
-  li .json-text-field, li .json-select-field {
-    width: calc(100% - 3.2rem);
+  .delete-object-button-wrapper {
+    padding-bottom: 2rem;
+  }
+
+
+  .json-array-field {
+    li .json-text-field,
+    li .json-select-field,
+    li .json-integer-field,
+    li .json-float-field,
+    li .json-decimal-field,
+    li .json-date-field,
+    li .json-time-field,
+    li .json-datetime-field {
+      &.deletable {
+        width: calc(100% - 3.2rem);
+      }
+    }
   }
 
   .form-control, .form-select {
@@ -178,9 +195,13 @@ form {
 .search-field-results {
   min-width: 25rem;
   background-color: $white;
-  position: fixed;
-  height: 15rem;
+  max-height: 15rem;
+  z-index: 3000;
+  position: absolute;
   overflow-y: auto;
+  .search-field-result {
+    color: #{$dark};
+  }
   .search-field-result {
     cursor: pointer;
     &:hover {

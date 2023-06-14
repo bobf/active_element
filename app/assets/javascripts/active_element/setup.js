@@ -4,8 +4,8 @@
   };
 
   const getAntiCsrfToken = () => {
-    const param = document.querySelector('meta[name="csrf-param"]').content;
-    const value = document.querySelector('meta[name="csrf-token"]').content;
+    const param = document.querySelector('meta[name="csrf-param"]')?.content;
+    const value = document.querySelector('meta[name="csrf-token"]')?.content;
 
     return { param, value };
   };
@@ -42,6 +42,7 @@
     getAntiCsrfToken,
     cloneElement,
     components: {},
+    getRequestId: () => ActiveElement.generateId(),
     jsonData: window.ActiveElement?.jsonData || {},
     controller_path: document.querySelector('meta[name="active_element_controller_path"]').content
   };

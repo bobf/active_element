@@ -11,6 +11,17 @@ RSpec::Documentation.configure do |config|
                            .source.split("\n")
                            .drop_while { |line| !line.include?('app/assets/stylesheets/active_element') }
                            .join("\n")
+    text_search_names = 1000.times.map do
+      first_name = Faker::Name.first_name
+      last_name = Faker::Name.last_name
+      {
+        value: rand(1000),
+        attributes: [
+          "#{first_name}.#{last_name}@#{Faker::Internet.domain_name}".downcase,
+          "#{first_name} #{Faker::Name.middle_name} #{last_name}".downcase
+        ]
+      }
+    end
     [
       ERB.new(File.read('app/views/active_element/components/form/_templates.html.erb')).result(binding),
       ERB.new(File.read('rspec-documentation/_head.html.erb')).result(binding)
@@ -19,6 +30,7 @@ RSpec::Documentation.configure do |config|
 
   ActiveRecord::Migration.class_eval do
     drop_table :users
+    drop_table :pets
   rescue ActiveRecord::StatementInvalid => e
     warn e.message
   end
@@ -37,6 +49,14 @@ RSpec::Documentation.configure do |config|
       t.json :family
       t.json :extended_family
       t.json :user_data
+    end
+  end
+
+  ActiveRecord::Migration.class_eval do
+    create_table :pets do |t|
+      t.string :name
+      t.string :animal
+      t.integer :user_id
     end
   end
 

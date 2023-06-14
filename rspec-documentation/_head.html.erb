@@ -2,7 +2,23 @@
 <script>
 <%= File.read('app/assets/javascripts/active_element/setup.js') %>
 <%= File.read('app/assets/javascripts/active_element/json_field.js') %>
+<%= File.read('app/assets/javascripts/active_element/text_search_field.js') %>
 ActiveElement.debug = true;
+ActiveElement.getRequestId = () => 'fake-request-id';
+const textSearchNames = <%= text_search_names.to_json %>;
+const textSearchResults = (body) => {
+  const query = JSON.parse(body).query;
+  return textSearchNames.filter(({ value, attributes }) => attributes.some((attribute) => attribute.includes(query.toLowerCase())));
+};
+
+window.fetch = (_, { body }) => {
+  return new Promise((resolve) => {
+    return resolve({
+      ok: true,
+      json: () => new Promise((resolve) => resolve({ results: textSearchResults(body), request_id: 'fake-request-id' })),
+    });
+  });
+};
 </script>
 
 <style>

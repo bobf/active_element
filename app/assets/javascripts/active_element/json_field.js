@@ -32,7 +32,7 @@ ActiveElement.JsonField = (() => {
                        })]
         )));
       } else if (schema.type === 'array') {
-        return (defaultValue || []).map((item, index) => (
+        return (Array.isArray(defaultValue) ? defaultValue : []).map((item, index) => (
           defaultState({ schema: schema.shape, path: path.concat([index]), defaultValue: item })
         ));
       } else {
@@ -278,6 +278,7 @@ ActiveElement.JsonField = (() => {
       const element = cloneElement('list-group');
 
       if (schema.focus) element.classList.add('focus');
+      element.classList.add('json-array-field');
 
       if (state) {
         state.forEach((eachState, index) => {
@@ -291,6 +292,7 @@ ActiveElement.JsonField = (() => {
 
     const ArrayItem = ({ state, path, schema, newItem = false }) => {
       const element = cloneElement('list-item');
+      const wrapper = document.createElement('div');
       const objectField = ObjectField({
         path,
         omitLabel: true,
@@ -305,18 +307,26 @@ ActiveElement.JsonField = (() => {
         const deleteObjectButton = DeleteButton(
           { path, state, rootElement: element, template: 'delete-object-button' }
         );
-        group.append(objectField);
 
         if (schema.focus) {
-          element.append(Focus({ state, schema, group, deleteObjectButton, newItem }));
+          group.append(objectField);
+          wrapper.append(Focus({ state, schema, group, deleteObjectButton, newItem }));
         } else {
-          element.append(deleteObjectButton);
-          element.append(group);
+          // TODO: Tidy this up.
+          const deleteObjectButtonWrapper = document.createElement('div');
+          deleteObjectButtonWrapper.classList.add('delete-object-button-wrapper');
+          deleteObjectButtonWrapper.append(deleteObjectButton);
+          group.append(deleteObjectButtonWrapper);
+          group.append(objectField);
+          wrapper.append(group);
         }
       } else {
-        element.append(objectField);
-        element.append(DeleteButton({ path, state, rootElement: element }));
+        wrapper.append(objectField);
+        objectField.classList.add('deletable');
+        wrapper.append(DeleteButton({ path, state, rootElement: element }));
       }
+
+      element.append(wrapper);
 
       return element;
     };
@@ -431,8 +441,8 @@ ActiveElement.JsonField = (() => {
 
       const group = cloneElement('form-group-floating');
 
-      group.append(Label({ title: schema.name }));
       group.append(element);
+      group.append(Label({ title: schema.name, labelFor: element }));
 
       return group;
     };
@@ -534,7 +544,6 @@ ActiveElement.JsonField = (() => {
     const { store, stateChanged, connectState } = createStore({ data, schema });
 
     schemaFieldElement.value = JSON.stringify(schema);
-    connectState({ element });
 
     stateChanged(({ getState }) => {
       const state = getState();
@@ -542,6 +551,8 @@ ActiveElement.JsonField = (() => {
       formFieldElement.value = JSON.stringify(state);
       ActiveElement.log.debug(state);
     });
+
+    connectState({ element });
 
     const component = Component({ store, stateChanged, connectState, schema, element, fieldName });
 
