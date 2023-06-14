@@ -45,11 +45,50 @@ module ActiveElement
         end
 
         def field_with_default_type_and_default_options(field)
+          return [field, type_from_file(field).to_sym, options_from_file(field)] if file_configuration?(field)
+
           [field, default_type_from_model(field), {}]
         end
 
         def field_with_type(field)
           [field.first, field.last, {}]
+        end
+
+        def file_configuration?(field)
+          # XXX: json_field schema is loaded separately so we ignore file configuration here.
+          # This does prevent specifying an alternative field type in a config file but can still
+          # be defined inline if e.g. a user wants a text_area instead of a json_field:
+          #
+          #   active_element.component.form fields: [:foo, :bar, [:some_json_field, :text_area]]
+          #
+          file_configuration_path(field).file? && default_type_from_model(field) != :json_field
+        end
+
+        def type_from_file(field)
+          YAML.safe_load(file_configuration_path(field).read, symbolize_names: true)
+              .fetch(:type, default_type_from_model(field))
+        end
+
+        def options_from_file(field)
+          YAML.safe_load(file_configuration_path(field).read, symbolize_names: true).fetch(:options, {})
+        end
+
+        def file_configuration_path(field)
+          record_field_configuration_path(field) || sti_field_configuration_path(field)
+        end
+
+        def record_field_configuration_path(field)
+          record_name = Util.record_name(record)
+          return nil if record_name.blank?
+
+          Rails.root.join('config/forms').join(record_name, "#{field}.yml")
+        end
+
+        def sti_record_field_configuration_path(field)
+          sti_record_name = Util.sti_record_name(record)
+          return nil if sti_record_name.blank?
+
+          Rails.root.join('config/forms').join(sti_record_name, "#{field}.yml")
         end
 
         def default_type_from_model(field)

@@ -103,7 +103,7 @@ module ActiveElement
             params: params,
             user: controller.active_element.current_user,
             search_columns: sql.search_columns.compact,
-            result_columns: (sql.search_columns + [sql.value_column]).compact
+            value_column: sql.value_column
           )
         end
 

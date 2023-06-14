@@ -8,9 +8,9 @@
                            field_type: 'text-search',
                            form_id: form_id,
                            search_attributes: (
-                             options.dig(:search, :attributes) || [options.dig(:search, :attribute)]
+                             options.dig(:search, :with) || [options.dig(:search, :with)]
                            )&.to_json,
-                           search_value: options.dig(:search, :value),
+                           search_value: options.dig(:search, :providing),
                            search_model: options.dig(:search, :model)
                          }
 %>

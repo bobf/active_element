@@ -35,8 +35,8 @@
     .search-field-result {
       cursor: pointer;
       &:hover {
-        background-color: #{$light};
-        color: #{$blue};
+        background-color: #{darken($blue, 8%)};
+        color: #{$light};
       }
     }
   }

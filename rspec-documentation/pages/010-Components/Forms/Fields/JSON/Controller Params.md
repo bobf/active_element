@@ -80,11 +80,15 @@ _ActiveElement_ tries to avoid behind-the-scenes magic where possible but, in th
 1. The meta parameters `__json_fields` and `__json_field_schemas` are removed from the result. You'll see them in the logs but they won't get in the way in your controller.
 1. The `request.params` object is re-assigned to the newly-constructed `ActionController::Parameters` object and the request continues as normal.
 
-If you have worked with submitting _JSON_ to _Rails_ controllers before then you have probably done at least some of these steps manually in your controller actions. _ActiveElement_ aims to remove that manual effort and provide a `params` object that is familiar and consistent with _Rails_ conventions, so all you need to do is pass the params to your _ActiveRecord_ `create`/`update` methods and everything should work seamlessly, while also giving you the benefit of being able to work with _Ruby_ objects. If you need to sort an array of objects by date before saving back to the database then it's as simple as:
+If you have worked with submitting _JSON_ to _Rails_ controllers before then you likely will have come across numerous edge cases and difficulties with handling different parameter types, deeply nested values, parser errors, etc. that required custom code to handle.
+
+_ActiveElement_ aims to remove that effort completely and provide a `params` object that is familiar and consistent with _Rails_ conventions, so all you need to do is pass the params to your _ActiveRecord_ `create`/`update` methods and everything should work seamlessly (submit a [bug report](https://github.com/bobf/active_element/issues) if it doesn't!), while also giving you the benefit of being able to work with _Ruby_ objects.
+
+For example, if you need to sort an array of objects by date before saving back to the database then it's as simple as:
 
 ```ruby
-def sorted_family
-  user_params[:family].sort_by { |family_member| family_member[:date_of_birth] }
+def sort_family_by_date_of_birth
+  user_params[:family].sort_by! { |family_member| family_member[:date_of_birth] }
 end
 
 def user_params

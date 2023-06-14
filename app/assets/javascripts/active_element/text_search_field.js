@@ -12,6 +12,13 @@
     }
   };
 
+  const getDisplayValue = ({ value, attributes }) => {
+    if (attributes.length === 0) return value;
+    if (attributes.length === 1 && attributes[0] === value) return value;
+
+    return `${attributes.join(', ')} (${value})`;
+  };
+
   const processResponse = ({
     element, response, hiddenInput, spinner, clearButton, searchResultsContainer, responseErrorContainer
   }) => {
@@ -34,10 +41,11 @@
         json.results.forEach(({ value, attributes }) => {
           const resultsItem = cloneElement('results-item');
 
-          resultsItem.innerText = attributes.length === 0 ? value : `${attributes.join(', ')} (${value})`;
+          resultsItem.innerText = getDisplayValue({ value, attributes });
           resultsItem.addEventListener('click', () => {
             hiddenInput.value = value;
-            element.value = attributes.length === 1 && attributes[0] === value ? value : `${value} (${attributes.join(', ')})`;
+            console.log(value, attributes);
+            element.value = getDisplayValue({ value, attributes });
             searchResultsContainer.replaceChildren();
             searchResultsContainer.classList.add('d-none');
           });

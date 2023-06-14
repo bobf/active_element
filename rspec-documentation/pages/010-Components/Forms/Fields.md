@@ -1,6 +1,6 @@
 # Fields
 
-_ActiveElement_ provides a selection of fields, most of which delegate to _Rails'_ own form field generators.
+_ActiveElement_ provides a selection of fields, most of which delegate to _Rails'_ own [form helpers](https://api.rubyonrails.org/classes/ActionView/Helpers/FormHelper.html).
 
 Extra field types provided by _ActiveElement_ include:
 
@@ -17,4 +17,26 @@ subject do
 end
 
 it { is_expected.to include 'type="date"' }
+```
+
+If you need to override these field types, use a two-element array of `[field_name, field_type]`:
+
+```rspec:html
+subject do
+  active_element.component.form model: User.new,
+                                fields: [:email, :name, [:date_of_birth, :text_field]]
+end
+
+it { is_expected.not_to include 'type="date"' }
+```
+
+You can also pass a third element to the array to specify any options you want to pass to the field:
+
+```rspec:html
+subject do
+  active_element.component.form model: User.new,
+                                fields: [:email, :name, [:date_of_birth, :text_field, { class: 'form-control my-class' }]]
+end
+
+it { is_expected.to include 'class="form-control my-class"' }
 ```
