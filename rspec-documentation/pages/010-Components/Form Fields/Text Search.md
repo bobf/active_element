@@ -12,7 +12,7 @@ The field requires some extra configuration to prevent leaking unwanted data to 
 
 We'll make a form that creates a `Pet` record and associates it with a `User` by setting a `user_id` field.
 
-Click the "Rendered Output" tab and type a few characters into the search field. In the real world this would be connected to your application, but for the purpose of this documentation we've stubbed the _Javascript_ `fetch` function to return some fake results based on the input.
+Click the **Rendered Output** tab and type a few characters into the search field. In the real world this would be connected to your application, but for the purpose of this documentation we've stubbed the _Javascript_ `fetch` function to return some fake results based on the input.
 
 ```rspec:html
 subject do

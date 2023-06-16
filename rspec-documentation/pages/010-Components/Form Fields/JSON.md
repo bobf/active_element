@@ -17,7 +17,7 @@ This example is powered by the [example schema](#example-schema) below.
 
 The `pets` column on the `users` table is a `json` column so _ActiveElement_ loads the schema and generates a dynamic, interactive form component allowing users to edit the data structure without having to manually edit _JSON_.
 
-Click the "Rendered Output" tab to see it in action:
+Click the **Rendered Output** tab to see it in action:
 
 ```rspec:html
 let(:user) do
