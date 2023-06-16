@@ -1,4 +1,8 @@
 [data-bs-theme="dark"] {
+  .navbar.application-menu {
+    background-color: #15221d !important;
+  }
+
   .flash.toast {
     &.notice {
       .toast-body {

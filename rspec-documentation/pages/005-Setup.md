@@ -18,7 +18,9 @@ $ bundle install
 
 ## Application Controller
 
-Inherit from `ActiveElement::ApplicationController` in the controller you want to use with _ActiveElement_. In most cases this will either be your main `ApplicationController`, or a namespaced admin area controller, e.g. `Admin::ApplicationController`.
+Inherit from `ActiveElement::ApplicationController` in the controller you want to use with _ActiveElement_. In most cases this will either be your main `ApplicationController`, or a namespaced admin area controller, e.g. `Admin::ApplicationController`. This will apply the default _ActiveElement_ layout which includes a [Navbar](components/navbar.html), [Theme Switcher](components/theme-switcher.html), and all the required _CSS_ and _Javascript_.
+
+If you want to add custom content to the layout, see the [Hooks](hooks.html) documentation.
 
 ```ruby
 # app/controllers/application_controller.rb

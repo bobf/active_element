@@ -1,0 +1,8 @@
+<%= active_element.component.page_title controller_name.titleize %>
+
+<%= active_element.component.table collection: collection,
+                                   new: true,
+                                   show: true,
+                                   edit: true,
+                                   destroy: true,
+                                   fields: active_element.state.fetch(:listable_fields, []) %>

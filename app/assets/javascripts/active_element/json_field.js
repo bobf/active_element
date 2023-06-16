@@ -251,6 +251,7 @@ ActiveElement.JsonField = (() => {
         case 'array':
           element = cloneElement('form-group');
           const list = ArrayField({ schema, state, path: currentPath });
+          if (schema.shape?.type === 'object') list.classList.add('array-of-objects');
           element.append(AppendButton({ list, schema, state, path: currentPath }));
           element.append(Label({ title: schema.name }));
           element.append(list);

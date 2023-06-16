@@ -18,6 +18,7 @@ module UsersTable
         t.datetime :reset_password_sent_at
         t.datetime :remember_created_at
         t.text :permissions
+        t.string :encrypted_password
       end
       add_index :users, :email,                unique: true
       add_index :users, :reset_password_token, unique: true

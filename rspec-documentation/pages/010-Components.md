@@ -9,7 +9,7 @@ All examples demonstrate how to use a component in a _Rails_ view. Every view re
 To use a component in your view, call (e.g.) `active_element.component.form` to render a [Form](components/form.html) component:
 
 ```erb
-<#= app/views/users/new.html.erb %>
+<%# app/views/users/new.html.erb %>
 
 <%= active_element.component.form model: User.new, fields: [:email, :name] %>
 ```

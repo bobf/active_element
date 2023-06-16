@@ -1,5 +1,7 @@
 <% if destroy %>
-  <%= active_element.component.destroy_button(record, float: 'end') %>
+  <div class="container w-100 text-end">
+    <%= active_element.component.destroy_button(record) %>
+  </div>
 <% end %>
 
 <% if modal %>

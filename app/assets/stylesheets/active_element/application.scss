@@ -5,6 +5,7 @@
 .navbar.application-menu {
   height: 5rem;
   transition: height 0.5s ease-in-out, background-position 0.8s ease-in-out;
+  background-color: #103427 !important;
   background-position: right 1.2rem center;
   background-repeat: no-repeat;
   z-index: 2000;
@@ -22,8 +23,9 @@
 }
 
 .main.content {
-  top: 10rem;
+  top: 7rem;
   position: relative;
+  padding-bottom: 3rem;
 }
 
 td.action-column {
@@ -73,16 +75,23 @@ form {
   }
 }
 
-.modal-dialog.modal-dialog-scrollable .modal-content {
+.modal-dialog.modal-dialog-scrollable.json-field-modal .modal-content {
   max-height: 80%;
   min-height: 80%;
   margin-top: 5rem;
 }
 
 .json-field {
+  ol.json-array-field {
+    margin-top: 1rem;
+  }
+
   ol {
     line-height: 2rem;
-    margin-top: 2.8rem;
+
+    &.array-of-objects {
+      margin-top: 2.8rem;
+    }
 
     ol {
       margin-top: 1rem;
@@ -93,11 +102,28 @@ form {
     margin-top: 0;
   }
 
+  li {
+    scroll-margin-top: 6rem;
+  }
+
   .form-group {
     padding: 1rem;
     background-color: #58575755;
   }
 
+  .form-check {
+    display: flex;
+    align-items: center;
+    margin-left: 1.25rem !important;
+
+    .form-check-input {
+      margin-top: 0;
+    }
+
+    .form-check-label {
+      margin-left: 0.4rem;
+    }
+  }
   .json-delete-object-button {
     // margin-top: 1rem;
     // margin-right: 1.8rem;

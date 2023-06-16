@@ -1,6 +1,6 @@
 # JSON
 
-The _JSON_ component provides a mechanism for converting _Ruby_ objects and storing them as _JSON_ within your _HTML_ so that it can be later accessed by any _Javascript_ code running in your application.
+The `json` component provides a mechanism for converting _Ruby_ objects and storing them as _JSON_ within your _HTML_ so that it can be later accessed by any _Javascript_ code running in your application.
 
 The implementation is simple but is intended to avoid repetition of serialization and ensures that all _JSON_ data you output is stored consistently in one location.
 

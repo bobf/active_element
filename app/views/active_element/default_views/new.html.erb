@@ -1,0 +1,4 @@
+<%= active_element.component.page_title record.model_name.to_s.titleize %>
+
+<%= active_element.component.form model: record,
+                                  fields: active_element.state.fetch(:editable_fields, []) %>

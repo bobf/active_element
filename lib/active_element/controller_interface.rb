@@ -5,7 +5,7 @@ module ActiveElement
   # Encapsulates core functionality such as `authenticate_with`, `permit_action`, and `component`
   # without polluting application controller namespace.
   class ControllerInterface
-    attr_reader :missing_template_store, :current_user
+    attr_reader :missing_template_store, :current_user, :assigned_editable_fields
 
     @state = {}
 
@@ -23,6 +23,18 @@ module ActiveElement
 
     def authorize?
       @authorize
+    end
+
+    def editable_fields(*args)
+      state[:editable_fields] = args.map(&:to_sym)
+    end
+
+    def viewable_fields(*args)
+      state[:viewable_fields] = args.map(&:to_sym)
+    end
+
+    def listable_fields(*args)
+      state[:listable_fields] = args.map(&:to_sym)
     end
 
     def application_name
@@ -66,16 +78,16 @@ module ActiveElement
       raise ArgumentError, 'Attempted to use ActiveElement component from a controller class method.'
     end
 
+    def state
+      self.class.state[controller_class]
+    end
+
     private
 
     attr_reader :controller_class, :controller_instance
 
     def initialize_state
       self.class.state[controller_class] ||= { permissions: [], authenticator: nil }
-    end
-
-    def state
-      self.class.state[controller_class]
     end
   end
 end

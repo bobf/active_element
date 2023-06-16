@@ -94,6 +94,7 @@ module ActiveElement
     end
 
     def default_class(collection, item, model_name)
+      return collection.model.name.underscore if collection.respond_to?(:model)
       return class_from_collection(collection, model_name) if collection.present?
 
       class_from_item(item, model_name)
