@@ -1,6 +1,10 @@
 [data-bs-theme="dark"] {
   .navbar.application-menu {
-    background-color: #15221d !important;
+    background-color: #15303a !important;
+  }
+
+  .dropdown-item:hover {
+    --bs-dropdown-link-hover-bg: #{$blue-700};
   }
 
   .flash.toast {
@@ -61,5 +65,22 @@
         }
       }
     }
+  }
+
+  .pagination {
+      .page-link {
+        --bs-pagination-active-bg: #505050;
+        --bs-pagination-active-color: #{darken($light, 10%)};
+      }
+      --bs-pagination-hover-color: #8e8c84;
+      --bs-pagination-focus-box-shadow: 0 0 0 0.25rem rgba(50, 93, 136, 0.25);
+      --bs-pagination-active-color: #333433;
+      --bs-pagination-active-bg: #626262;
+      --bs-pagination-bg: #{$dark};
+      --bs-pagination-disabled-bg: #464646;
+      --bs-pagination-border-color: #{$dark};
+      --bs-pagination-active-border-color: #{$dark};
+      --bs-pagination-disabled-color: #dfd7ca;
+      --bs-pagination-disabled-border-color: #000;
   }
 }

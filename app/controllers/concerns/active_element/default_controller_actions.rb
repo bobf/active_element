@@ -3,60 +3,31 @@ module ActiveElement
     extend ActiveSupport::Concern
 
     def index
-      render 'active_element/default_views/index', locals: { collection: model.all }
+      ActiveElement::DefaultController.new(controller: self).index
     end
 
     def show
-      render 'active_element/default_views/show', locals: { record: record }
+      ActiveElement::DefaultController.new(controller: self).show
     end
 
     def new
-      render 'active_element/default_views/new', locals: { record: model.new }
+      ActiveElement::DefaultController.new(controller: self).new
     end
 
     def create
-      if model.create(default_record_params)
-        flash.notice = "#{record.model_name} created successfully."
-        redirect_to record
-      else
-        flash.alert = "Failed to create #{model.name}."
-        render :new
-      end
+      ActiveElement::DefaultController.new(controller: self).create
     end
 
     def edit
-      render 'active_element/default_views/edit', locals: { record: record }
+      ActiveElement::DefaultController.new(controller: self).edit
     end
 
     def update
-      if record.update(default_record_params)
-        flash.notice = "#{record.model_name} updated successfully."
-        redirect_to record
-      else
-        flash.alert = "Failed to update #{model.name}."
-        render :edit
-      end
+      ActiveElement::DefaultController.new(controller: self).update
     end
 
     def destroy
-      record.destroy
-      flash.notice = "Deleted #{record.model_name}."
-      redirect_to model
-    end
-
-    private
-
-    def model
-      controller_name.classify.constantize
-    end
-
-    def record
-      @record ||= model.find(params[:id])
-    end
-
-    def default_record_params
-      params.require(record.model_name.singular)
-            .permit(active_element.state.fetch(:editable_fields, []))
+      ActiveElement::DefaultController.new(controller: self).destroy
     end
   end
 end

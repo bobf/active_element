@@ -61,7 +61,7 @@ module ActiveElement
       end
 
       def model
-        return collection.first.klass if collection.first.is_a?(ActiveRecord::Relation)
+        return collection.model if collection.is_a?(ActiveRecord::Relation)
 
         collection&.first.class.is_a?(ActiveModel::Naming) ? collection.first.class : nil
       end
@@ -115,6 +115,7 @@ module ActiveElement
       end
 
       def with_includes(collection)
+        return collection unless collection.respond_to?(:includes_values)
         return collection if collection.includes_values.present? || collection.select_values.present?
 
         collection.includes(fields.select { |field| collection.model.reflect_on_association(field).present? })

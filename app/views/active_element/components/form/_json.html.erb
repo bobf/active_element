@@ -15,6 +15,6 @@
 <%=
   active_element.component.json(
     ActiveElement::Components::Util.json_name("#{form.object_name}.#{field}"),
-    { data: component.value_for(field, options), schema: component.schema_for(field, options) }
+    { data: component.value_for(field, default: options), schema: component.schema_for(field, options) }
   )
 %>

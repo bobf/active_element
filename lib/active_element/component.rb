@@ -24,6 +24,10 @@ module ActiveElement
       render Components::PageDescription.new(controller, content: content)
     end
 
+    def navbar(**kwargs)
+      render Components::Navbar.new(controller, **kwargs)
+    end
+
     def show_button(record = nil, flag_or_options = true, **kwargs) # rubocop:disable Style/OptionalBooleanParameter
       render Components::Button.new(controller, record, flag_or_options, type: :show, **kwargs)
     end

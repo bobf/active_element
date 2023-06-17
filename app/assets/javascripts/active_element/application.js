@@ -10,3 +10,4 @@
 //= require active_element/pagination
 //= require active_element/toast
 //= require active_element/popover
+//= require active_element/timezones

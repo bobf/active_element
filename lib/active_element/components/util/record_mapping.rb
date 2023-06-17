@@ -56,17 +56,21 @@ module ActiveElement
           send("#{column.type}_value")
         end
 
-        def mapped_association_from_record
-          AssociationMapping.new(
-            component: component,
+        def association_mapping
+          @association_mapping ||= AssociationMapping.new(
+            controller: component.controller,
             field: field,
             record: record,
             associated_record: value_from_record,
             options: options
-          ).link_tag
+          )
         end
 
         # Override these methods as required in a class that includes this module:
+
+        def mapped_association_from_record
+          association_mapping.foreign_key_value
+        end
 
         def numeric_value
           value_from_record
@@ -122,6 +126,16 @@ module ActiveElement
 
         def geometry_value
           value_from_record
+        end
+
+        def timezone_offset
+          component.controller.request.cookies['timezone_offset'].to_i.minutes
+        end
+
+        def with_timezone_offset(val)
+          return val unless val.present?
+
+          val - timezone_offset
         end
       end
     end

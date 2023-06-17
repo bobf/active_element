@@ -34,13 +34,14 @@
       <div class="row mb-3 form-group sticky-top" style="top: 0.5rem;">
         <div class="col-sm-3"></div>
         <div class="col pb-3">
-          <%= form.submit submit_label, class: "btn btn-#{method == :post ? 'success' : 'primary'} float-end" %>
+          <%= form.submit submit_label, name: '', class: "btn btn-#{method == :post ? 'success' : 'primary'} ms-2 float-end" %>
+          <%= active_element.component.button 'Clear Form', class: 'btn-secondary float-end', data: { 'form-input-type': 'clear' } %>
         </div>
       </div>
     <% end %>
 
     <% fields.each_slice(columns) do |field_group| %>
-      <div class="row mb-3">
+      <div class="row form-fields mb-3">
         <% field_group.each do |field, type, options| %>
           <div class="col-sm-3">
             <%= render partial: 'active_element/components/form/label',
@@ -66,7 +67,8 @@
 
     <% if %i[bottom both].include?(submit_position) %>
       <div class="form-group">
-        <%= form.submit submit_label, class: "btn btn-#{method == :post ? 'success' : 'primary'}" %>
+        <%= form.submit submit_label, name: '', class: "btn btn-#{method == :post ? 'success' : 'primary'}" %>
+        <%= active_element.component.button 'Clear Form', class: 'btn-secondary ms-2', data: { 'form-input-type': 'clear' } %>
       </div>
     <% end %>
   <% end %>

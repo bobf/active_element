@@ -2,23 +2,23 @@
 @import "bootstrap";
 @import "dark";
 
-.navbar.application-menu {
-  height: 5rem;
-  transition: height 0.5s ease-in-out, background-position 0.8s ease-in-out;
-  background-color: #103427 !important;
-  background-position: right 1.2rem center;
-  background-repeat: no-repeat;
-  z-index: 2000;
+body {
+  overflow-y: scroll; // Prevent navbar from moving when scrollbar visible.
+}
 
-  &.shrink {
-    height: 3rem;
-    background-position: right -50rem center;
+.application-menu {
+  height: 5rem;
+  padding-left: 2rem;
+  top: 0;
+  transition: height 0.5s ease-in-out, background-position 0.8s ease-in-out;
+  background-color: #456060 !important;
+  z-index: 2000;
+  .dropdown-toggle::after {
+    color: #{$blue};
   }
 
-  &:hover {
-    height: 5rem;
-    background-position: right 1.2rem center;
-    background-repeat: no-repeat;
+  &.shrink {
+    height: 2.5rem;
   }
 }
 
@@ -257,11 +257,12 @@ form {
   }
 }
 
+.user-menu-icon {
+  font-size: 1.5rem;
+}
+
 #theme-select {
   font-size: 1.5rem;
-  padding: 0.2rem 0.8rem;
-  position: absolute;
-  right: 0;
 
   a {
     &.dark-theme {

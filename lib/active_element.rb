@@ -13,6 +13,7 @@ require_relative 'active_element/permissions_check'
 require_relative 'active_element/permissions_report'
 require_relative 'active_element/controller_interface'
 require_relative 'active_element/controller_action'
+require_relative 'active_element/default_controller'
 require_relative 'active_element/pre_render_processors'
 require_relative 'active_element/rails_component'
 require_relative 'active_element/route'
@@ -28,17 +29,16 @@ module ActiveElement
   class UnprotectedRouteError < Error; end
   class UnknownAttributeError < Error; end
 
+  @eager_loaded = {}
+
   class << self
     attr_writer :application_name, :navbar_items
+    attr_accessor :navbar_items
 
     include Paintbrush
 
     def application_title
       @application_name || RailsComponent.new(Rails).application_name.titleize
-    end
-
-    def navbar_items(user)
-      @navbar_items || inferred_navbar_items(user)
     end
 
     def warning(message)
@@ -47,19 +47,6 @@ module ActiveElement
 
     def log_tag
       paintbrush { cyan "[#{blue 'ActiveElement'}]" }
-    end
-
-    def active_path_class(user:, current_navbar_item:, current_path:, controller_path:, action_name:)
-      if ActiveMenuLink.new(
-        rails_component: RailsComponent.new(Rails),
-        navbar_items: navbar_items(user),
-        current_path: current_path,
-        current_navbar_item: current_navbar_item,
-        controller_path: controller_path,
-        action_name: action_name
-      ).active?
-        'active'
-      end
     end
 
     def json_pretty_print(json)
@@ -91,28 +78,15 @@ module ActiveElement
     end
 
     def eager_load(resource)
+      return if @eager_loaded[resource]
+
       suffix = resource == :controllers ? '_controller' : nil
       Rails.root.join("app/#{resource}").glob("**/*#{suffix}.rb").each { |path| require path }
+      @eager_loaded[resource] = true
     end
 
     def element_id
       "active-element-#{SecureRandom.uuid}"
-    end
-
-    private
-
-    def inferred_navbar_items(user)
-      eager_load_controllers
-      user_routes(user).available.select(&:primary?).map do |route|
-        { path: route.path, title: route.title, spec: route.spec }
-      end
-    end
-
-    def user_routes(user)
-      ActiveElement::Routes.new(
-        permissions: user&.permissions,
-        rails_component: ActiveElement::RailsComponent.new(Rails)
-      )
     end
   end
 end

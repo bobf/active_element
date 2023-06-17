@@ -3,10 +3,11 @@
 module ActiveElement
   module Components
     module Util
-      # Utility class for mapping an association to a linked URL (e.g. for displaying associations in a table).
+      # Utility class for mapping an association to a linked URL display value, (e.g. for
+      # displaying associations in a table, form, etc.).
       class AssociationMapping
-        def initialize(component:, field:, record:, associated_record:, options:)
-          @component = component
+        def initialize(controller:, field:, record:, associated_record:, options: {})
+          @controller = controller
           @field = field
           @record = record
           @associated_record = associated_record
@@ -17,17 +18,34 @@ module ActiveElement
           verify_display_attribute
           return display_value if associated_record_path.blank?
 
-          component.controller.helpers.link_to(display_value, associated_record_path)
+          controller.helpers.link_to(display_value, associated_record_path)
+        end
+
+        def foreign_key_value
+          record.public_send(foreign_key)
+        end
+
+        def foreign_key
+          record.class.reflect_on_association(field).foreign_key
+        end
+
+        def display_value(with_foreign_key: false)
+          return nil if display_field.nil?
+
+          value = associated_record.public_send(display_field)
+          return value unless with_foreign_key
+
+          "#{value} (#{foreign_key}: #{foreign_key_value})"
         end
 
         private
 
-        attr_reader :component, :field, :record, :associated_record, :options
+        attr_reader :controller, :field, :record, :associated_record, :options
 
         def associated_record_path
-          return nil unless component.controller.helpers.respond_to?(path_helper)
+          return nil unless controller.helpers.respond_to?(path_helper)
 
-          component.controller.helpers.public_send(path_helper, associated_record)
+          controller.helpers.public_send(path_helper, associated_record)
         end
 
         def verify_display_attribute
@@ -38,16 +56,12 @@ module ActiveElement
                 "`#{associated_record.class.name}.default_display_attribute`"
         end
 
-        def display_value
-          associated_record.public_send(display_field)
-        end
-
         def display_field
           @display_field ||= options.fetch(:attribute) do
             next associated_record.class.default_display_attribute if defined_display_attribute?
             next default_display_attribute if default_display_attribute.present?
 
-            associated_record.class.primary_key
+            associated_record&.class&.primary_key
           end
         end
 
@@ -56,7 +70,7 @@ module ActiveElement
         end
 
         def namespace
-          component.controller.class.name.deconstantize.underscore
+          controller.class.name.deconstantize.underscore
         end
 
         def resource_name

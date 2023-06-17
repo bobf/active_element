@@ -21,7 +21,17 @@
           <span class="ms-1"><%= value %></span>
         </div>
       <% end %>
-  <% elsif value.present? %>
+  <% elsif type == :datetime_range_field %>
+    <% next unless value.present? %>
+
+    <% values << value %>
+    <div class="d-inline me-3">
+      <span class="text-secondary"><%= options.fetch(:label) %>:</span>
+      <span class="ms-1 text-primary"><%= value[:from] %></span>
+      <span class="text-secondary">&rarr;</span>
+      <span class="ms-1 text-primary"><%= value[:to] %></span>
+    </div>
+  <% elsif value.class && value.present? %>
     <%# TODO: Handle other field types %>
 
     <% values << value %>

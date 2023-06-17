@@ -18,7 +18,7 @@ PATH
       bootstrap (~> 5.3.0alpha3)
       kaminari (~> 1.2)
       paintbrush (~> 0.1.2)
-      rails (~> 6.1)
+      rails
       rouge (~> 4.1)
       sassc (~> 2.4)
 

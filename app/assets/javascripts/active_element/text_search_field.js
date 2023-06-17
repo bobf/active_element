@@ -12,19 +12,18 @@
     }
   };
 
-  const getDisplayValue = ({ value, attributes }) => {
+  const getDisplayValue = ({ value, attributes, simplify = false }) => {
     if (attributes.length === 0) return value;
     if (attributes.length === 1 && attributes[0] === value) return value;
+    if (simplify) return attributes[0];
 
-    return `${attributes.join(', ')} (${value})`;
+    return attributes.join(', ');
   };
 
   const processResponse = ({
-    element, response, hiddenInput, spinner, clearButton, searchResultsContainer, responseErrorContainer
+    element, response, hiddenInput, spinner, searchResultsContainer, responseErrorContainer
   }) => {
     spinner.classList.add('invisible');
-    clearButton.classList.remove('invisible');
-
     if (response.ok) {
       response.json().then((json) => {
         if (json.request_id !== lastRequestId) {
@@ -44,8 +43,7 @@
           resultsItem.innerText = getDisplayValue({ value, attributes });
           resultsItem.addEventListener('click', () => {
             hiddenInput.value = value;
-            console.log(value, attributes);
-            element.value = getDisplayValue({ value, attributes });
+            element.value = getDisplayValue({ value, attributes, simplify: true });
             searchResultsContainer.replaceChildren();
             searchResultsContainer.classList.add('d-none');
           });
@@ -66,25 +64,16 @@
       const hiddenId = `${id}-hidden-value`;
       const formId = element.dataset.formId;
       const form = document.querySelector(`#${formId}`);
+      const hiddenInput = document.querySelector(`#${hiddenId}`);
       const model = element.dataset.searchModel;
       const attributes = tryParseJSON(element.dataset.searchAttributes, []);
       const value = element.dataset.searchValue;
       const token = ActiveElement.getAntiCsrfToken();
-      const hiddenInput = cloneElement('hidden-input');
       const responseErrorContainer = cloneElement('response-error');
       const searchResultsContainer = cloneElement('results');
       const spinner = cloneElement('spinner');
-      const clearButton = cloneElement('clear-button');
       document.addEventListener('click', () => {
         searchResultsContainer.classList.add('d-none');
-      });
-
-      clearButton.addEventListener('click', () => {
-        element.value = '';
-        hiddenInput.value = '';
-        responseErrorContainer.innerText = '';
-        spinner.classList.add('invisible');
-        clearButton.classList.add('invisible');
       });
 
       element.addEventListener('keyup', () => {
@@ -92,9 +81,7 @@
         const requestId = ActiveElement.getRequestId();
         lastRequestId = requestId;
 
-        clearButton.classList.add('invisible');
         spinner.classList.remove('invisible');
-        hiddenInput.value = query;
         searchResultsContainer.classList.add('d-none');
 
         if (!query || query.length < 3) {
@@ -121,15 +108,12 @@
             }),
           }
         ).then((response) => processResponse(
-          { element, response, spinner, clearButton, hiddenInput, searchResultsContainer, responseErrorContainer }
+          { element, response, spinner, hiddenInput, searchResultsContainer, responseErrorContainer }
         ));
       });
 
-      hiddenInput.name = element.name;
-      if (element.value) hiddenInput.value = element.value;
       form.append(hiddenInput);
       element.parentElement.append(searchResultsContainer);
-      element.parentElement.append(clearButton);
       element.parentElement.append(spinner);
       element.parentElement.append(responseErrorContainer);
     });

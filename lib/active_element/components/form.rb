@@ -10,7 +10,7 @@ module ActiveElement
       attr_reader :controller
 
       # rubocop:disable Metrics/MethodLength
-      def initialize(controller, fields:, submit:, item:, title: nil, destroy: false,
+      def initialize(controller, fields:, submit:, item:, title: nil, destroy: false, search: false,
                      modal: false, columns: 1, **kwargs)
         @controller = controller
         @fields = fields
@@ -21,6 +21,7 @@ module ActiveElement
         @modal = modal
         @kwargs = kwargs
         @columns = columns
+        @search = search
         @action = kwargs.delete(:action) { default_action }
         @method = kwargs.delete(:method) { default_method }.to_s.downcase.to_sym
       end
@@ -33,7 +34,7 @@ module ActiveElement
       def locals # rubocop:disable Metrics/MethodLength
         {
           component: self,
-          fields: Util::FormFieldMapping.new(record, fields, i18n).fields_with_types_and_options,
+          fields: form_field_mapping.fields_with_types_and_options,
           record: record,
           submit_label: submit_label,
           submit_position: submit_position,
@@ -91,10 +92,10 @@ module ActiveElement
         end&.first
       end
 
-      def value_for(field, default = nil)
-        return form_value_mapping_value(field) if record.class.is_a?(ActiveModel::Naming)
-        return default_record_value(field, default) if record.present? && record.respond_to?(field)
-        return item[field].presence || default if item.present?
+      def value_for(*field, default: nil)
+        return form_value_mapping_value(field.first) if record.class.is_a?(ActiveModel::Naming)
+        return default_record_value(field.first, default) if record.present? && record.respond_to?(field.first)
+        return field.reduce(item) { |hash, key| hash.fetch(key, {}) }.presence || default if item.present?
 
         default
       end
@@ -112,7 +113,7 @@ module ActiveElement
       end
 
       def value_for_json_array_field(field, schema_field, element_index = nil)
-        array = value_for(field, {}).fetch(schema_field[:name], [])
+        array = value_for(field, default: {}).fetch(schema_field[:name], [])
         return array if element_index.nil?
 
         array.fetch(element_index, nil)
@@ -131,7 +132,17 @@ module ActiveElement
       private
 
       attr_reader :fields, :submit, :title, :kwargs, :item, :method, :action,
-                  :destroy, :modal, :columns
+                  :destroy, :modal, :columns, :search
+
+      def form_field_mapping
+        @form_field_mapping ||= Util::FormFieldMapping.new(
+          record: record,
+          controller: controller,
+          fields: fields,
+          i18n: i18n,
+          search: search
+        )
+      end
 
       def valid_field?(field)
         return true if record.respond_to?("#{field}_changed?") && !record.public_send("#{field}_changed?")

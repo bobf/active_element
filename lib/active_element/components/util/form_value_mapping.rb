@@ -20,15 +20,15 @@ module ActiveElement
         end
 
         def datetime_value
-          value_from_record.strftime('%Y-%m-%d %H:%M:%S')
+          with_timezone_offset(value_from_record).strftime('%Y-%m-%d %H:%M:%S')
         end
 
         def time_value
-          value_from_record.strftime('%H:%M:%S')
+          with_timezone_offset(value_from_record).strftime('%H:%M:%S')
         end
 
         def date_value
-          value_from_record.strftime('%Y-%m-%d')
+          with_timezone_offset(value_from_record).strftime('%Y-%m-%d')
         end
 
         def boolean_value

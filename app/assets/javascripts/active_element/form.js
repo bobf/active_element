@@ -1,7 +1,7 @@
 (() => {
   const cloneElement = (id) => ActiveElement.cloneElement('form', id);
 
-  const initPopupButtons = () => {
+  const initModalButtons = () => {
     document.querySelectorAll('[data-field-type="form-modal"]').forEach((element) => {
       const formId = element.dataset.formId;
       const form = document.querySelector(`#${formId}`);
@@ -25,7 +25,21 @@
     });
   };
 
+  const initClearFormButtons = () => {
+    document.querySelectorAll('form').forEach((form) => {
+      form.querySelectorAll('[data-form-input-type="clear"]').forEach((clearFormButton) => {
+        clearFormButton.addEventListener('click', (ev) => {
+          ev.preventDefault();
+
+          form.querySelectorAll('.form-fields input, .form-fields select, .form-fields textarea')
+              .forEach((formInput) => formInput.value = '');
+        });
+      });
+    });
+  };
+
   window.addEventListener('DOMContentLoaded', () => {
-    initPopupButtons();
+    initModalButtons();
+    initClearFormButtons();
   });
 })();

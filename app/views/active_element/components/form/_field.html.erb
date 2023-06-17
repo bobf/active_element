@@ -16,6 +16,9 @@
 <% elsif type == :text_area %>
   <%= render partial: 'active_element/components/form/text_area',
              locals: { form_id: id, form: form, field: field, type: type, options: options, component: component } %>
+<% elsif type == :datetime_range_field %>
+  <%= render partial: 'active_element/components/form/datetime_range_field',
+             locals: { form_id: id, form: form, field: field, type: type, options: options, component: component } %>
 <% else %>
   <%= render partial: 'active_element/components/form/generic_field',
              locals: { form_id: id, form: form, field: field, type: type, options: options, component: component } %>

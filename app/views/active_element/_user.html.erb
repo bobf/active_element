@@ -1,0 +1,20 @@
+<li class="nav-item dropdown" style="list-style: none">
+  <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <i class="fa-solid fa-user text-primary user-menu-icon"></i>
+  </a>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <% if active_element.current_user.present? %>
+      <li class="dropdown-header">Signed in as <span class="text-primary"><%= active_element.current_user.email %></span></li>
+      <li><hr class="dropdown-divider"/></li>
+      <% if active_element.sign_in_path.present? %>
+        <li><%= link_to 'Sign Out', active_element.sign_out_path,
+                                    method: active_element.sign_out_method,
+                                    class: 'dropdown-item' %></li>
+      <% end %>
+    <% elsif active_element.sign_out_path.present? %>
+      <li><%= link_to 'Sign In', active_element.sign_in_path,
+                                 method: active_element.sign_in_method,
+                                 class: 'dropdown-item' %></li>
+    <% end %>
+  </ul>
+</li>

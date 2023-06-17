@@ -32,6 +32,10 @@ module ActiveElement
         (record.is_a?(Class) ? record.name : record.class.name).demodulize.underscore
       end
 
+      def self.relation_controller(model, relation)
+        "#{model.reflect_on_association(relation).klass.name.pluralize}Controller".safe_constantize
+      end
+
       def self.json_pretty_print(json)
         formatter = Rouge::Formatters::HTML.new
         lexer = Rouge::Lexers::JSON.new

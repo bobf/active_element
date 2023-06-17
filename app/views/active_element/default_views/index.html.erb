@@ -1,8 +1,15 @@
-<%= active_element.component.page_title controller_name.titleize %>
+<% if active_element.state.key?(:searchable_fields) %>
+  <%= active_element.component.form title: 'Search Filters',
+                                    submit: 'Search',
+                                    modal: true,
+                                    search: true,
+                                    item: search_filters,
+                                    fields: active_element.state.fetch(:searchable_fields) %>
+<% end %>
 
-<%= active_element.component.table collection: collection,
-                                   new: true,
+<%= active_element.component.table new: true,
                                    show: true,
                                    edit: true,
                                    destroy: true,
+                                   collection: collection,
                                    fields: active_element.state.fetch(:listable_fields, []) %>

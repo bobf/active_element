@@ -25,16 +25,20 @@ module ActiveElement
       @authorize
     end
 
-    def editable_fields(*args)
-      state[:editable_fields] = args.map(&:to_sym)
+    def listable_fields(*args)
+      state[:listable_fields] = args.map(&:to_sym)
     end
 
     def viewable_fields(*args)
       state[:viewable_fields] = args.map(&:to_sym)
     end
 
-    def listable_fields(*args)
-      state[:listable_fields] = args.map(&:to_sym)
+    def editable_fields(*args)
+      state[:editable_fields] = args.map(&:to_sym)
+    end
+
+    def searchable_fields(*args)
+      state[:searchable_fields] = args.map(&:to_sym)
     end
 
     def application_name
@@ -48,6 +52,32 @@ module ActiveElement
     def authorize_with(&block)
       @authorize = true
       state[:authorizor] = block
+    end
+
+    def sign_out_with(method: :get, &block)
+      state[:sign_out_method] = method
+      state[:sign_out_path] = block
+    end
+
+    def sign_out_path
+      state[:sign_out_path]&.call
+    end
+
+    def sign_out_method
+      state[:sign_out_method]
+    end
+
+    def sign_in_with(method: :get, &block)
+      state[:sign_in_method] = method
+      state[:sign_in_path] = block
+    end
+
+    def sign_in_path
+      state[:sign_in_path]&.call
+    end
+
+    def sign_in_method
+      state[:sign_in_method]
     end
 
     def authenticate
