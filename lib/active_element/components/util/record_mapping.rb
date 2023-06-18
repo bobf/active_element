@@ -133,7 +133,7 @@ module ActiveElement
         end
 
         def with_timezone_offset(val)
-          return val unless val.present?
+          return val if val.blank?
 
           val - timezone_offset
         end

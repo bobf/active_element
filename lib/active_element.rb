@@ -14,6 +14,8 @@ require_relative 'active_element/permissions_report'
 require_relative 'active_element/controller_interface'
 require_relative 'active_element/controller_action'
 require_relative 'active_element/default_controller'
+require_relative 'active_element/default_record_params'
+require_relative 'active_element/default_text_search'
 require_relative 'active_element/pre_render_processors'
 require_relative 'active_element/rails_component'
 require_relative 'active_element/route'
@@ -32,7 +34,7 @@ module ActiveElement
   @eager_loaded = {}
 
   class << self
-    attr_writer :application_name, :navbar_items
+    attr_writer :application_name
     attr_accessor :navbar_items
 
     include Paintbrush

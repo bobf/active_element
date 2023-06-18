@@ -22,11 +22,11 @@ Click the **Rendered Output** tab to see it in action:
 ```rspec:html
 let(:user) do
   User.new(
-      email: 'user@example.com',
-      pets: [
-        { animal: 'Cat', name: 'Hercules', favorite_foods: ['Plants', 'Biscuits'] },
-        { animal: 'Dog', name: 'Samson' }
-      ]
+    email: 'user@example.com',
+    pets: [
+      { animal: 'Cat', name: 'Hercules', favorite_foods: ['Plants', 'Biscuits'] },
+      { animal: 'Dog', name: 'Samson' }
+    ]
   )
 end
 

@@ -100,9 +100,13 @@ module ActiveElement
       def value_for(*field, default: nil)
         return form_value_mapping_value(field.first) if record.class.is_a?(ActiveModel::Naming)
         return default_record_value(field.first, default) if record.present? && record.respond_to?(field.first)
-        return field.reduce(item) { |hash, key| hash.fetch(key, {}) }.presence || default if item.present?
+        return nested_value(field).presence || default if item.present?
 
         default
+      end
+
+      def nested_value(field)
+        field.reduce(item) { |hash, key| hash.fetch(key, {}) }
       end
 
       def form_value_mapping_value(field)

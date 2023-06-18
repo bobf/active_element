@@ -11,14 +11,7 @@
             <%=
               link_to navbar_item.fetch(:title) { navbar_item.fetch(:label) },
                       navbar_item.fetch(:path),
-                      class: "nav-link #{
-                        component.active_path_class(
-                          user: active_element.current_user,
-                          current_navbar_item: navbar_item,
-                          current_path: request.path,
-                          controller_path: controller_path,
-                          action_name: action_name)
-                      }"
+                      class: "nav-link #{component.active_path_class(current_navbar_item: navbar_item)}"
             %>
           </li>
         <% end %>

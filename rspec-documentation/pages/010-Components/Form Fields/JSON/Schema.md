@@ -63,7 +63,7 @@ We'll use the schema from the previous example as well and create two separate `
 
 ```rspec:html
 subject do
-  active_element.component.form model: User.new(nicknames: ["Buster", "Coffee Guy"]),
+  active_element.component.form model: User.new(nicknames: ['Buster', 'Coffee Guy']),
                                 fields: [:email, :permissions, :nicknames]
 end
 

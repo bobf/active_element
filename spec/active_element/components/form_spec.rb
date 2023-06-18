@@ -19,7 +19,7 @@ RSpec.describe ActiveElement::Components::Form do
   let(:helpers) { double }
 
   before do
-    allow(helpers).to receive(:'r_spec/mocks_examples_path') { '/examples' }
+    allow(helpers).to receive(:'r_spec/mocks_examples_path').and_return('/examples')
   end
 
   it { is_expected.to be_a described_class }
@@ -66,7 +66,7 @@ RSpec.describe ActiveElement::Components::Form do
         ]
       end
 
-      its([:fields]) do
+      its([:fields]) do # rubocop:disable RSpec/ExampleLength
         is_expected.to eql [
           [:name, :text_field, {
             description: 'Description', label: 'Name', placeholder: 'Placeholder', required: false
@@ -160,7 +160,7 @@ RSpec.describe ActiveElement::Components::Form do
       it { is_expected.to eql [%w[option1 value1], %w[option2 value2]] }
     end
 
-    context 'with field and inferred options' do
+    context 'with field and inferred options' do # rubocop:disable RSpec/MultipleMemoizedHelpers
       let(:field) { :name }
       let(:field_options) { {} }
       let(:kwargs) { { model: model } }

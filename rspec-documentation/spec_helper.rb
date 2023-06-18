@@ -1,14 +1,16 @@
+# frozen_string_literal: true
+
 require 'active_element'
 require_relative 'dummy/config/environment'
 require_relative 'support'
 
-RSpec::Documentation.configure do |config|
-  active_element = OpenStruct.new(component: ActiveElement::Component.new(UsersController.new))
+RSpec::Documentation.configure do |config| # rubocop:disable Metrics/BlockLength
+  active_element = Struct.new(:component).new(ActiveElement::Component.new(UsersController.new))
   application_css = Rails.application
                          .assets
                          .find_asset('active_element/application.css')
                          .source.split("\n")
-                         .drop_while { |line| !line.include?('app/assets/stylesheets/active_element') }
+                         .drop_while { |line| line.exclude?('app/assets/stylesheets/active_element') }
                          .join("\n")
   text_search_names = 1000.times.map do
     first_name = Faker::Name.first_name

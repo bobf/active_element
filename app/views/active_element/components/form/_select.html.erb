@@ -1,5 +1,7 @@
 <%= form.select field,
                 component.options_for_select(field, options),
-                tabindex: component.tabindex,
                 { selected: component.value_for(field) },
-                { class: "form-select #{component.valid?(field) ? nil : 'is-invalid'}" } %>
+                {
+                  tabindex: component.tabindex,
+                  class: "form-select #{component.valid?(field) ? nil : 'is-invalid'}"
+                } %>

@@ -26,14 +26,14 @@ module ActiveElement
         }
       end
 
-      def active_path_class(user:, current_navbar_item:, current_path:, controller_path:, action_name:)
+      def active_path_class(current_navbar_item:)
         if ActiveMenuLink.new(
           rails_component: RailsComponent.new(Rails),
           navbar_items: items,
-          current_path: current_path,
+          current_path: controller.request.path,
           current_navbar_item: current_navbar_item,
-          controller_path: controller_path,
-          action_name: action_name
+          controller_path: controller.controller_path,
+          action_name: controller.action_name
         ).active?
           'active'
         end

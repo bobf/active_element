@@ -1,11 +1,11 @@
 PATH
   remote: ..
   specs:
-    active_element (0.0.10)
+    active_element (0.0.11)
       bootstrap (~> 5.3.0alpha3)
       kaminari (~> 1.2)
       paintbrush (~> 0.1.2)
-      rails
+      rails (>= 6.0)
       rouge (~> 4.1)
       sassc (~> 2.4)
 

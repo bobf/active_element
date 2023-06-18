@@ -17,6 +17,10 @@ module ActiveElement
         def register_authorized_text_search(model:, with:, providing:)
           authorized_text_searches << [model, with, providing]
         end
+
+        def text_search_options(model:, with:, providing:)
+          { search: { model: model.name.underscore, with: with, providing: providing } }
+        end
       end
     end
   end

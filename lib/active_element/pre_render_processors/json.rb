@@ -28,12 +28,14 @@ module ActiveElement
           *nested_keys, field_key = field.split('.')
           param = nested_keys.reduce(permitted_params) { |params, key| params[key] }
           schema = schema_for(nested_keys + [field_key])
-          param[field_key] = if value == ''
-                               { 'array' => [], 'object' => {} }.fetch(schema['type'])
-                             else
-                               coerced_value(JSON.parse(value), schema: schema)
-                             end
+          param[field_key] = coerced_with_default(value, schema)
         end
+      end
+
+      def coerced_with_default(value, schema)
+        return coerced_value(JSON.parse(value), schema: schema) unless value == ''
+
+        { 'array' => [], 'object' => {} }.fetch(schema['type'])
       end
 
       def delete_meta_params
@@ -59,6 +61,7 @@ module ActiveElement
         @permitted_params ||= controller.params.permit!.to_h
       end
 
+      # rubocop:disable Metrics/AbcSize, Metrics/CyclomaticComplexity, Metrics/MethodLength
       def coerced_value(val, schema:)
         return val if val.nil?
 
@@ -81,6 +84,7 @@ module ActiveElement
           Date.parse(val)
         end
       end
+      # rubocop:enable Metrics/AbcSize, Metrics/CyclomaticComplexity, Metrics/MethodLength
 
       def schema_for(path)
         JSON.parse(path.reduce(permitted_params['__json_field_schemas']) { |schema, key| schema[key] })

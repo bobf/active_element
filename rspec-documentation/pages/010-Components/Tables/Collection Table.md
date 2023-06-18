@@ -13,7 +13,7 @@ collection = [
   User.new(name: 'John', email: 'john@example.com', enabled: true),
   User.new(name: 'Jane', email: 'jane@example.org', enabled: false),
   User.new(name: 'Peter', email: 'peter@example.org', enabled: false),
-  User.new(name: 'Sally', email: 'sally@example.org', enabled: true),
+  User.new(name: 'Sally', email: 'sally@example.org', enabled: true)
 ]
 
 subject do

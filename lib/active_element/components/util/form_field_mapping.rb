@@ -4,7 +4,7 @@ module ActiveElement
   module Components
     module Util
       # Normalizes Form `fields` parameter from various supported input formats.
-      class FormFieldMapping
+      class FormFieldMapping # rubocop:disable Metrics/ClassLength
         include SecretFields
         include PhoneFields
         include EmailFields
@@ -93,14 +93,14 @@ module ActiveElement
           record_name = Util.record_name(record)
           return nil if record_name.blank?
 
-          Rails.root.join('config/forms').join(record_name, "#{field}.yml")
+          Rails.root.join('config/forms', record_name, "#{field}.yml")
         end
 
         def sti_record_field_configuration_path(field)
           sti_record_name = Util.sti_record_name(record)
           return nil if sti_record_name.blank?
 
-          Rails.root.join('config/forms').join(sti_record_name, "#{field}.yml")
+          Rails.root.join('config/forms', sti_record_name, "#{field}.yml")
         end
 
         def default_type_from_model(field)
@@ -128,23 +128,20 @@ module ActiveElement
 
         def relation_text_search_field(field)
           relation_model = relation(field).klass
-          relation_record = record.public_send(field)
-          searchable_fields = Util.relation_controller(model, controller, field)
-                                  .active_element
-                                  .state
-                                  .fetch(:searchable_fields, [])
-          [
-            field,
-            :text_search_field,
-            {
-              search: {
-                model: relation_model.name.underscore,
-                with: searchable_fields,
-                providing: relation_model.primary_key
-              },
-              display_value: association_mapping(field).display_value
-            }
-          ]
+          record.public_send(field)
+          [field, :text_search_field,
+           TextSearch.text_search_options(
+             model: relation_model,
+             with: searchable_fields(field),
+             providing: relation_model.primary_key
+           ).merge({ display_value: association_mapping(field).display_value })]
+        end
+
+        def searchable_fields(field)
+          Util.relation_controller(model, controller, field)
+              .active_element
+              .state
+              .fetch(:searchable_fields, [])
         end
 
         def default_type_from_column_type(field, column_type) # rubocop:disable Metrics/MethodLength

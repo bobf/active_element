@@ -35,7 +35,11 @@ You can also pass a third element to the array to specify any options you want t
 ```rspec:html
 subject do
   active_element.component.form model: User.new,
-                                fields: [:email, :name, [:date_of_birth, :text_field, { class: 'form-control my-class' }]]
+                                fields: [
+                                  :email,
+                                  :name,
+                                  [:date_of_birth, :text_field, { class: 'form-control my-class' }]
+                                ]
 end
 
 it { is_expected.to include 'class="form-control my-class"' }

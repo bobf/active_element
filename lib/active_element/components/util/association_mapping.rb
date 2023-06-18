@@ -20,7 +20,7 @@ module ActiveElement
           return link_to(associated_record) if single_association?
         end
 
-        def relation_id
+        def relation_id # rubocop:disable Metrics/CyclomaticComplexity
           case relation.macro
           when :has_one
             associated_record&.public_send(relation_key)
@@ -111,7 +111,7 @@ module ActiveElement
         end
 
         def single_association?
-          [:has_one, :belongs_to].include?(relation.macro)
+          %i[has_one belongs_to].include?(relation.macro)
         end
 
         def multiple_association?

@@ -1,4 +1,9 @@
+# frozen_string_literal: true
+
 module ActiveElement
+  # Default Rails actions to be performed if not defined by a controller, allows developers to
+  # define a controller and have basic boilerplate for typical functionality which can be
+  # overridden and customized as needed.
   module DefaultControllerActions
     extend ActiveSupport::Concern
 

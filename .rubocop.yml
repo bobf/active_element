@@ -9,8 +9,9 @@ AllCops:
   NewCops: enable
   Exclude:
   - 'bin/**/*'
-  - 'spec/dummy/bin/**/*'
   - 'rspec-documentation/dummy/**/*'
+  - 'example_app/**/*'
+  - 'spec/dummy/**/*'
 
 RSpec/MultipleMemoizedHelpers:
   Max: 8
@@ -19,3 +20,11 @@ Metrics/ParameterLists:
   Exclude:
   - 'lib/active_element/components/**/*.rb'
   - 'lib/active_element/active_element_component.rb'
+
+Style/SymbolArray:
+  Exclude:
+  - 'rspec-documentation/pages/**/*.md'
+
+Style/Style/WordArray:
+  Exclude:
+  - 'rspec-documentation/pages/**/*.md'
