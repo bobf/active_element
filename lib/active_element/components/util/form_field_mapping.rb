@@ -136,7 +136,8 @@ module ActiveElement
         end
 
         def searchable_fields(field)
-          Util.relation_controller(model, controller, field)&.active_element&.state&.searchable_fields || []
+          (Util.relation_controller(model, controller, field)&.active_element&.state&.searchable_fields || [])
+            .reject { |field| field.to_s.end_with?('_at') } # FIXME: Select strings/numbers only.
         end
 
         def relation_primary_key(field)

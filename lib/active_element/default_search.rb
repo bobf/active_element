@@ -66,7 +66,7 @@ module ActiveElement
       value[:from].present? ? Time.zone.parse(value[:from]) + timezone_offset : -Float::INFINITY
     end
 
-    def range_end
+    def range_end(value)
       value[:to].present? ? Time.zone.parse(value[:to]) + timezone_offset : Float::INFINITY
     end
 

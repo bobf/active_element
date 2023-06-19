@@ -21,8 +21,14 @@ module ActiveElement
         def text_search_options(model:, with:, providing:)
           {
             search: { model: model.name.underscore, with: with, providing: providing },
-            placeholder: "Search for #{model.name.titleize} by #{Array(with).compact.join(', ')}..."
+            placeholder: "Search for #{model.name.titleize} by #{humanized_names(with).join(', ')}..."
           }
+        end
+
+        private
+
+        def humanized_names(names)
+          Array(names).compact.map.map(&:to_s).map(&:humanize)
         end
       end
     end
