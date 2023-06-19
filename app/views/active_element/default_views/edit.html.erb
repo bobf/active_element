@@ -1,5 +1,5 @@
 <%= active_element.component.page_title record.model_name.to_s.titleize %>
 
 <%= active_element.component.form model: [namespace, record].compact,
-                                  destroy: true,
-                                  fields: active_element.state.fetch(:editable_fields, []) %>
+                                  destroy: active_element.state.deletable?,
+                                  fields: active_element.state.editable_fields %>

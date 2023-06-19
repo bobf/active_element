@@ -19,7 +19,10 @@ module ActiveElement
         end
 
         def text_search_options(model:, with:, providing:)
-          { search: { model: model.name.underscore, with: with, providing: providing } }
+          {
+            search: { model: model.name.underscore, with: with, providing: providing },
+            placeholder: "Search for #{model.name.titleize} by #{Array(with).compact.join(', ')}..."
+          }
         end
       end
     end

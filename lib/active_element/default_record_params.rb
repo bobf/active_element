@@ -12,7 +12,7 @@ module ActiveElement
     def params
       with_transformed_relations(
         controller.params.require(controller.controller_name.singularize)
-                  .permit(controller.active_element.state.fetch(:editable_fields, []))
+                  .permit(controller.active_element.state.editable_fields)
       )
     end
 

@@ -127,21 +127,20 @@ module ActiveElement
         end
 
         def relation_text_search_field(field)
-          relation_model = relation(field).klass
-          record.public_send(field)
           [field, :text_search_field,
            TextSearch.text_search_options(
-             model: relation_model,
+             model: relation(field).klass,
              with: searchable_fields(field),
-             providing: relation_model.primary_key
-           ).merge({ display_value: association_mapping(field).display_value })]
+             providing: relation(field).klass.primary_key
+           ).merge({ display_value: association_mapping(field).display_value, label: i18n.label(field) })]
         end
 
         def searchable_fields(field)
-          Util.relation_controller(model, controller, field)
-              .active_element
-              .state
-              .fetch(:searchable_fields, [])
+          Util.relation_controller(model, controller, field)&.active_element&.state&.searchable_fields || []
+        end
+
+        def relation_primary_key(field)
+          relation(field).options.fetch(:primary_key) { relation_model.primary_key }
         end
 
         def default_type_from_column_type(field, column_type) # rubocop:disable Metrics/MethodLength
@@ -204,7 +203,9 @@ module ActiveElement
         end
 
         def default_options(field)
-          { required: required?(field) }
+          {
+            required: required?(field)
+          }.merge(field_options(field))
         end
 
         def required?(field)
@@ -214,6 +215,16 @@ module ActiveElement
           record.class.validators.find do |validator|
             validator.kind == :presence && validator.attributes.include?(field.to_sym)
           end
+        end
+
+        def field_options(field)
+          return NumericField.new(field: field, column: column(field)).options if numeric?(field)
+
+          {}
+        end
+
+        def numeric?(field)
+          %i[float decimal integer].include?(column(field)&.type)
         end
       end
     end

@@ -1,9 +1,10 @@
 # frozen_string_literal: true
 
 module ActiveElement
-  # Full text search querying for DefaultController, provides full text search filters for all
-  # controllers with configured searchable fields. Includes support for querying across relations.
-  class DefaultTextSearch
+  # Full text search and datetime querying for DefaultController, provides full text search
+  # filters for all controllers with configured searchable fields. Includes support for querying
+  # across relations.
+  class DefaultSearch
     def initialize(controller:, model:)
       @controller = controller
       @model = model
@@ -40,8 +41,7 @@ module ActiveElement
     attr_reader :controller, :model
 
     def searchable_fields
-      base_fields = controller.active_element.state.fetch(:searchable_fields, [])
-      base_fields.map do |field|
+      controller.active_element.state.searchable_fields.map do |field|
         next field unless field.to_s.end_with?('_at')
 
         { field => %i[from to] }

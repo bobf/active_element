@@ -71,7 +71,16 @@
       const token = ActiveElement.getAntiCsrfToken();
       const responseErrorContainer = cloneElement('response-error');
       const searchResultsContainer = cloneElement('results');
-      const spinner = cloneElement('spinner');
+      const icons = cloneElement('icons');
+      const spinner = icons.querySelector('[data-item-class="spinner"]');
+      const clearButton = icons.querySelector('[data-item-class="clear"]');
+
+      if (element.value) clearButton.classList.remove('invisible');
+      clearButton.addEventListener('click', () => {
+        element.value = '';
+        hiddenInput.value = '';
+        clearButton.classList.add('invisible');
+      });
 
       document.addEventListener('click', () => {
         searchResultsContainer.classList.add('d-none');
@@ -79,6 +88,7 @@
 
       element.addEventListener('change', () => {
         hiddenInput.value = element.value;
+        if (element.value) clearButton.classList.remove('invisible');
       });
 
       element.addEventListener('keyup', () => {
@@ -87,6 +97,7 @@
         lastRequestId = requestId;
 
         spinner.classList.remove('invisible');
+        if (element.value) clearButton.classList.remove('invisible');
         searchResultsContainer.classList.add('d-none');
 
         if (!query || query.length < 3) {
@@ -119,6 +130,7 @@
 
       form.append(hiddenInput);
       element.parentElement.append(searchResultsContainer);
+      element.parentElement.append(clearButton);
       element.parentElement.append(spinner);
       element.parentElement.append(responseErrorContainer);
     });

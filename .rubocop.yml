@@ -25,6 +25,6 @@ Style/SymbolArray:
   Exclude:
   - 'rspec-documentation/pages/**/*.md'
 
-Style/Style/WordArray:
+Style/WordArray:
   Exclude:
   - 'rspec-documentation/pages/**/*.md'

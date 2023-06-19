@@ -16,7 +16,7 @@ module ActiveElement
     def initialize(controller_class, controller_instance = nil)
       @controller_class = controller_class
       @controller_instance = controller_instance
-      initialize_state
+      initialize_state(controller_class)
       @missing_template_store = {}
       @authorize = false
     end
@@ -26,19 +26,23 @@ module ActiveElement
     end
 
     def listable_fields(*args)
-      state[:listable_fields] = args.map(&:to_sym)
+      state.listable_fields.concat(args.map(&:to_sym)).uniq!
     end
 
     def viewable_fields(*args)
-      state[:viewable_fields] = args.map(&:to_sym)
+      state.viewable_fields.concat(args.map(&:to_sym)).uniq!
     end
 
     def editable_fields(*args)
-      state[:editable_fields] = args.map(&:to_sym)
+      state.editable_fields.concat(args.map(&:to_sym)).uniq!
     end
 
     def searchable_fields(*args)
-      state[:searchable_fields] = args.map(&:to_sym)
+      state.searchable_fields.concat(args.map(&:to_sym)).uniq!
+    end
+
+    def deletable
+      state.deletable = true
     end
 
     def application_name
@@ -46,43 +50,39 @@ module ActiveElement
     end
 
     def authenticate_with(&block)
-      state[:authenticator] = block
+      state.authenticator = block
     end
 
     def authorize_with(&block)
       @authorize = true
-      state[:authorizor] = block
+      state.authorizor = block
     end
 
     def sign_out_with(method: :get, &block)
-      state[:sign_out_method] = method
-      state[:sign_out_path] = block
+      state.sign_out_method = method
+      state.sign_out_path = block
     end
 
     def sign_out_path
-      state[:sign_out_path]&.call
+      state.sign_out_path&.call
     end
 
-    def sign_out_method
-      state[:sign_out_method]
-    end
+    delegate :sign_out_method, to: :state
 
     def sign_in_with(method: :get, &block)
-      state[:sign_in_method] = method
-      state[:sign_in_path] = block
+      state.sign_in_method = method
+      state.sign_in_path = block
     end
 
     def sign_in_path
-      state[:sign_in_path]&.call
+      state.sign_in_path&.call
     end
 
-    def sign_in_method
-      state[:sign_in_method]
-    end
+    delegate :sign_in_method, to: :state
 
     def authenticate
       authenticator&.call
-      @current_user = state[:authorizor]&.call
+      @current_user = state.authorizor&.call
 
       nil
     end
@@ -91,16 +91,12 @@ module ActiveElement
       raise ArgumentError, "Must specify `with: '<permission>'` or `always: true`" unless with.present? || always
       raise ArgumentError, 'Cannot specify both `with` and `always: true`' if with.present? && always
 
-      state[:permissions] << { with: with, always: always, action: action }
+      state.permissions << { with: with, always: always, action: action }
     end
 
-    def authenticator
-      state[:authenticator]
-    end
+    delegate :authenticator, to: :state
 
-    def permissions
-      state.fetch(:permissions)
-    end
+    delegate :permissions, to: :state
 
     def component
       return (@component ||= ActiveElement::Component.new(controller_instance)) unless controller_instance.nil?
@@ -116,8 +112,8 @@ module ActiveElement
 
     attr_reader :controller_class, :controller_instance
 
-    def initialize_state
-      self.class.state[controller_class] ||= { permissions: [], authenticator: nil }
+    def initialize_state(key)
+      self.class.state[key] ||= ControllerState.new(controller: controller_instance)
     end
   end
 end

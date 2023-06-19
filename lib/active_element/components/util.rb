@@ -9,6 +9,7 @@ require_relative 'util/form_value_mapping'
 require_relative 'util/display_value_mapping'
 require_relative 'util/association_mapping'
 require_relative 'util/decorator'
+require_relative 'util/numeric_field'
 
 module ActiveElement
   module Components

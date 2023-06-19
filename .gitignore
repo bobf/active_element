@@ -18,3 +18,5 @@
 TODO.md
 
 /rspec-documentation/bundle/
+/example_app/log/*
+/example_app/tmp/*

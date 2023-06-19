@@ -18,8 +18,8 @@
     <input id="json-time-field-template" type="time" class="form-control m-1 d-inline-block json-time-field" />
     <input id="json-datetime-field-template" type="datetime-local" class="form-control m-1 d-inline-block json-datetime-field" />
     <input id="json-integer-field-template" type="number" class="form-control m-1 json-integer-field" />
-    <input id="json-float-field-template" type="number" class="form-control m-1 json-float-field" />
-    <input id="json-decimal-field-template" type="number" class="form-control m-1 json-decimal-field" />
+    <input id="json-float-field-template" type="number" step="any" class="form-control m-1 json-float-field" />
+    <input id="json-decimal-field-template" type="number" step="any" class="form-control m-1 json-decimal-field" />
 
     <select id="json-select-template" class="form-select m-1 json-select-field"></select>
 
@@ -65,9 +65,12 @@
     <p id="form-search-field-response-error-template" class="text-danger validation-error-message pt-1 m-0"></p>
     <div id="form-search-field-results-template" class="search-field-results d-none border border-top-0"></div>
     <div id="form-search-field-results-item-template" class="search-field-result p-2"></div>
-    <div id="form-search-field-spinner-template" class="invisible text-end">
-      <div style="position: relative; float: right; width: auto; right: 0.5rem; top: -1.7rem;">
-        <i class="fa-solid fa-spinner fa-spin"></i>
+    <div id="form-search-field-icons-template" class="text-end">
+      <div data-item-class="spinner" class="invisible" style="position: relative; float: right; width: auto; right: 0.5rem; top: -1.7rem;">
+        <i class="fa-fw fa-solid fa-spinner fa-spin"></i>
+      </div>
+      <div data-item-class="clear" class="invisible" style="position: relative; float: right; width: auto; right: 0.5rem; top: -1.7rem; cursor: pointer;">
+        <i class="fa-solid fa-fw fa-xmark"></i>
       </div>
     </div>
   </div>

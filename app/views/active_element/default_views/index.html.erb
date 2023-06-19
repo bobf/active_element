@@ -1,15 +1,15 @@
-<% if active_element.state.key?(:searchable_fields) %>
+<% if active_element.state.searchable_fields.present? %>
   <%= active_element.component.form title: 'Search Filters',
                                     submit: 'Search',
                                     modal: true,
                                     search: true,
                                     item: search_filters,
-                                    fields: active_element.state.fetch(:searchable_fields) %>
+                                    fields: active_element.state.searchable_fields %>
 <% end %>
 
-<%= active_element.component.table new: true,
-                                   show: true,
-                                   edit: true,
-                                   destroy: true,
+<%= active_element.component.table new: active_element.state.creatable?,
+                                   show: active_element.state.viewable?,
+                                   edit: active_element.state.editable?,
+                                   destroy: active_element.state.deletable?,
                                    collection: collection,
-                                   fields: active_element.state.fetch(:listable_fields, []) %>
+                                   fields: active_element.state.listable_fields %>
