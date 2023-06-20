@@ -26,3 +26,10 @@
   <%= render partial: 'active_element/components/form/option_groups_summary',
              locals: { option_groups: options[:option_groups] } %>
 <% end %>
+
+<% if type == :json_field %>
+  <div>
+  <%= render partial: 'active_element/components/fields/json',
+             locals: { value: component.value_for(field), field_id: "#{id}-#{field}-json-view" } %>
+  </div>
+<% end %>

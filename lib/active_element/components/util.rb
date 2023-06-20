@@ -41,6 +41,13 @@ module ActiveElement
         "#{namespace.classify}::#{base}".safe_constantize || base.safe_constantize
       end
 
+      def self.json_schema(model:, field:)
+        YAML.safe_load(
+          Rails.root.join("config/forms/#{model.name.underscore}/#{field}.yml").read,
+          symbolize_names: true
+        )
+      end
+
       def self.json_pretty_print(json)
         formatter = Rouge::Formatters::HTML.new
         lexer = Rouge::Lexers::JSON.new

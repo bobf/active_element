@@ -12,7 +12,7 @@ module ActiveElement
     def params
       with_transformed_relations(
         controller.params.require(controller.controller_name.singularize)
-                  .permit(controller.active_element.state.editable_fields)
+                  .permit(permitted_fields)
       )
     end
 
@@ -26,6 +26,34 @@ module ActiveElement
 
         relation_param(key, value)
       end
+    end
+
+    def permitted_fields
+      scalar, json = controller.active_element.state.editable_fields.partition do |field|
+        scalar?(field)
+      end
+      scalar + [json.to_h { |key| [key, json_permission(key)] }]
+    end
+
+    def scalar?(field)
+      return true if relation?(field)
+      return true if [:json, :jsonb].exclude?(column(field)&.type)
+
+      false
+    end
+
+    def json_permission(field)
+      schema = ActiveElement::Components::Util.json_schema(model: model, field: field)
+      return {} if schema[:type] == 'object'
+      return array_permission(schema) if schema[:type] == 'array'
+
+      raise ArgumentError, "Expected `object` or `array` schema type, got: #{schema[:type].inspect}"
+    end
+
+    def array_permission(schema)
+      return [] unless schema.dig(:shape, :type) == 'object'
+
+      schema.dig(:shape, :shape, :fields).pluck(:name)
     end
 
     def relation_param(key, value)
@@ -57,6 +85,10 @@ module ActiveElement
 
     def relation(attribute)
       model.reflect_on_association(attribute.to_sym)
+    end
+
+    def column(attribute)
+      model.columns.find { |column| column.name.to_s == attribute.to_s }
     end
   end
 end

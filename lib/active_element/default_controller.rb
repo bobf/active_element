@@ -13,7 +13,7 @@ module ActiveElement
 
       controller.render 'active_element/default_views/index',
                         locals: {
-                          collection: collection,
+                          collection: ordered(collection),
                           search_filters: default_text_search.search_filters
                         }
     end
@@ -77,6 +77,12 @@ module ActiveElement
     private
 
     attr_reader :controller
+
+    def ordered(unordered_collection)
+      return unordered_collection unless state.list_order.present?
+
+      unordered_collection.order(state.list_order)
+    end
 
     def render_forbidden(type)
       controller.render 'active_element/default_views/forbidden', locals: { type: type }

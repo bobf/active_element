@@ -51,7 +51,7 @@
         <% field_group.each do |field, type, options| %>
           <div class="col-sm-3">
             <%= render partial: 'active_element/components/form/label',
-                       locals: { type: type, form: form, field: field, options: options } %>
+                       locals: { component: component, id: id, type: type, form: form, field: field, options: options } %>
           </div>
 
 

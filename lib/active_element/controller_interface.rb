@@ -26,6 +26,7 @@ module ActiveElement
     end
 
     def listable_fields(*args)
+      state.list_order = args.pop[:order] if args.last.is_a?(Hash)
       state.listable_fields.concat(args.map(&:to_sym)).uniq!
     end
 

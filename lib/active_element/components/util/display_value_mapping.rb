@@ -16,8 +16,6 @@ module ActiveElement
         end
 
         def json_value
-          return ActiveElement.json_pretty_print(value_from_record) unless component.is_a?(CollectionTable)
-
           component.controller.render_to_string(
             partial: 'active_element/components/fields/json',
             locals: { value: value_from_record, field_id: ActiveElement.element_id }

@@ -81,14 +81,7 @@ module ActiveElement
       end
 
       def schema_for(field, options)
-        options.key?(:schema) ? options.fetch(:schema) : schema_from_yaml(field)
-      end
-
-      def schema_from_yaml(field)
-        YAML.safe_load(
-          Rails.root.join("config/forms/#{record.class.name.underscore}/#{field}.yml").read,
-          symbolize_names: true
-        )
+        options.key?(:schema) ? options.fetch(:schema) : Util.json_schema(model: record.class, field: field)
       end
 
       def display_value_for_select(field, options)

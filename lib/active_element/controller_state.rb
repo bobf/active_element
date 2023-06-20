@@ -7,7 +7,7 @@ module ActiveElement
   class ControllerState
     attr_reader :permissions, :listable_fields, :viewable_fields, :editable_fields, :searchable_fields
     attr_accessor :sign_in_path, :sign_in, :sign_in_method, :sign_out_path, :sign_out_method,
-                  :deletable, :authorizor, :authenticator
+                  :deletable, :authorizor, :authenticator, :list_order
 
     def initialize(controller:)
       @controller = controller

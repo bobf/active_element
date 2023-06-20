@@ -4,11 +4,26 @@ ActiveElement.JsonField = (() => {
   const humanize = ({ string, singular = false }) => {
     if (!string) return '';
 
-    const humanized = string.split('_').map(item => item.charAt(0).toUpperCase() + item.substring(1)).join(' ');
+    const humanized = string.split('_')
+                            .map(item => item.charAt(0).toUpperCase() + item.substring(1)).join(' ')
+                            .replace(/([a-z])([A-Z])/g, '$1 $2');
 
     if (!singular) return humanized;
 
-    return humanized.replace(/[^u]s$/, ''); // FIXME: Expose translations from back-end to make this more useful.
+    // FIXME: Expose translations from back-end to make this more useful.
+    return humanized.replace(/[^u]s$/, '');
+  };
+
+  // Adapted from: https://stackoverflow.com/a/7557433
+  const isVisible = (element) => {
+    const boundingClientRect = element.getBoundingClientRect();
+
+    return (
+      boundingClientRect.top >= 0 &&
+      boundingClientRect.left >= 0 &&
+      boundingClientRect.bottom <= (window.innerHeight || document.documentElement.clientHeight) &&
+      boundingClientRect.right <= (window.innerWidth || document.documentElement.clientWidth)
+    );
   };
 
   const isObject = (object) => object && typeof object === 'object';
@@ -44,7 +59,8 @@ ActiveElement.JsonField = (() => {
     };
 
     store.state = defaultState({ schema, path: [], defaultValue: data });
-    console.log(store.state)
+    ActiveElement.debug = true;
+    ActiveElement.log.debug(store.state)
 
     const stateChangedCallbacks = [];
     const stateChanged = (callback, state) => stateChangedCallbacks.push([callback, state]);
@@ -211,9 +227,11 @@ ActiveElement.JsonField = (() => {
   };
 
   const Component = ({ store, stateChanged, connectState, schema, element, fieldName }) => {
-    const ObjectField = ({ schema, state, path, omitLabel = false }) => {
+    const ObjectField = ({ schema, state, path, omitLabel = false, depth = 0 }) => {
       const getPath = () => schema.name ? path.concat(schema.name) : path;
       const currentPath = getPath();
+
+      depth = depth + 1;
 
       let element;
 
@@ -235,7 +253,9 @@ ActiveElement.JsonField = (() => {
         case 'decimal':
           return DecimalField({ state, omitLabel, schema, path: currentPath });
         case 'object':
-          element = cloneElement('form-group-floating');
+          element = cloneElement('form-group');
+          element.classList.add(`depth-${depth}`);
+          if (schema.name) element.append(Label({ schema }));
           (schema.shape.fields).forEach((field) => {
             element.append(
               ObjectField({
@@ -243,6 +263,7 @@ ActiveElement.JsonField = (() => {
                 schema: field,
                 state: state ? state[field.name] : null,
                 path: currentPath,
+                depth,
               })
             );
           });
@@ -250,10 +271,10 @@ ActiveElement.JsonField = (() => {
           return element;
         case 'array':
           element = cloneElement('form-group');
-          const list = ArrayField({ schema, state, path: currentPath });
+          const list = ArrayField({ schema, state, path: currentPath, depth });
           if (schema.shape?.type === 'object') list.classList.add('array-of-objects');
           element.append(AppendButton({ list, schema, state, path: currentPath }));
-          element.append(Label({ title: schema.name }));
+          element.append(Label({ schema }));
           element.append(list);
           return element;
       }
@@ -270,12 +291,12 @@ ActiveElement.JsonField = (() => {
       const element = cloneElement('form-check');
 
       element.append(checkbox);
-      element.append(Label({ title: schema.name, template: 'form-check-label' }));
+      element.append(Label({ schema, template: 'form-check-label', labelFor: checkbox }));
 
       return element;
     };
 
-    const ArrayField = ({ schema, state, path: objectPath }) => {
+    const ArrayField = ({ schema, state, depth, path: objectPath }) => {
       const element = cloneElement('list-group');
 
       if (schema.focus) element.classList.add('focus');
@@ -284,21 +305,22 @@ ActiveElement.JsonField = (() => {
       if (state) {
         state.forEach((eachState, index) => {
           const path = objectPath.concat([index]);
-          element.append(ArrayItem({ state: eachState, path, schema }));
+          element.append(ArrayItem({ state: eachState, path, schema, depth }));
         });
       }
 
       return element;
     };
 
-    const ArrayItem = ({ state, path, schema, newItem = false }) => {
+    const ArrayItem = ({ state, path, schema, depth, newItem = false }) => {
       const element = cloneElement('list-item');
       const wrapper = document.createElement('div');
       const objectField = ObjectField({
         path,
         omitLabel: true,
         schema: { ...schema.shape },
-        state: state
+        state: state,
+        depth,
       });
 
       // TODO: Use same template etc. for all delete buttons, use presentation layer to
@@ -366,6 +388,7 @@ ActiveElement.JsonField = (() => {
       valueElement.href = '#';
       modalBody.append(group);
       modalBody.classList.add('json-field');
+      group.classList.add('depth-1');
       titleElement.append(deleteObjectButton);
       modalHeader.append(deleteObjectButton);
       deleteObjectButton.addEventListener('click', () => bootstrapModal.hide());
@@ -382,10 +405,10 @@ ActiveElement.JsonField = (() => {
       return element;
     };
 
-    const Label = ({ title, template, labelFor }) => {
+    const Label = ({ schema, template, labelFor }) => {
       const element = cloneElement(template || 'label');
 
-      element.append(humanize({ string: title }));
+      element.append(schema.label || humanize({ string: schema.name }));
 
       if (labelFor) {
         element.htmlFor = labelFor.id;
@@ -443,7 +466,7 @@ ActiveElement.JsonField = (() => {
       const group = cloneElement('form-group-floating');
 
       group.append(element);
-      group.append(Label({ title: schema.name, labelFor: element }));
+      group.append(Label({ schema, labelFor: element }));
 
       return group;
     };
@@ -464,9 +487,9 @@ ActiveElement.JsonField = (() => {
 
       if (floating) {
         group.append(element);
-        group.append(Label({ title: schema.name, labelFor: element }));
+        group.append(Label({ schema, labelFor: element }));
       } else {
-        group.append(Label({ title: schema.name, labelFor: element }));
+        group.append(Label({ schema, labelFor: element }));
         group.append(element);
       }
 
@@ -513,9 +536,8 @@ ActiveElement.JsonField = (() => {
 
     const AppendButton = ({ list, schema, state, path: objectPath }) => {
       const element = cloneElement('append-button');
-      const humanName = humanize({ string: schema.name || fieldName, singular: true });
 
-      element.append(`Add ${humanName}`);
+      element.append(`Add Item`);
       element.classList.add('append-button', 'float-end');
       element.onclick = (ev) => {
         ev.preventDefault();
@@ -524,7 +546,8 @@ ActiveElement.JsonField = (() => {
         const item = ArrayItem({ path, state: appendState, schema, newItem: true })
 
         list.append(item);
-        item.scrollIntoView();
+
+        if (!isVisible(item)) item.scrollIntoView({ block: 'center' });
 
         return false;
       };
@@ -540,17 +563,28 @@ ActiveElement.JsonField = (() => {
     const formId = element.dataset.formId;
     const formFieldElement = document.querySelector(`#${element.dataset.fieldId}`);
     const schemaFieldElement = document.querySelector(`#${element.dataset.schemaFieldId}`);
+    const jsonViewModal = document.querySelector(`#${element.dataset.jsonViewModalId}`);
+    const jsonViewModalTrigger = document.querySelector(`#${element.dataset.jsonViewModalTriggerId}`);
     const fieldName = element.dataset.fieldName;
     const schema = getSchema(element);
     const { store, stateChanged, connectState } = createStore({ data, schema });
+    let currentState = null;
 
     schemaFieldElement.value = JSON.stringify(schema);
 
     stateChanged(({ getState }) => {
       const state = getState();
 
+      currentState = state;
       formFieldElement.value = JSON.stringify(state);
       ActiveElement.log.debug(state);
+    });
+
+    jsonViewModalTrigger.addEventListener('click', () => {
+      const highlighted = hljs.highlight(JSON.stringify(currentState, null, 2), { language: 'json' }).value;
+      // console.log(
+      jsonViewModal.querySelector('[data-field-type="modal-body"]').innerHTML = `<pre>${highlighted}</pre>`;
+      return true;
     });
 
     connectState({ element });

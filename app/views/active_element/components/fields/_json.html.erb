@@ -1,9 +1,10 @@
 <a data-modal-id="<%= "#json-modal-#{field_id}" %>"
+   id="<%= "json-view-modal-trigger-#{field_id}" %>"
    data-json-modal-link="true"
    data-bs-toggle="modal"
    data-bs-target="#json-modal-<%= field_id %>"
-   class="text-decoration-none"
-   href="#">Inspect JSON <i class="fa-solid fa-magnifying-glass"></i></a>
+   class="text-decoration-none text-nowrap"
+   href="#">JSON <i class="fa-solid fa-magnifying-glass"></i></a>
 <div id="json-modal-<%= field_id %>" class="modal fade"
      tabindex="-1"
      aria-hidden="true">
