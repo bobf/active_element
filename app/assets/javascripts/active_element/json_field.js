@@ -8,7 +8,7 @@ ActiveElement.JsonField = (() => {
 
     if (!singular) return humanized;
 
-    return humanized.replace(/s$/, ''); // FIXME: Expose translations from back-end to make this more useful.
+    return humanized.replace(/[^u]s$/, ''); // FIXME: Expose translations from back-end to make this more useful.
   };
 
   const isObject = (object) => object && typeof object === 'object';
