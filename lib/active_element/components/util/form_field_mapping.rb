@@ -136,8 +136,9 @@ module ActiveElement
         end
 
         def searchable_fields(field)
+          # FIXME: Use database column type to only include strings/numbers.
           (Util.relation_controller(model, controller, field)&.active_element&.state&.searchable_fields || [])
-            .reject { |field| field.to_s.end_with?('_at') } # FIXME: Select strings/numbers only.
+            .reject { |searchable_field| searchable_field.to_s.end_with?('_at') }
         end
 
         def relation_primary_key(field)

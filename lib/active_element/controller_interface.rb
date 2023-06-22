@@ -25,8 +25,8 @@ module ActiveElement
       @authorize
     end
 
-    def listable_fields(*args)
-      state.list_order = args.pop[:order] if args.last.is_a?(Hash)
+    def listable_fields(*args, order: nil)
+      state.list_order = order
       state.listable_fields.concat(args.map(&:to_sym)).uniq!
     end
 

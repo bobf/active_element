@@ -44,3 +44,38 @@ end
 
 it { is_expected.to include 'class="form-control my-class"' }
 ```
+
+## Custom Fields
+
+If you're using the [Default Controller](../default-controller.html) or you simply want to separate your configuration from your views, you can customize each form field by creating a file named `config/forms/<model>/<field>.yml`.
+
+The `User` `email` field can be configured by creating `config/forms/user/email.yml`:
+
+```yaml
+# config/forms/user/email.yml
+
+type: email_field
+options:
+  class: 'form-control my-email-field-class'
+  description: 'We will use your email address to send your account details.'
+  placeholder: 'Enter your email address, e.g. user@example.com'
+```
+
+```rspec:html
+subject do
+  active_element.component.form model: User.new,
+                                fields: [:email, :name, :date_of_birth]
+end
+
+it { is_expected.to include 'class="form-control my-email-field-class"' }
+```
+
+The `options` configuration receives a small number of options specific to _ActiveElement_ such as `description` and [Text Search](form-fields/text-search.html) configuration, otherwise they are passed directly to the underlying _Rails_ form helper.
+
+The `type` configuration corresponds to either a _Rails_ form helper _ActiveElement_ extension field, i.e. `email_field` will call some variation of:
+
+```ruby
+form_with do |form|
+  form.email_field :email
+end
+```

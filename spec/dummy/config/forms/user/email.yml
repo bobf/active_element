@@ -1,0 +1,5 @@
+type: email_field
+options:
+  class: 'form-control my-email-field-class'
+  description: 'We will use your email address to send your account details.'
+  placeholder: 'Enter your email address, e.g. user@example.com'

@@ -1,7 +1,5 @@
 # Setup
 
-To integrate _ActiveElement_ into your _Rails_ application, follow the steps below:
-
 ## Installation
 
 Install the `active_element` gem by adding the following to your `Gemfile`:
@@ -20,7 +18,7 @@ $ bundle install
 
 Inherit from `ActiveElement::ApplicationController` in the controller you want to use with _ActiveElement_. In most cases this will either be your main `ApplicationController`, or a namespaced admin area controller, e.g. `Admin::ApplicationController`. This will apply the default _ActiveElement_ layout which includes a [Navbar](components/navbar.html), [Theme Switcher](components/theme-switcher.html), and all the required _CSS_ and _Javascript_.
 
-If you want to add custom content to the layout, see the [Hooks](hooks.html) documentation.
+If you want to add custom content to the layout, see the [Hooks](hooks.html) documentation, or if you want to use a completely custom layout, simply specify `layout 'my_layout'` in your `ApplicationController`.
 
 ```ruby
 # app/controllers/application_controller.rb
@@ -30,23 +28,13 @@ class ApplicationController < ActiveElement::ApplicationController
 end
 ```
 
-## Create a View
+## Default Controller Actions
 
-We'll use `UsersController` in this example, but you can replace this with whatever controller you want to use with _ActiveElement_.
+_ActiveElement_ provides default controller actions for all controllers that inherit from `ActiveElement::ApplicationController` (directly or indirectly).
 
-Assuming your controller is defined something like this:
+Each action provides boilerplate functionality to get your application off the ground as quickly as possible. See the [Default Controller](default-controller.html) for full details.
 
-```ruby
-# app/controllers/users_controller.rb
-
-class UsersController < ApplicationController
-  def index
-    @users = User.all
-  end
-end
-```
-
-And your routes are defined something like this:
+The below example creates a `/users` endpoint for your application with boilerplate to list, search, view, create, edit, and delete users:
 
 ```ruby
 # config/routes.rb
@@ -56,20 +44,25 @@ Rails.application.routes.draw do
 end
 ```
 
-Edit or create `app/views/users/index.html.erb`. Add a page title and a table component:
+```ruby
+# app/controllers/users_controller.rb
 
-```erb
-<%# app/views/users/index.html.erb %>
-
-<%= active_element.component.page_title 'Users' %>
-
-<%= active_element.component.table collection: @users, fields: [:id, :email, :name] %>
+class UsersController < ApplicationController
+  active_element.listable_fields :name, :email, :created_at, order: :name
+  active_element.viewable_fields :name, :email, :created_at, :updated_at
+  active_element.editable_fields :name, :email
+  active_element.searchable_fields :name, :name, :created_at, :updated_at
+  active_element.deletable
+end
 ```
 
-Adjust the `fields` to match whatever attributes you want to display for each `User` in your table.
+```ruby
+# app/models/user.rb
 
-Start your _Rails_ application and browse to `/users` to see your new users index.
+class User < ApplicationRecord
+end
+```
 
-## Next Steps
+You can now browse to `/users` on your local development server and see all the default behaviour provided by _ActiveElement_.
 
-Now that you know how to render components, take a look at the [Components](components.html) section of this documentation to see what components are available and how to use them.
+See the [Default Controller](default-controller.html) and [Custom Controllers](custom-controllers.html) sections for more details.

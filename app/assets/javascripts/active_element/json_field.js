@@ -59,8 +59,6 @@ ActiveElement.JsonField = (() => {
     };
 
     store.state = defaultState({ schema, path: [], defaultValue: data });
-    ActiveElement.debug = true;
-    ActiveElement.log.debug(store.state)
 
     const stateChangedCallbacks = [];
     const stateChanged = (callback, state) => stateChangedCallbacks.push([callback, state]);
@@ -582,7 +580,6 @@ ActiveElement.JsonField = (() => {
 
     jsonViewModalTrigger.addEventListener('click', () => {
       const highlighted = hljs.highlight(JSON.stringify(currentState, null, 2), { language: 'json' }).value;
-      // console.log(
       jsonViewModal.querySelector('[data-field-type="modal-body"]').innerHTML = `<pre>${highlighted}</pre>`;
       return true;
     });
