@@ -32,7 +32,7 @@
 
 
   const ActiveElement = {
-    debug: false,
+    debug: true,
     log: {
       debug: (message) => { ActiveElement.debug && console.log(`[ActiveElement:debug]`, message); },
       info: (message) => { console.log(`[ActiveElement:info] ${message}`); },

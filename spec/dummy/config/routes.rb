@@ -7,6 +7,8 @@ Rails.application.routes.draw do
   resources :examples
   resources :components
   resources :examples
+  resources :_users
+  resources :_pets
   resources :example_permissions do
     member do
       get 'custom'

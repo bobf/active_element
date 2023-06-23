@@ -198,6 +198,8 @@ ActiveElement.JsonField = (() => {
       notifyStateChanged();
     };
 
+    ActiveElement.log.debug(store);
+
     return {
       stateChanged,
       connectState,
