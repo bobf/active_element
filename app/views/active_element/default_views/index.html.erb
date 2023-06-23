@@ -7,9 +7,14 @@
                                     fields: active_element.state.searchable_fields %>
 <% end %>
 
-<%= active_element.component.table new: active_element.state.creatable?,
-                                   show: active_element.state.viewable?,
-                                   edit: active_element.state.editable?,
-                                   destroy: active_element.state.deletable?,
-                                   collection: collection,
-                                   fields: active_element.state.listable_fields %>
+<% if active_element.state.search_required && search_filters.compact_blank.blank? %>
+  <%= active_element.component.page_section_title active_element.t('search_required.title') %>
+  <%= active_element.component.page_description active_element.t('search_required.description') %>
+<% else %>
+  <%= active_element.component.table new: active_element.state.creatable?,
+                                     show: active_element.state.viewable?,
+                                     edit: active_element.state.editable?,
+                                     destroy: active_element.state.deletable?,
+                                     collection: collection,
+                                     fields: active_element.state.listable_fields %>
+<% end %>

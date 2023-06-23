@@ -17,7 +17,7 @@
     if (attributes.length === 1 && attributes[0] === value) return value;
     if (simplify) return attributes[0];
 
-    return attributes.join(', ');
+    return attributes.concat(value).join(', ');
   };
 
   const processResponse = ({

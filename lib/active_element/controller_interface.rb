@@ -38,7 +38,8 @@ module ActiveElement
       state.editable_fields.concat(args.map(&:to_sym)).uniq!
     end
 
-    def searchable_fields(*args)
+    def searchable_fields(*args, required: false)
+      state.search_required = required
       state.searchable_fields.concat(args.map(&:to_sym)).uniq!
     end
 
@@ -48,6 +49,10 @@ module ActiveElement
 
     def application_name
       RailsComponent.new(::Rails).application_name
+    end
+
+    def t(identifier, **kwargs)
+      ::I18n.t("active_element.#{identifier}", **kwargs)
     end
 
     def authenticate_with(&block)

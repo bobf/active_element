@@ -1,3 +1,6 @@
 en:
   active_element:
     unexpected_error: 'Unexpected error'
+    search_required:
+      title: 'Apply search filters to view results'
+      description: 'This page requires at least one search filter to be applied before results will be displayed.'

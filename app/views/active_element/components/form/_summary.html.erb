@@ -18,7 +18,7 @@
         <% values << value %>
         <div class="d-inline me-3">
           <span class="text-secondary"><%= options.fetch(:label) %>:</span>
-          <span class="ms-1"><%= value %></span>
+          <span class="ms-1 fw-bold"><%= value %></span>
         </div>
       <% end %>
   <% elsif type == :datetime_range_field %>
@@ -37,7 +37,7 @@
     <% values << value %>
     <div class="d-inline me-3">
       <span class="text-secondary"><%= options.fetch(:label) %>:</span>
-      <span class="ms-1"><%= value %></span>
+      <span class="ms-1 fw-bold"><%= value %></span>
     </div>
 
   <% end %>
