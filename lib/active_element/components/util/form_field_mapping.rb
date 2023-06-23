@@ -73,7 +73,7 @@ module ActiveElement
           #
           #   active_element.component.form fields: [:foo, :bar, [:some_json_field, :text_area]]
           #
-          file_configuration_path(field).file? && default_type_from_model(field) != :json_field
+          file_configuration_path(field).present? && default_type_from_model(field) != :json_field
         end
 
         def type_from_file(field)
@@ -86,7 +86,15 @@ module ActiveElement
         end
 
         def file_configuration_path(field)
-          record_field_configuration_path(field) || sti_field_configuration_path(field)
+          file_configuration_paths(field).compact.find(&:file?)
+        end
+
+        def file_configuration_paths(field)
+          [
+            record_field_configuration_path(field),
+            sti_record_field_configuration_paths(field),
+            controller_field_configuration_path(field)
+          ].flatten
         end
 
         def record_field_configuration_path(field)
@@ -96,11 +104,17 @@ module ActiveElement
           Rails.root.join('config/forms', record_name, "#{field}.yml")
         end
 
-        def sti_record_field_configuration_path(field)
-          sti_record_name = Util.sti_record_name(record)
-          return nil if sti_record_name.blank?
+        def sti_record_field_configuration_paths(field)
+          sti_record_names = Util.sti_record_names(record)
+          return nil if sti_record_names.blank?
 
-          Rails.root.join('config/forms', sti_record_name, "#{field}.yml")
+          sti_record_names.map { |name| Rails.root.join('config/forms', name, "#{field}.yml") }
+        end
+
+        def controller_field_configuration_path(field)
+          return nil if controller.blank?
+
+          Rails.root.join('config/forms', controller.controller_path.singularize, "#{field}.yml")
         end
 
         def default_type_from_model(field)

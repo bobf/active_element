@@ -1,3 +1,10 @@
 # frozen_string_literal: true
-# TODO: Move each default controller action into individual classes inside
-# ActiveElement::DefaultController::Actions
+
+require_relative 'actions/index'
+
+module ActiveElement
+  module DefaultController
+    module Actions
+    end
+  end
+end

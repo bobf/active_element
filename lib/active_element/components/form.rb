@@ -11,7 +11,7 @@ module ActiveElement
 
       # rubocop:disable Metrics/MethodLength
       def initialize(controller, fields:, submit:, item:, title: nil, destroy: false, search: false,
-                     modal: false, columns: 1, **kwargs)
+                     model: nil, modal: false, columns: 1, **kwargs)
         @controller = controller
         @fields = fields
         @title = title
@@ -25,6 +25,7 @@ module ActiveElement
         @action = kwargs.delete(:action) { default_action }
         @method = kwargs.delete(:method) { default_method }.to_s.downcase.to_sym
         @tabindex = 1
+        @form_model = model
       end
       # rubocop:enable Metrics/MethodLength
 
@@ -40,9 +41,11 @@ module ActiveElement
           submit_label: submit_label,
           submit_position: submit_position,
           class_name: class_name,
+          becomes_model: becomes_model,
           method: method,
           action: action,
           kwargs: kwargs,
+          model_param: model_param,
           destroy: destroy,
           modal: modal,
           columns: columns,
@@ -122,9 +125,9 @@ module ActiveElement
       end
 
       def record
-        return nil if kwargs.fetch(:model, nil).blank?
+        return nil if form_model.blank?
 
-        kwargs[:model].is_a?(Array) ? kwargs[:model].last : kwargs[:model]
+        form_model.is_a?(Array) ? form_model.last : form_model
       end
 
       def model
@@ -138,7 +141,7 @@ module ActiveElement
       private
 
       attr_reader :fields, :submit, :title, :kwargs, :item, :method, :action,
-                  :destroy, :modal, :columns, :search
+                  :destroy, :modal, :columns, :search, :form_model
 
       def form_field_mapping
         @form_field_mapping ||= Util::FormFieldMapping.new(
@@ -233,10 +236,27 @@ module ActiveElement
         end
       end
 
+      def becomes_model
+        return nil unless record.is_a?(ActiveRecord::Base)
+        return nil if record_path.model == model
+
+        record_path.model
+      end
+
       def default_action
         return controller.request.path unless record.class.is_a?(ActiveModel::Naming)
 
-        Util::RecordPath.new(record: record, controller: controller, type: default_action_type).path
+        record_path.path
+      end
+
+      def record_path
+        @record_path ||= Util::RecordPath.new(record: record, controller: controller, type: default_action_type)
+      end
+
+      def model_param
+        return nil unless record.present?
+
+        [record_path.namespace, becomes_model.present? ? record.becomes(becomes_model) : record].compact
       end
     end
   end

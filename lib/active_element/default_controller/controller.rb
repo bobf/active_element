@@ -10,13 +10,9 @@ module ActiveElement
       end
 
       def index
-        return render_forbidden(:listable) unless configured?(:listable)
+        return render_forbidden(:viewable) unless configured?(:viewable)
 
-        controller.render 'active_element/default_views/index',
-                          locals: {
-                            collection: ordered(collection),
-                            search_filters: default_text_search.search_filters
-                          }
+        Actions::Index.new(controller: controller, model: model, state: state).render
       end
 
       def show
@@ -79,12 +75,6 @@ module ActiveElement
 
       attr_reader :controller
 
-      def ordered(unordered_collection)
-        return unordered_collection if state.list_order.blank?
-
-        unordered_collection.order(state.list_order)
-      end
-
       def render_forbidden(type)
         controller.render 'active_element/default_views/forbidden', locals: { type: type }
       end
@@ -103,10 +93,6 @@ module ActiveElement
         @default_record_params ||= DefaultController::Params.new(controller: controller, model: model)
       end
 
-      def default_text_search
-        @default_text_search ||= DefaultController::Search.new(controller: controller, model: model)
-      end
-
       def record_path(record, type = nil)
         ActiveElement::Components::Util::RecordPath.new(record: record, controller: controller, type: type)
       end
@@ -121,12 +107,6 @@ module ActiveElement
 
       def record
         @record ||= model.find(controller.params[:id])
-      end
-
-      def collection
-        return model.all unless default_text_search.text_search?
-
-        model.left_outer_joins(default_text_search.search_relations).where(*default_text_search.text_search)
       end
 
       def render_range_error(error:, action:)

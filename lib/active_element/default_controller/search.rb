@@ -25,8 +25,9 @@ module ActiveElement
         conditions = search_filters.to_h.map do |key, value|
           next relation_matches(key, value) if relation?(key)
           next datetime_between(key, value) if datetime?(key)
+          next model.arel_table[key].matches("#{value}%") if [:string, :text].include?(column(key).type)
 
-          model.arel_table[key].matches("#{value}%")
+          model.arel_table[key].eq(value)
         end
         conditions[1..].reduce(conditions.first) do |accumulated, condition|
           accumulated.and(condition)
@@ -41,6 +42,10 @@ module ActiveElement
 
       attr_reader :controller, :model
 
+      def column(key)
+        model.columns.find { |column| column.name.to_s == key.to_s }
+      end
+
       def searchable_fields
         controller.active_element.state.searchable_fields.map do |field|
           next field unless field.to_s.end_with?('_at')
@@ -54,7 +59,7 @@ module ActiveElement
       end
 
       def datetime?(key)
-        model.columns.find { |column| column.name.to_s == key.to_s }&.type == :datetime
+        column(key)&.type == :datetime
       end
 
       def datetime_between(key, value)
