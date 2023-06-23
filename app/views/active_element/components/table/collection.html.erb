@@ -12,7 +12,7 @@
                      page_sizes: page_sizes }
   %>
 <% else %>
-  <%= active_element.component.page_description "Displaying #{pluralize(collection.total_count, 'result')}" %>
+  <%= active_element.component.page_description "Displaying #{pluralize(collection.try(:total_count) || collection.size, 'result')}" %>
 <% end %>
 
 <% if group %>
