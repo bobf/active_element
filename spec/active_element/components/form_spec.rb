@@ -9,6 +9,7 @@ RSpec.describe ActiveElement::Components::Form do
       action_name: 'new',
       request: instance_double(ActionDispatch::Request, path: '/request/path'),
       controller_name: 'examples',
+      controller_path: 'examples',
       helpers: helpers
     )
   end
