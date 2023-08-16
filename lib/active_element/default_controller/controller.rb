@@ -4,7 +4,7 @@ module ActiveElement
   module DefaultController
     # Encapsulation of all logic performed for default controller actions when no action is defined
     # by the current controller.
-    class Controller # rubocop:disable Metrics/ClassLength
+    class Controller
       def initialize(controller:)
         @controller = controller
       end

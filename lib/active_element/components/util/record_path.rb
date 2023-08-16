@@ -12,15 +12,15 @@ module ActiveElement
         end
 
         def path
-          record_path || sti_record_path
+          record_path
         rescue NoMethodError
           raise Error,
-                "Unable to map #{record.inspect} to a Rails route. Tried:\n" \
-                "#{[default_record_path, sti_record_path].compact.join("\n")}"
+                "Unable to map #{record.inspect} to a Rails route (#{@controller.class.name}##{@type}). Tried:\n" \
+                "#{all_record_paths.join("\n")}"
         end
 
         def model
-          ([record_name] + sti_record_names).compact.find do |name|
+          all_names.find do |name|
             controller.helpers.public_send(record_path_for(name), *path_arguments)
           rescue NoMethodError
             nil
@@ -40,6 +40,14 @@ module ActiveElement
 
         private
 
+        def all_names
+          @all_names ||= ([record_name] + sti_record_names).compact
+        end
+
+        def all_record_paths
+          @all_record_paths ||= all_names.map { |name| record_path_for(name) }
+        end
+
         def namespace_prefix
           return nil if namespace.blank?
 
@@ -48,7 +56,7 @@ module ActiveElement
 
         attr_reader :record, :controller, :type
 
-        def record_path
+        def record_path # rubocop:disable Metrics/AbcSize
           return nil if record.nil?
 
           controller.helpers.public_send(default_record_path, *path_arguments)

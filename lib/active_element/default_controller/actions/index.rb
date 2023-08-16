@@ -3,6 +3,7 @@
 module ActiveElement
   module DefaultController
     module Actions
+      # Default index action, rendered if no `#index` controller method defined.
       class Index
         def initialize(controller:, model:, state:)
           @controller = controller

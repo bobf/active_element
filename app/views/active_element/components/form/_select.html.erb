@@ -2,6 +2,19 @@
                 component.options_for_select(field, options),
                 { selected: component.value_for(field) },
                 {
+                  id: "#{form_id}-#{field}",
                   tabindex: component.tabindex,
                   class: "form-select #{component.valid?(field) ? nil : 'is-invalid'}"
                 } %>
+
+
+<% if options[:multiple] %>
+  <script>
+    window.addEventListener('DOMContentLoaded', () => {
+      const dropdown = new multiSelect(
+        document.querySelector("#<%= "#{form_id}-#{field}" %>"),
+        { className: '', maxVisibleOptions: 0 }
+      );
+    });
+  </script>
+<% end %>

@@ -203,7 +203,7 @@ module ActiveElement
 
       def default_options_for_select(field, field_options)
         options = record.class.distinct.order(field).pluck(field)
-        [options.map { |option| autoformat(option, field_options) }, options].transpose
+        [options.map { |option| autoformat(option, field_options) }, options].transpose + [{ selected: value_for(field) }]
       end
 
       def form_id
@@ -254,9 +254,9 @@ module ActiveElement
       end
 
       def model_param
-        return nil unless record.present?
+        return nil if record.blank?
 
-        [record_path.namespace, becomes_model.present? ? record.becomes(becomes_model) : record].compact
+        [record_path.namespace, becomes_model.present? ? record.becomes(becomes_model) : record].compact_blank
       end
     end
   end

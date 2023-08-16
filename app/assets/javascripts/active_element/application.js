@@ -11,3 +11,4 @@
 //= require active_element/toast
 //= require active_element/popover
 //= require active_element/timezones
+//= require active_element/multiselect-dropdown

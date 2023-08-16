@@ -48,7 +48,7 @@ module ActiveElement
 
         def field_with_default_type_and_default_options(field)
           return [field, type_from_file(field).to_sym, options_from_file(field)] if file_configuration?(field)
-          return relation_text_search_field(field) if relation?(field) && record.present? && !search?
+          return relation_field(field) if relation?(field) && record.present? && !search?
 
           [field, default_type_from_model(field), default_options(field)]
         end
@@ -58,7 +58,7 @@ module ActiveElement
         end
 
         def association_mapping(field)
-          @association_mapping ||= AssociationMapping.new(
+          AssociationMapping.new(
             controller: controller,
             field: field,
             record: record,
@@ -140,6 +140,12 @@ module ActiveElement
           model&.reflect_on_association(field)
         end
 
+        def relation_field(field)
+          return relation_text_search_field(field) if association_mapping(field).total_count > 100000
+
+          relation_select_field(field)
+        end
+
         def relation_text_search_field(field)
           [field, :text_search_field,
            TextSearch.text_search_options(
@@ -147,6 +153,12 @@ module ActiveElement
              with: searchable_fields(field),
              providing: relation(field).klass.primary_key
            ).merge({ display_value: association_mapping(field).display_value, label: i18n.label(field) })]
+        end
+
+        def relation_select_field(field)
+          [field, :select,
+           { multiple: association_mapping(field).multiple_association?,
+             options: association_mapping(field).options_for_select }]
         end
 
         def searchable_fields(field)

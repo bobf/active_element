@@ -21,11 +21,11 @@ module ActiveElement
         search_filters.present?
       end
 
-      def text_search
+      def text_search # rubocop:disable Metrics/AbcSize
         conditions = search_filters.to_h.map do |key, value|
           next relation_matches(key, value) if relation?(key)
           next datetime_between(key, value) if datetime?(key)
-          next model.arel_table[key].matches("#{value}%") if [:string, :text].include?(column(key).type)
+          next model.arel_table[key].matches("#{value}%") if %i[string text].include?(column(key).type)
 
           model.arel_table[key].eq(value)
         end

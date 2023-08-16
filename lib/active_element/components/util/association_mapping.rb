@@ -25,7 +25,7 @@ module ActiveElement
           when :has_one
             associated_record&.public_send(relation_key)
           when :has_many
-            associated_record&.map(&relation_key)
+            associated_record&.map(&relation_key.to_sym)
           when :belongs_to
             record&.public_send(relation_key)
           end
@@ -45,6 +45,37 @@ module ActiveElement
           return nil if associated_model&.primary_key.blank?
 
           value.public_send(associated_model.primary_key)
+        end
+
+        def display_field
+          @display_field ||= options.fetch(:attribute) do
+            next associated_model.default_display_attribute if defined_display_attribute?
+            next default_display_attribute if default_display_attribute.present?
+
+            associated_model.primary_key
+          end
+        end
+
+        def total_count
+          associated_model&.count
+        end
+
+        def options_for_select
+          return [] if associated_model.blank?
+
+          associated_model.all.pluck(display_field, associated_model.primary_key).map do |title, value|
+            next [title, value] if display_field == associated_model.primary_key
+
+            ["#{title} (#{value})", value]
+          end
+        end
+
+        def single_association?
+          %i[has_one belongs_to].include?(relation.macro)
+        end
+
+        def multiple_association?
+          relation.macro == :has_many
         end
 
         private
@@ -67,15 +98,6 @@ module ActiveElement
           raise ArgumentError,
                 "Must provide { attribute: :example_attribute } for `#{field}` or define " \
                 "`#{associated_record.class.name}.default_display_attribute`"
-        end
-
-        def display_field
-          @display_field ||= options.fetch(:attribute) do
-            next associated_model.default_display_attribute if defined_display_attribute?
-            next default_display_attribute if default_display_attribute.present?
-
-            associated_model.primary_key
-          end
         end
 
         def defined_display_attribute?
@@ -108,14 +130,6 @@ module ActiveElement
           return false unless associated_model.public_instance_method(name).arity.zero?
 
           true
-        end
-
-        def single_association?
-          %i[has_one belongs_to].include?(relation.macro)
-        end
-
-        def multiple_association?
-          relation.macro == :has_many
         end
 
         def path_helper

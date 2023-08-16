@@ -1,0 +1,119 @@
+/*
+ * MIT License Copyright (c) 2017 Israel Muñoz
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy of this software
+ * and associated documentation files (the "Software"), to deal in the Software without
+ * restriction, including without limitation the rights to use, copy, modify, merge, publish,
+ * distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the
+ * Software is furnished to do so, subject to the following conditions: The above copyright
+ * notice and this permission notice shall be included in all copies or substantial portions of
+ * the Software. THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A
+ * PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE
+ * LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+ * OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+ * DEALINGS IN THE SOFTWARE.
+ */
+
+.multi-select {
+  font-family: inherit;
+  font-size: 16px;
+  height: 1.2em;
+  box-sizing: border-box;
+  cursor: default;
+  position: relative;
+  width: 200px;
+}
+
+.multi-select select {
+  border: 0;
+  display: inline-block;
+  height: 0;
+  padding: 0;
+  position: absolute;
+  visibility: hidden;
+  width: 0;
+}
+
+.multi-select div {
+  margin: 0;
+}
+
+.multi-select .multi-select-display {
+  background-color: #fff;
+  border: solid 1px #a9a9a9;
+  border-radius: 0.1em;
+  box-sizing: border-box;
+  font-size: 80%;
+  height: 100%;
+  overflow: hidden;
+  padding: 1px 20px 1px 4px;
+  position: relative;
+  white-space: nowrap;
+}
+
+.multi-select .multi-select-display::before {
+  background-color: #fff;
+  content: '';
+  height: 100%;
+  position: absolute;
+  right: 0;
+  top: 0;
+  width: 18px;
+}
+
+.multi-select .multi-select-display::after {
+  border-color: #000 transparent transparent;
+  border-style: solid;
+  border-width: 0.5em 0.25em;
+  content: '';
+  height: 0;
+  position: absolute;
+  right: 0.45em;
+  top: 0.4em;
+  width: 0;
+}
+
+.multi-select .multi-select-options {
+  display: none;
+}
+
+.multi-select-options-overlay {
+  margin: 0;
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 0;
+  width: 0;
+  overflow: visible;
+  z-index: 1000;
+}
+
+.multi-select-options-overlay .multi-select-options {
+  background-color: #fff;
+  border: solid 1px #a9a9a9;
+  box-sizing: border-box;
+  font-size: 80%;
+  position: absolute;
+  min-width: 0;
+  margin: 0;
+  width: auto;
+  overflow: auto;
+}
+
+.multi-select-options-overlay .multi-select-options .option {
+  margin: 0;
+}
+
+.multi-select-options-overlay .multi-select-options .option label {
+  box-sizing: border-box;
+  display: block;
+  padding: 1px 4px 1px 1px;
+  white-space: nowrap;
+  width: 100%;
+}
+
+.multi-select-options-overlay .multi-select-options .option label:hover {
+  background-color: #39f;
+  color: #fff;
+}

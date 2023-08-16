@@ -30,12 +30,12 @@ module ActiveElement
         record&.class&.superclass&.model_name&.singular if record&.try(record.class.inheritance_column).present?
       end
 
-      def self.sti_record_names(record)
+      def self.sti_record_names(record) # rubocop:disable Metrics/CyclomaticComplexity
         record.class.ancestors.select do |ancestor|
           next false if ancestor == record.class
-          next false unless ancestor.try(:inheritance_column).present?
+          next false if ancestor.try(:inheritance_column).blank?
           next false unless ancestor < ActiveRecord::Base
-          next false unless !ancestor.abstract_class?
+          next false if ancestor.abstract_class?
 
           true
         end.map(&:model_name).map(&:singular)
