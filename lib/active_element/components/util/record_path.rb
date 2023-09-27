@@ -11,8 +11,8 @@ module ActiveElement
           @type = type&.to_sym || controller.action_name&.to_sym
         end
 
-        def path
-          record_path
+        def path(**kwargs)
+          record_path(**kwargs)
         rescue NoMethodError
           raise Error,
                 "Unable to map #{record.inspect} to a Rails route (#{@controller.class.name}##{@type}). Tried:\n" \
@@ -24,7 +24,7 @@ module ActiveElement
             controller.helpers.public_send(record_path_for(name), *path_arguments)
           rescue NoMethodError
             nil
-          end&.classify&.constantize
+          end&.classify&.constantize || default_model
         end
 
         def namespace
@@ -39,6 +39,10 @@ module ActiveElement
         end
 
         private
+
+        def default_model
+          controller.controller_name.classify&.constantize
+        end
 
         def all_names
           @all_names ||= ([record_name] + sti_record_names).compact
@@ -56,15 +60,15 @@ module ActiveElement
 
         attr_reader :record, :controller, :type
 
-        def record_path # rubocop:disable Metrics/AbcSize
+        def record_path(**kwargs) # rubocop:disable Metrics/AbcSize
           return nil if record.nil?
 
-          controller.helpers.public_send(default_record_path, *path_arguments)
+          controller.helpers.public_send(default_record_path, *path_arguments, **kwargs)
         rescue NoMethodError
           raise if sti_record_names.blank?
 
           sti_record_names.each do |sti_record_name|
-            return controller.helpers.public_send(record_path_for(sti_record_name), *path_arguments)
+            return controller.helpers.public_send(record_path_for(sti_record_name), *path_arguments, **kwargs)
           rescue NoMethodError
             nil
           end

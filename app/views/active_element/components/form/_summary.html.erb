@@ -13,6 +13,8 @@
     <% end %>
 
   <% elsif type == :select %>
+      <% next if value.nil? %>
+
       <% value = component.display_value_for_select(field_name, options) %>
       <% if value.present? %>
         <% values << value %>

@@ -8,6 +8,9 @@
 <% end %>
 
 <% if active_element.state.search_required && search_filters.compact_blank.blank? %>
+  <% if active_element.state.creatable? %>
+    <%= active_element.component.new_button(collection.model&.new, float: 'end', class: 'mb-3') %>
+  <% end %>
   <%= active_element.component.page_section_title active_element.t('search_required.title') %>
   <%= active_element.component.page_description active_element.t('search_required.description') %>
 <% else %>

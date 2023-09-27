@@ -31,9 +31,13 @@ module ActiveElement
 
       def permitted_fields
         scalar, json = controller.active_element.state.editable_fields.partition do |field|
-          scalar?(field)
+          scalar?(normalized_field_name(field))
         end
-        scalar + [json_params(json)]
+        (scalar + [json_params(json)]).map { |field| normalized_field_name(field) }
+      end
+
+      def normalized_field_name(field)
+        field.is_a?(Array) ? field.first : field
       end
 
       def scalar?(field)
@@ -78,7 +82,6 @@ module ActiveElement
       end
 
       def has_many_param(key, _value) # rubocop:disable Naming/PredicateName
-        byebug
         [relation(key).name, relation(key).klass.where(relation(key).klass.primary_key => relation(key).value)]
       end
 

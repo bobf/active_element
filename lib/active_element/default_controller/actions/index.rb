@@ -34,9 +34,16 @@ module ActiveElement
         end
 
         def ordered(unordered_collection)
-          return unordered_collection if state.list_order.blank?
+          return unordered_collection.order(state.list_order) if state.list_order.present?
+          return unordered_collection.order(**order_params) if order_params.present?
 
-          unordered_collection.order(state.list_order)
+          unordered_collection
+        end
+
+        def order_params
+          return nil if controller.params[:_order].blank?
+
+          @order_params ||= { controller.params[:_order].first => controller.params[:_order].last }
         end
       end
     end

@@ -131,7 +131,7 @@ module ActiveElement
       end
 
       def model
-        record&.class
+        record&.class || record_path.model
       end
 
       def tabindex
@@ -186,7 +186,7 @@ module ActiveElement
 
       def base_options_for_select(field, field_options)
         return normalized_options(field_options.fetch(:options)) if field_options.key?(:options)
-        return default_options_for_select(field, field_options) if record.class.is_a?(ActiveModel::Naming)
+        return default_options_for_select(field, field_options) if record_path.model.is_a?(ActiveModel::Naming)
 
         raise ArgumentError, "Must provide select options `[:#{field}, { options: [...] }]` or a record instance."
       end
@@ -202,8 +202,8 @@ module ActiveElement
       end
 
       def default_options_for_select(field, field_options)
-        options = record.class.distinct.order(field).pluck(field)
-        [options.map { |option| autoformat(option, field_options) }, options].transpose + [{ selected: value_for(field) }]
+        options = model.distinct.order(field).pluck(field).compact
+        [options.map { |option| autoformat(option, field_options) }, options].transpose
       end
 
       def form_id

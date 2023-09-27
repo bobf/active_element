@@ -3,7 +3,15 @@
     <tr>
       <% fields.each do |field, class_name, label, _mapper, options| %>
         <th class="text-nowrap">
-          <%= label %>
+          <% if component.model.present? %>
+            <%= link_to label,
+                        ActiveElement::Components::Util::RecordPath.new(
+                          record: component.model,
+                          controller: component.controller,
+                          type: :index
+                        ).path(**component.controller.request.params.merge(_order: [field, 'ASC'])) %>
+          <% end %>
+
           <% if options[:description].present? %>
             <button type="button"
                     style="background: none; border: none; outline: 0; position: absolute; margin-top: 0.3rem"

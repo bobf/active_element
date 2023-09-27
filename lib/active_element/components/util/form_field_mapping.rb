@@ -20,7 +20,7 @@ module ActiveElement
         def fields_with_types_and_options
           compiled_fields = fields.map do |field|
             next field_with_default_type_and_default_options(field) unless field.is_a?(Array)
-            next field if normalized_field?(field)
+            next field_with_provided_type_and_provided_options(field) if normalized_field?(field)
             next field_with_default_type_and_provided_options(field) if field_name_with_options?(field)
             next field_with_type(field) if field_name_with_type?(field)
 
@@ -53,8 +53,14 @@ module ActiveElement
           [field, default_type_from_model(field), default_options(field)]
         end
 
+        def field_with_provided_type_and_provided_options(field)
+          return field unless relation?(field.first) || field.last.key?(:options)
+
+          relation_select_field(field.first, scope: field.last.fetch(:scope, nil))
+        end
+
         def field_with_type(field)
-          [field.first, field.last, default_options(field)]
+          [field.first, field.last, default_options(field.first)]
         end
 
         def association_mapping(field)
@@ -141,7 +147,7 @@ module ActiveElement
         end
 
         def relation_field(field)
-          return relation_text_search_field(field) if association_mapping(field).total_count > 100000
+          return relation_text_search_field(field) if association_mapping(field).total_count > 1000
 
           relation_select_field(field)
         end
@@ -155,10 +161,10 @@ module ActiveElement
            ).merge({ display_value: association_mapping(field).display_value, label: i18n.label(field) })]
         end
 
-        def relation_select_field(field)
+        def relation_select_field(field, scope: nil)
           [field, :select,
            { multiple: association_mapping(field).multiple_association?,
-             options: association_mapping(field).options_for_select }]
+             options: association_mapping(field).options_for_select(scope: scope) }]
         end
 
         def searchable_fields(field)
@@ -215,7 +221,7 @@ module ActiveElement
           return default_search_field_type(field) if search?
           return :password_field if secret_field?(field)
           return :email_field if email_field?(field)
-          return :phone_field if phone_field?(field)
+          return :telephone_field if phone_field?(field)
 
           :text_field
         end

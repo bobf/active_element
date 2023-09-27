@@ -27,20 +27,20 @@ module ActiveElement
 
     def listable_fields(*args, order: nil)
       state.list_order = order
-      state.listable_fields.concat(args.map(&:to_sym)).uniq!
+      state.listable_fields.concat(args).uniq!
     end
 
     def viewable_fields(*args)
-      state.viewable_fields.concat(args.map(&:to_sym)).uniq!
+      state.viewable_fields.concat(args).uniq!
     end
 
     def editable_fields(*args)
-      state.editable_fields.concat(args.map(&:to_sym)).uniq!
+      state.editable_fields.concat(args).uniq!
     end
 
     def searchable_fields(*args, required: false)
       state.search_required = required
-      state.searchable_fields.concat(args.map(&:to_sym)).uniq!
+      state.searchable_fields.concat(args).uniq!
     end
 
     def deletable

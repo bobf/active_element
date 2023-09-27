@@ -4,7 +4,6 @@ module ActiveElement
   module Components
     # A table component for rendering the fields of a single object horizontally.
     class ItemTable
-      include LinkHelpers
       include SecretFields
 
       attr_reader :controller, :model_name

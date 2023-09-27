@@ -4,7 +4,6 @@ module ActiveElement
   module Components
     # A table component for rendering a collection of data.
     class CollectionTable
-      include LinkHelpers
       include SecretFields
       include Translations
 

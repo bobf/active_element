@@ -60,10 +60,11 @@ module ActiveElement
           associated_model&.count
         end
 
-        def options_for_select
+        def options_for_select(scope: nil)
           return [] if associated_model.blank?
 
-          associated_model.all.pluck(display_field, associated_model.primary_key).map do |title, value|
+          base = scope.nil? ? associated_model : associated_model.public_send(scope)
+          base.all.pluck(display_field, associated_model.primary_key).sort.map do |title, value|
             next [title, value] if display_field == associated_model.primary_key
 
             ["#{title} (#{value})", value]
