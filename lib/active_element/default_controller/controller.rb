@@ -10,7 +10,7 @@ module ActiveElement
       end
 
       def index
-        return render_forbidden(:viewable) unless configured?(:viewable)
+        return render_forbidden(:listable) unless configured?(:listable)
 
         Actions::Index.new(controller: controller, model: model, state: state).render
       end

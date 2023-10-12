@@ -88,7 +88,7 @@ module ActiveElement
         end
 
         def associated_record_path(path_for)
-          return nil unless controller.helpers.respond_to?(path_helper)
+          return nil if path_helper.nil?
 
           controller.helpers.public_send(path_helper, path_for)
         end
@@ -134,9 +134,15 @@ module ActiveElement
         end
 
         def path_helper
-          return "#{resource_name}_path" if namespace.blank?
+          names = [associated_record.model_name.singular] + Util.sti_record_names(associated_record)
+          names.compact.each do |name|
+            base_path = "#{name}_path"
+            namespace_path = "#{namespace}_#{name}_path" if namespace.present?
+            return base_path if namespace.blank? && controller.helpers.respond_to?(base_path)
+            return namespace_path if namespace_path.present? && controller.helpers.respond_to?(namespace_path)
+          end
 
-          "#{namespace}_#{resource_name}_path"
+          nil
         end
 
         def link_to(value)
