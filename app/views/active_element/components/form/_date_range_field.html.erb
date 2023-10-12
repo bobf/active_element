@@ -1,0 +1,14 @@
+<div class="d-flex">
+  <%= form.label(nil, class: 'me-2 mt-1') { 'Between' } %>
+  <%= form.date_field("#{field}[from]", name: "#{field}[from]",
+                                 value: component.value_for(field, :from),
+                                 class: "form-control #{component.valid?(field) ? nil : 'is-invalid'}",
+                                 tabindex: component.tabindex,
+                                 **options) %>
+  <%= form.label(nil, class: 'ms-2 mt-1 me-2') { 'and' } %>
+  <%= form.date_field("#{field}[to]", name: "#{field}[to]",
+                                 value: component.value_for(field, :to),
+                                 class: "form-control #{component.valid?(field) ? nil : 'is-invalid'}",
+                                 tabindex: component.tabindex,
+                                 **options) %>
+</div>

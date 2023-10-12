@@ -20,6 +20,9 @@
 <% elsif type == :datetime_range_field %>
   <%= render partial: 'active_element/components/form/datetime_range_field',
              locals: { form_id: id, form: form, field: field, type: type, options: options, component: component } %>
+<% elsif type == :date_range_field %>
+  <%= render partial: 'active_element/components/form/date_range_field',
+             locals: { form_id: id, form: form, field: field, type: type, options: options, component: component } %>
 <% else %>
   <%= render partial: 'active_element/components/form/generic_field',
              locals: { form_id: id, form: form, field: field, type: type, options: options, component: component } %>
