@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    active_element (0.0.13)
+    active_element (0.0.14)
       bootstrap (~> 5.3.0alpha3)
       kaminari (~> 1.2)
       paintbrush (~> 0.1.2)
@@ -80,12 +80,12 @@ GEM
     addressable (2.8.4)
       public_suffix (>= 2.0.2, < 6.0)
     ast (2.4.2)
-    autoprefixer-rails (10.4.13.0)
+    autoprefixer-rails (10.4.15.0)
       execjs (~> 2)
     bcrypt (3.1.18)
-    bootstrap (5.3.0.alpha3)
+    bootstrap (5.3.1)
       autoprefixer-rails (>= 9.1.0)
-      popper_js (>= 2.11.7, < 3)
+      popper_js (>= 2.11.8, < 3)
       sassc-rails (>= 2.0.0)
     brakeman (5.4.1)
     builder (3.2.4)
@@ -103,7 +103,7 @@ GEM
     devpack (0.4.1)
     diff-lcs (1.5.0)
     erubi (1.12.0)
-    execjs (2.8.1)
+    execjs (2.9.1)
     factory_bot (5.2.0)
       activesupport (>= 4.2.0)
     factory_bot_rails (5.2.0)
@@ -112,8 +112,8 @@ GEM
     faker (2.23.0)
       i18n (>= 1.8.11, < 2)
     ffi (1.15.5)
-    globalid (1.1.0)
-      activesupport (>= 5.0)
+    globalid (1.2.1)
+      activesupport (>= 6.1)
     hashdiff (1.0.1)
     htmlbeautifier (1.4.2)
     i18n (1.14.1)
@@ -148,17 +148,17 @@ GEM
       net-smtp
     marcel (1.0.2)
     method_source (1.0.0)
-    mini_mime (1.1.2)
+    mini_mime (1.1.5)
     mini_portile2 (2.8.2)
     minitest (5.18.1)
-    net-imap (0.3.6)
+    net-imap (0.4.1)
       date
       net-protocol
     net-pop (0.1.2)
       net-protocol
     net-protocol (0.2.1)
       timeout
-    net-smtp (0.3.3)
+    net-smtp (0.4.0)
       net-protocol
     nio4r (2.5.9)
     nokogiri (1.15.2)
@@ -171,7 +171,7 @@ GEM
     parser (3.2.2.3)
       ast (~> 2.4.1)
       racc
-    popper_js (2.11.7)
+    popper_js (2.11.8)
     public_suffix (5.0.1)
     racc (1.7.1)
     rack (2.2.7)
@@ -292,7 +292,7 @@ GEM
       sprockets (> 3.0)
       sprockets-rails
       tilt
-    sprockets (4.2.0)
+    sprockets (4.2.1)
       concurrent-ruby (~> 1.0)
       rack (>= 2.2.4, < 4)
     sprockets-rails (3.4.2)
@@ -305,8 +305,8 @@ GEM
       i18n (>= 0.5)
       paint (~> 2.0)
     thor (1.2.2)
-    tilt (2.2.0)
-    timeout (0.3.2)
+    tilt (2.3.0)
+    timeout (0.4.0)
     tzinfo (2.0.6)
       concurrent-ruby (~> 1.0)
     unicode-display_width (2.4.2)
@@ -316,7 +316,7 @@ GEM
       addressable (>= 2.8.0)
       crack (>= 0.3.2)
       hashdiff (>= 0.4.0, < 2.0.0)
-    websocket-driver (0.7.5)
+    websocket-driver (0.7.6)
       websocket-extensions (>= 0.1.0)
     websocket-extensions (0.1.5)
     zeitwerk (2.6.8)
