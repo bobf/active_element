@@ -105,7 +105,7 @@ The results will be rendered in a horizontal table with one row for each item, i
 # app/controllers/restaurants_controller.rb
 
 class RestaurantsController < ApplicationController
-  active_element.searchable_fields :name, :restaurateur, :created_at
+  active_element.viewable_fields :name, :restaurateur, :created_at
 end
 ```
 
@@ -118,6 +118,15 @@ This declaration enables both the `#edit`, `#new`, `#update`, and `#create` acti
 Note that each field type can be overridden and configured by defining `config/forms/<model>/<field.yml>`, allowing you to make many customizations to each field without having to work with views or override the default controller actions, as well as allowing each field configuration to be re-used in multiple places. See the [Form Fields](components/form-fields.html) documentation for more details.
 
 By default, `json` and `jsonb` fields use the [JSON Field](form-fields/json.html) type, allowing you to edit complex _JSON_ data structures via user-friendly _HTML_ forms. A [schema file](form-fields/json/schema.html) **must** be defined for these fields. See the `json_field` documentation for more details.
+
+
+```ruby
+# app/controllers/restaurants_controller.rb
+
+class RestaurantsController < ApplicationController
+  active_element.editable_fields :name, :restaurateur
+end
+```
 
 ## Deletable
 
