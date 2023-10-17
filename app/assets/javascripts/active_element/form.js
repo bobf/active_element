@@ -31,7 +31,8 @@
         clearFormButton.addEventListener('click', (ev) => {
           ev.preventDefault();
 
-          form.querySelectorAll('.form-fields input, .form-fields select, .form-fields textarea')
+          form.querySelectorAll('.form-fields input:enabled, .form-fields select:enabled, .form-fields textarea:enabled')
+              .filter((formInput) => !formInput.readonly)
               .forEach((formInput) => formInput.value = '');
         });
       });
