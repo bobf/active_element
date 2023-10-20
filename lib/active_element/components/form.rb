@@ -178,7 +178,11 @@ module ActiveElement
       end
 
       def humanized_model_name
-        record.class.name.titleize
+        if record.respond_to?(:to_model)
+          record.to_model.model_name.name.titleize
+        else
+          record.class.name.titleize
+        end
       end
 
       def base_options_for_select(field, field_options)
