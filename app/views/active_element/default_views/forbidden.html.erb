@@ -1,7 +1,21 @@
-<h1>Forbidden</h1>
+<% if Rails.env.development? %>
+  <h1>Not Configured</h1>
 
-<h2 class="text-danger">Access to this resource has not been configured</h2>
+  <p>The <code><%= type %></code> resource for <code><%= controller_name.titleize %></code> has not been configured.</p>
 
-<p>The <span class="text-primary font-monospace"><%= type %></span> resource for <span class="text-primary font-monospace"><%= controller_name.titleize %></span> has not been configured, please contact your administrator.</p>
+  <p>Configure <code><%= controller.class.name %></code> like the example below:</p>
+
+<code><pre class="border p-3">class <%= controller.class.name %>
+  active_element.<%= type %>_fields :name, :email, :date_of_birth
+end</pre></code>
+
+  <p>This message is visible in <code>development</code> mode only.</p>
+<% else %>
+  <h1>Forbidden</h1>
+
+  <h2 class="text-danger">Access to this resource has not been configured</h2>
+
+  <p>The <span class="text-primary font-monospace"><%= type %></span> resource for <span class="text-primary font-monospace"><%= controller_name.titleize %></span> has not been configured, please contact your administrator.</p>
+<% end %>
 
 <hr/>

@@ -10,9 +10,9 @@ module ActiveElement
         include EmailFields
 
         def initialize(record:, fields:, controller:, i18n:, search: false)
-          @record = record
-          @fields = fields
           @controller = controller
+          @record = record || default_record
+          @fields = fields
           @i18n = i18n
           @search = search
         end
@@ -20,7 +20,7 @@ module ActiveElement
         def fields_with_types_and_options
           compiled_fields = fields.map do |field|
             next field_with_default_type_and_default_options(field) unless field.is_a?(Array)
-            next field if normalized_field?(field)
+            next field_with_provided_type_and_provided_options(field) if normalized_field?(field)
             next field_with_default_type_and_provided_options(field) if field_name_with_options?(field)
             next field_with_type(field) if field_name_with_type?(field)
 
@@ -47,18 +47,37 @@ module ActiveElement
         end
 
         def field_with_default_type_and_default_options(field)
+          return inline_configured_field(field) if inline_configuration?(field)
           return [field, type_from_file(field).to_sym, options_from_file(field)] if file_configuration?(field)
-          return relation_text_search_field(field) if relation?(field) && record.present? && !search?
+          return relation_field(field) if relation?(field) && record.present?
 
           [field, default_type_from_model(field), default_options(field)]
         end
 
+        def inline_configuration?(field)
+          inline_configured_field(field).present?
+        end
+
+        def inline_configured_field(field)
+          block = controller.active_element.state.field_options[field]
+          return nil if block.blank?
+
+          field_options = block.call(FieldOptions.new(field))
+          [field, field_options.type, field_options.options]
+        end
+
+        def field_with_provided_type_and_provided_options(field)
+          return relation_select_field(field.first) if relation?(field.first) && field[1] == :select
+
+          field
+        end
+
         def field_with_type(field)
-          [field.first, field.last, default_options(field)]
+          [field.first, field.last, default_options(field.first)]
         end
 
         def association_mapping(field)
-          @association_mapping ||= AssociationMapping.new(
+          AssociationMapping.new(
             controller: controller,
             field: field,
             record: record,
@@ -73,7 +92,7 @@ module ActiveElement
           #
           #   active_element.component.form fields: [:foo, :bar, [:some_json_field, :text_area]]
           #
-          file_configuration_path(field).file? && default_type_from_model(field) != :json_field
+          file_configuration_path(field).present? && default_type_from_model(field) != :json_field
         end
 
         def type_from_file(field)
@@ -86,7 +105,16 @@ module ActiveElement
         end
 
         def file_configuration_path(field)
-          record_field_configuration_path(field) || sti_field_configuration_path(field)
+          file_configuration_paths(field).compact.find(&:file?)
+        end
+
+        def file_configuration_paths(field)
+          [
+            record_field_configuration_path(field),
+            sti_record_field_configuration_paths(field),
+            controller_field_configuration_path(field),
+            controller_field_configuration_path(field, scope: false)
+          ].flatten
         end
 
         def record_field_configuration_path(field)
@@ -96,11 +124,18 @@ module ActiveElement
           Rails.root.join('config/forms', record_name, "#{field}.yml")
         end
 
-        def sti_record_field_configuration_path(field)
-          sti_record_name = Util.sti_record_name(record)
-          return nil if sti_record_name.blank?
+        def sti_record_field_configuration_paths(field)
+          sti_record_names = Util.sti_record_names(record)
+          return nil if sti_record_names.blank?
 
-          Rails.root.join('config/forms', sti_record_name, "#{field}.yml")
+          sti_record_names.map { |name| Rails.root.join('config/forms', name, "#{field}.yml") }
+        end
+
+        def controller_field_configuration_path(field, scope: true)
+          return nil if controller.blank?
+
+          controller_segment = (scope ? controller.controller_path : controller.controller_name).singularize
+          Rails.root.join('config/forms', controller_segment, "#{field}.yml")
         end
 
         def default_type_from_model(field)
@@ -126,6 +161,20 @@ module ActiveElement
           model&.reflect_on_association(field)
         end
 
+        def relation_field(field)
+          return relation_text_search_field(field) if association_mapping(field).associated_model.count > 1000
+
+          relation_select_field(field)
+        end
+
+        def relation_select_field(field)
+          association = association_mapping(field)
+          columns = [association.display_field, association.associated_model.primary_key].compact
+          [association.relation_key, :select,
+           { multiple: association_mapping(field).multiple_association?,
+             options: association.associated_model.pluck(*columns) }]
+        end
+
         def relation_text_search_field(field)
           [field, :text_search_field,
            TextSearch.text_search_options(
@@ -136,9 +185,10 @@ module ActiveElement
         end
 
         def searchable_fields(field)
+          fields = Util.relation_controller(model, controller, field)&.active_element&.state&.searchable_fields || []
           # FIXME: Use database column type to only include strings/numbers.
-          (Util.relation_controller(model, controller, field)&.active_element&.state&.searchable_fields || [])
-            .reject { |searchable_field| searchable_field.to_s.end_with?('_at') }
+          searchable = fields.reject { |searchable_field| searchable_field.to_s.end_with?('_at') }
+          searchable.presence || [:id, :name].reject { |column| model.columns.map(&:name).include?(column) }
         end
 
         def relation_primary_key(field)
@@ -189,7 +239,7 @@ module ActiveElement
           return default_search_field_type(field) if search?
           return :password_field if secret_field?(field)
           return :email_field if email_field?(field)
-          return :phone_field if phone_field?(field)
+          return :telephone_field if phone_field?(field)
 
           :text_field
         end
@@ -208,6 +258,10 @@ module ActiveElement
           {
             required: required?(field)
           }.merge(field_options(field))
+        end
+
+        def default_record
+          controller&.controller_name&.classify&.safe_constantize&.new
         end
 
         def required?(field)

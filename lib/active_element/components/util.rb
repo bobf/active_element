@@ -23,10 +23,22 @@ module ActiveElement
         record&.try(:model_name)&.try(&:singular) || default_record_name(record)
       end
 
+      # TODO: Remove and use .sti_record_names everywhere instead.
       def self.sti_record_name(record)
         return default_record_name(record) unless record.class.respond_to?(:inheritance_column)
 
         record&.class&.superclass&.model_name&.singular if record&.try(record.class.inheritance_column).present?
+      end
+
+      def self.sti_record_names(record) # rubocop:disable Metrics/CyclomaticComplexity
+        record.class.ancestors.select do |ancestor|
+          next false if ancestor == record.class
+          next false if ancestor.try(:inheritance_column).blank?
+          next false unless ancestor < ActiveRecord::Base
+          next false if ancestor.abstract_class?
+
+          true
+        end.map(&:model_name).map(&:singular)
       end
 
       def self.default_record_name(record)

@@ -20,6 +20,7 @@ module ActiveElement
         @item = item
         @modal = modal
         @kwargs = kwargs
+        @model = model
         @columns = columns
         @search = search
         @action = kwargs.delete(:action) { default_action }
@@ -40,9 +41,11 @@ module ActiveElement
           submit_label: submit_label,
           submit_position: submit_position,
           class_name: class_name,
+          becomes_model: becomes_model,
           method: method,
           action: action,
           kwargs: kwargs,
+          model_param: model_param,
           destroy: destroy,
           modal: modal,
           columns: columns,
@@ -237,10 +240,27 @@ module ActiveElement
         end
       end
 
+      def becomes_model
+        return nil unless record.is_a?(ActiveRecord::Base)
+        return nil if record_path.model == model
+
+        record_path.model
+      end
+
       def default_action
         return controller.request.path unless record.class.is_a?(ActiveModel::Naming)
 
-        Util::RecordPath.new(record: record, controller: controller, type: default_action_type).path
+        record_path.path
+      end
+
+      def record_path
+        @record_path ||= Util::RecordPath.new(record: record, controller: controller, type: default_action_type)
+      end
+
+      def model_param
+        return nil if record.blank?
+
+        [record_path.namespace, becomes_model.present? ? record.becomes(becomes_model) : record].compact_blank
       end
     end
   end

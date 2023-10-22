@@ -25,9 +25,11 @@ module ActiveElement
         conditions = search_filters.to_h.map do |key, value|
           next relation_matches(key, value) if relation?(key)
           next datetime_between(key, value) if datetime?(key)
+          next model.arel_table[key].matches("#{value}%") if string_like_column?(key)
 
-          model.arel_table[key].matches("#{value}%")
+          model.arel_table[key].eq(value)
         end
+
         conditions[1..].reduce(conditions.first) do |accumulated, condition|
           accumulated.and(condition)
         end
@@ -41,12 +43,27 @@ module ActiveElement
 
       attr_reader :controller, :model
 
+      def string_like_column?(key)
+        [:string, :text].include?(
+          model.columns.find { |column| column.name.to_s == key.to_s }
+        )
+      end
+
       def searchable_fields
-        controller.active_element.state.searchable_fields.map do |field|
+        fields = controller.active_element.state.searchable_fields.map do |field|
           next field unless field.to_s.end_with?('_at')
 
           { field => %i[from to] }
         end
+        (fields + relation_fields).uniq
+      end
+
+      def relation_fields
+        controller.active_element.state.searchable_fields.map do |field|
+          next nil unless relation?(field)
+
+          relation(field).try(:foreign_key)
+        end.compact
       end
 
       def noop
@@ -76,21 +93,10 @@ module ActiveElement
       end
 
       def relation_matches(key, value)
-        fields = searchable_relation_fields(key)
-        relation_model = relation(key).klass
-        fields.select! do |field|
-          relation_model.columns.find { |column| column.name.to_s == field.to_s }&.type == :string
-        end
+        foreign_key = relation(key).try(:foreign_key)
+        return noop unless foreign_key.present?
 
-        return noop if fields.empty?
-
-        relation_conditions(fields, value, relation_model)
-      end
-
-      def relation_conditions(fields, value, relation_model)
-        fields[1..].reduce(relation_model.arel_table[fields.first].matches("#{value}%")) do |condition, field|
-          condition.or(relation_model.arel_table[field].matches("#{value}%"))
-        end
+        model.arel_table[foreign_key].eq(value)
       end
 
       def searchable_relation_fields(key)

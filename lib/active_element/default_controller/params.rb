@@ -33,7 +33,15 @@ module ActiveElement
         scalar, json = controller.active_element.state.editable_fields.partition do |field|
           scalar?(field)
         end
-        scalar + [json_params(json)]
+        scalar + relation_fields + [json_params(json)]
+      end
+
+      def relation_fields
+        controller.active_element.state.editable_fields.map do |field|
+          next nil unless relation?(field)
+
+          relation(field).try(:foreign_key)
+        end.compact
       end
 
       def scalar?(field)

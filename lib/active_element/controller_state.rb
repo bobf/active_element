@@ -5,9 +5,10 @@ module ActiveElement
   # configuration. Used throughout ActiveElement for generating dynamic content based on
   # controller configuration.
   class ControllerState
-    attr_reader :permissions, :listable_fields, :viewable_fields, :editable_fields, :searchable_fields
+    attr_reader :permissions, :listable_fields, :viewable_fields, :editable_fields, :searchable_fields,
+                :field_options
     attr_accessor :sign_in_path, :sign_in, :sign_in_method, :sign_out_path, :sign_out_method,
-                  :deletable, :authorizor, :authenticator, :list_order
+                  :deletable, :authorizor, :authenticator, :list_order, :search_required
 
     def initialize(controller:)
       @controller = controller
@@ -19,6 +20,7 @@ module ActiveElement
       @viewable_fields = []
       @editable_fields = []
       @searchable_fields = []
+      @field_options = {}
     end
 
     def deletable?

@@ -45,6 +45,8 @@ module ActiveElement
         end
 
         def value_from_record
+          return nil if field.blank?
+
           record.public_send(field) if record.respond_to?(field)
         end
 

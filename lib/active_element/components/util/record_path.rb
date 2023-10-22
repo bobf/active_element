@@ -11,19 +11,23 @@ module ActiveElement
           @type = type&.to_sym || controller.action_name&.to_sym
         end
 
-        def path
-          record_path || sti_record_path
+        def path(**kwargs)
+          record_path(**kwargs)
         rescue NoMethodError
           raise Error,
-                "Unable to map #{record.inspect} to a Rails route. Tried:\n" \
-                "#{[default_record_path, sti_record_path].compact.join("\n")}"
+                "Unable to map #{record.inspect} to a Rails route (#{@controller.class.name}##{@type}). Tried:\n" \
+                "#{all_record_paths.join("\n")}"
         end
 
-        private
+        def model
+          all_names.find do |name|
+            controller.helpers.public_send(record_path_for(name), *path_arguments)
+          rescue NoMethodError
+            nil
+          end&.classify&.constantize || default_model
+        end
 
-        attr_reader :record, :controller, :type
-
-        def namespace_prefix
+        def namespace
           # XXX: We guess the namespace from the current controller's module name. This will work
           # most of the time but will break if the current record's controller exists in a different
           # namespace to the current controller, e.g. `BackEndAdmin::UsersController` and
@@ -31,20 +35,45 @@ module ActiveElement
           # collection of `User` objects, the "show" path will be wrong:
           # `front_end_admin_user_path`. Maybe descend through the full controller class tree to
           # find a best match ?
-          namespace = controller.class.name.deconstantize.underscore
+          controller.class.name.deconstantize.underscore.to_sym
+        end
+
+        private
+
+        def default_model
+          controller.controller_name.classify&.constantize
+        end
+
+        def all_names
+          @all_names ||= ([record_name] + sti_record_names).compact
+        end
+
+        def all_record_paths
+          @all_record_paths ||= all_names.map { |name| record_path_for(name) }
+        end
+
+        def namespace_prefix
           return nil if namespace.blank?
 
           "#{namespace}_"
         end
 
-        def record_path
+        attr_reader :record, :controller, :type
+
+        def record_path(**kwargs) # rubocop:disable Metrics/AbcSize
           return nil if record.nil?
 
-          controller.helpers.public_send(default_record_path, *path_arguments)
+          controller.helpers.public_send(default_record_path, *path_arguments, **kwargs)
         rescue NoMethodError
-          raise NoMethodError if sti_record_name.nil?
+          raise if sti_record_names.blank?
 
-          controller.helpers.public_send(sti_record_path, *path_arguments)
+          sti_record_names.each do |sti_record_name|
+            return controller.helpers.public_send(record_path_for(sti_record_name), *path_arguments, **kwargs)
+          rescue NoMethodError
+            nil
+          end
+
+          raise
         end
 
         def path_arguments
@@ -60,10 +89,8 @@ module ActiveElement
           "#{record_path_prefix}#{namespace_prefix}#{record_name}_path"
         end
 
-        def sti_record_path
-          return nil if sti_record_name.nil?
-
-          "#{record_path_prefix}#{namespace_prefix}#{sti_record_name}_path"
+        def record_path_for(name)
+          "#{record_path_prefix}#{namespace_prefix}#{name}_path"
         end
 
         def record_name
@@ -72,10 +99,10 @@ module ActiveElement
           Util.record_name(record)&.pluralize
         end
 
-        def sti_record_name
-          return Util.sti_record_name(record) unless pluralize?
+        def sti_record_names
+          return Util.sti_record_names(record) unless pluralize?
 
-          Util.sti_record_name(record)
+          Util.sti_record_names(record).map(&:pluralize)
         end
 
         def record_path_prefix

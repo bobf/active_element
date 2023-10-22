@@ -25,7 +25,7 @@ module ActiveElement
           when :has_one
             associated_record&.public_send(relation_key)
           when :has_many
-            associated_record&.map(&relation_key)
+            associated_record&.map(&relation_key.to_sym)
           when :belongs_to
             record&.public_send(relation_key)
           end
@@ -47,6 +47,42 @@ module ActiveElement
           value.public_send(associated_model.primary_key)
         end
 
+        def display_field
+          @display_field ||= options.fetch(:attribute) do
+            next associated_model.default_display_attribute if defined_display_attribute?
+            next default_display_attribute if default_display_attribute.present?
+
+            associated_model.primary_key
+          end
+        end
+
+        def total_count
+          associated_model&.count
+        end
+
+        def options_for_select(scope: nil)
+          return [] if associated_model.blank?
+
+          base = scope.nil? ? associated_model : associated_model.public_send(scope)
+          base.all.pluck(display_field, associated_model.primary_key).sort.map do |title, value|
+            next [title, value] if display_field == associated_model.primary_key
+
+            ["#{title} (#{value})", value]
+          end
+        end
+
+        def single_association?
+          %i[has_one belongs_to].include?(relation.macro)
+        end
+
+        def multiple_association?
+          [:has_and_belongs_to_many, :has_many].include?(relation.macro)
+        end
+
+        def associated_model
+          record.association(field).klass
+        end
+
         private
 
         attr_reader :controller, :field, :record, :associated_record, :options
@@ -56,7 +92,7 @@ module ActiveElement
         end
 
         def associated_record_path(path_for)
-          return nil unless controller.helpers.respond_to?(path_helper)
+          return nil if path_helper.nil?
 
           controller.helpers.public_send(path_helper, path_for)
         end
@@ -67,15 +103,6 @@ module ActiveElement
           raise ArgumentError,
                 "Must provide { attribute: :example_attribute } for `#{field}` or define " \
                 "`#{associated_record.class.name}.default_display_attribute`"
-        end
-
-        def display_field
-          @display_field ||= options.fetch(:attribute) do
-            next associated_model.default_display_attribute if defined_display_attribute?
-            next default_display_attribute if default_display_attribute.present?
-
-            associated_model.primary_key
-          end
         end
 
         def defined_display_attribute?
@@ -99,10 +126,6 @@ module ActiveElement
           end
         end
 
-        def associated_model
-          record.association(field).klass
-        end
-
         def associated_model_callable_method?(name)
           return false unless associated_model.public_instance_methods.include?(name)
           return false unless associated_model.public_instance_method(name).arity.zero?
@@ -110,18 +133,18 @@ module ActiveElement
           true
         end
 
-        def single_association?
-          %i[has_one belongs_to].include?(relation.macro)
-        end
-
-        def multiple_association?
-          relation.macro == :has_many
-        end
-
         def path_helper
-          return "#{resource_name}_path" if namespace.blank?
+          names = [associated_record&.model_name&.singular].compact + Util.sti_record_names(associated_record)
+          names.compact.each do |name|
+            base_path = "#{name}_path"
+            namespace_path = "#{namespace}_#{name}_path" if namespace.present?
+            return base_path if namespace.blank? && controller.helpers.respond_to?(base_path)
+            return namespace_path if namespace_path.present? && controller.helpers.respond_to?(namespace_path)
+          end
 
-          "#{namespace}_#{resource_name}_path"
+          nil
+        rescue
+          byebug
         end
 
         def link_to(value)
