@@ -50,7 +50,7 @@ module ActiveElement
 
         @items ||= user_routes(controller.active_element.current_user).available.select(&:primary?).map do |route|
           { path: route.path, title: route.title, spec: route.spec }
-        end
+        end.uniq { |item| item[:title] }
       end
 
       def user_routes(user)

@@ -45,7 +45,7 @@ module ActiveElement
 
       def string_like_column?(key)
         [:string, :text].include?(
-          model.columns.find { |column| column.name.to_s == key.to_s }
+          model.columns.find { |column| column.name.to_s == key.to_s }&.type&.to_sym
         )
       end
 
