@@ -39,7 +39,7 @@ module ActiveElement
         def association?
           return false unless record.is_a?(ActiveRecord::Base)
 
-          record.association(field).present?
+          !record.association(field).nil?
         rescue ActiveRecord::AssociationNotFoundError
           false
         end

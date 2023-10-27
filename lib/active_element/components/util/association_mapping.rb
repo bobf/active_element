@@ -118,7 +118,7 @@ module ActiveElement
         end
 
         def default_display_attribute
-          %i[name email display_name username].find do |display_field|
+          %i[email name display_name username].find do |display_field|
             next true if associated_model_callable_method?(display_field.to_sym)
             next true if associated_model.columns.map(&:name).map(&:to_sym).include?(display_field.to_sym)
 
