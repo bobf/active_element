@@ -17,7 +17,7 @@ module ActiveElement
         end
 
         def value
-          return mapped_value_from_record if association? || column.present?
+          return mapped_value_from_record if active_record? || column.present?
 
           value_from_record
         end
@@ -36,6 +36,10 @@ module ActiveElement
           @column ||= record.class.columns.find { |model_column| model_column.name.to_s == field.to_s }
         end
 
+        def active_record?
+          association? || value_from_record.is_a?(ActiveRecord::Base)
+        end
+
         def association?
           return false unless record.is_a?(ActiveRecord::Base)
 
@@ -47,7 +51,13 @@ module ActiveElement
         def value_from_record
           return nil if field.blank?
 
-          record.public_send(field) if record.respond_to?(field)
+          @value_from_record ||= if record.respond_to?(field) && record.is_a?(ActiveRecord::Base)
+                                   record.public_send(field)
+                                 elsif record.respond_to?(:key?) && record.respond_to?(:[]) && record.key?(field)
+                                   record[field]
+                                 elsif record.respond_to?(field)
+                                   record.public_send(field)
+                                 end
         end
 
         def mapped_value_from_record

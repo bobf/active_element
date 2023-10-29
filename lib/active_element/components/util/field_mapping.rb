@@ -73,8 +73,8 @@ module ActiveElement
         def default_value_mapper(field, options = nil)
           proc do |item|
             next default_record_value(field, item, options) if item.class.is_a?(ActiveModel::Naming)
-            next item.public_send(field) if item.respond_to?(field)
-            next item[field] if hash_field?(item, field)
+            next item.public_send(field) if item.class.is_a?(ActiveModel::Naming) && item.respond_to?(field)
+            next default_record_value(field, item, options) if hash_field?(item, field)
 
             nil
           end

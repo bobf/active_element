@@ -6,7 +6,7 @@ module ActiveElement
     class Button
       # rubocop:disable Metrics/MethodLength
       def initialize(controller, record, flag_or_options, confirm: false, type: :primary, method: nil,
-                     float: nil, icon: nil, **kwargs, &block)
+                     float: nil, icon: nil, tooltip: false, **kwargs, &block)
         @controller = controller
         @record = record.is_a?(ActiveRecord::Relation) ? record.klass.new : record
         @flag_or_options = flag_or_options
@@ -19,6 +19,7 @@ module ActiveElement
         @icon = icon
         @block_given = block_given?
         @content = block.call if block_given?
+        @tooltip = tooltip
       end
       # rubocop:enable Metrics/MethodLength
 
@@ -40,14 +41,15 @@ module ActiveElement
           kwargs_class: kwargs_class,
           kwargs: kwargs,
           content: content,
-          block_given: block_given
+          block_given: block_given,
+          tooltip: tooltip
         }
       end
 
       private
 
       attr_reader :controller, :record, :flag_or_options, :float, :kwargs, :kwargs_class, :type, :method, :icon,
-                  :block_given, :content, :confirm
+                  :block_given, :content, :confirm, :tooltip
 
       def link_method
         return method if method.present?
@@ -60,7 +62,7 @@ module ActiveElement
         when :destroy
           'btn-danger destroy-button action-button'
         when :show
-          'btn-primary show-button action-button'
+          'btn-info show-button action-button'
         when :edit
           'btn-primary edit-button action-button'
         when :new

@@ -16,6 +16,7 @@ module ActiveElement
 
         def link_tag
           verify_display_attribute
+          return nil if associated_record.blank?
           return associated_record.map { |value| link_to(value) } if multiple_association?
           return link_to(associated_record) if single_association?
         end

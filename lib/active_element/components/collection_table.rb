@@ -15,7 +15,7 @@ module ActiveElement
       # rubocop:disable Metrics/MethodLength
       def initialize(controller, class_name:, collection:, fields:, params:, model_name: nil, style: nil,
                      show: false, new: false, edit: false, destroy: false, paginate: true, group: nil,
-                     group_title: false, row_class: nil, **_kwargs)
+                     group_title: false, row_class: nil, title: nil, **_kwargs)
         @controller = controller
         @class_name = class_name
         @model_name = model_name
@@ -31,6 +31,7 @@ module ActiveElement
         @group = group
         @group_title = group_title
         @row_class = row_class
+        @title = title
         verify_paginate_and_group
       end
       # rubocop:enable Metrics/MethodLength
@@ -43,6 +44,7 @@ module ActiveElement
         {
           component: self,
           class_name: class_name,
+          title: title,
           collection: group ? collection : paginated_collection,
           fields: Util::FieldMapping.new(self, fields, class_name).mapped_fields,
           style: style,
@@ -76,10 +78,10 @@ module ActiveElement
 
       attr_reader :class_name, :collection, :fields, :style, :row_class,
                   :new, :show, :edit, :destroy,
-                  :paginate, :params, :group, :group_title
+                  :paginate, :params, :group, :group_title, :title
 
       def paginated_collection
-        return collection unless paginate && collection.respond_to?(:page)
+        return collection unless paginate && collection.respond_to?(:page) && !limit?
         return collection.page(page_number).per(page_size) if supports_pagination_but_not_yet_paginated?
 
         @paginated_collection ||= collection.page(page_number).per(page_size)
@@ -99,6 +101,7 @@ module ActiveElement
 
       def display_pagination?
         return false if group.present?
+        return false if limit?
         return false unless paginate && paginated_collection.respond_to?(:total_count)
 
         paginated_collection.total_count > (params[:page_size].presence&.to_i || DEFAULT_PAGE_SIZE)
@@ -119,6 +122,10 @@ module ActiveElement
         return collection if collection.includes_values.present? || collection.select_values.present?
 
         collection.includes(fields.select { |field| collection.model.reflect_on_association(field).present? })
+      end
+
+      def limit?
+        !collection.try(:limit_value).nil?
       end
     end
   end

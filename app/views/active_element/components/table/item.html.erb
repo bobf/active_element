@@ -10,6 +10,10 @@
   <%= active_element.component.new_button(component.model, float: 'end', class: 'mb-3') %>
 <% end %>
 
+<% if title.present? %>
+  active_element.component.page_section_title(title)
+<% end %>
+
 <table class="<%= class_name %> table" style="<%= style %>">
   <tbody>
     <% fields.each do |field, class_mapper, label, value_mapper, options| %>

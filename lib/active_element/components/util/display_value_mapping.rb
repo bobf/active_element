@@ -11,6 +11,12 @@ module ActiveElement
           association_mapping.link_tag
         end
 
+        def mapped_value_from_record
+          return value_record_path if value_from_record.is_a?(ActiveRecord::Base)
+
+          super
+        end
+
         def numeric_value
           value_from_record
         end
@@ -48,6 +54,10 @@ module ActiveElement
         def geometry_value
           require 'rgeo/geo_json'
           Util.json_pretty_print(RGeo::GeoJSON.encode(value_from_record))
+        end
+
+        def value_record_path
+          RecordPath.new(record: value_from_record, controller: component.controller, type: :show).link
         end
       end
     end

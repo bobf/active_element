@@ -2,6 +2,11 @@
   <%= active_element.component.new_button(component.model&.new, float: 'end', class: 'mb-3') %>
 <% end %>
 
+
+<% if title.present? %>
+  <%= active_element.component.page_section_title(title) %>
+<% end %>
+
 <% if display_pagination %>
   <%=
     render partial: 'active_element/components/table/pagination',
@@ -25,15 +30,19 @@
                        i18n: i18n,
                        row_class_mapper: row_class_mapper } %>
 <% else %>
-  <%= render partial: 'active_element/components/table/ungrouped_collection',
-             locals: { component: component,
-                       collection: collection,
-                       fields: fields,
-                       show: show,
-                       edit: edit,
-                       destroy: destroy,
-                       class_name: class_name,
-                       style: style,
-                       i18n: i18n,
-                       row_class_mapper: row_class_mapper } %>
+  <% if collection.try(:empty?) %>
+    <p><i>(No items to display).</i></p>
+  <% else %>
+    <%= render partial: 'active_element/components/table/ungrouped_collection',
+               locals: { component: component,
+                         collection: collection,
+                         fields: fields,
+                         show: show,
+                         edit: edit,
+                         destroy: destroy,
+                         class_name: class_name,
+                         style: style,
+                         i18n: i18n,
+                         row_class_mapper: row_class_mapper } %>
+  <% end %>
 <% end %>

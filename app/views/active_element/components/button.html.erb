@@ -1,11 +1,13 @@
-
 <%=
   link_to(
     path.presence || '#',
     method: path.present? && method != :get ? method : nil,
-    data: { confirm_action: confirm },
+    data: { confirm_action: confirm }.merge(tooltip ? {
+      'bs-trigger': 'hover',
+      'bs-toggle': 'popover',
+      'bs-content': title,
+    } : {}),
     class: "btn #{button_class} #{float_class} #{kwargs_class}",
-    title: title,
     **kwargs
   ) do %>
   <% if block_given %>
@@ -15,7 +17,7 @@
       <% if icon.present? %>
         <i class="fa-solid fa-<%= icon %>"></i>
       <% elsif type == :show %>
-        <i class="fa-solid fa-eye"></i>
+        <i class="fa-solid fa-magnifying-glass"></i>
       <% elsif type == :edit %>
         <i class="fa-solid fa-pen"></i>
       <% elsif type == :destroy %>

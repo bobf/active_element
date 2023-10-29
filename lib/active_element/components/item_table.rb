@@ -10,7 +10,7 @@ module ActiveElement
       attr_reader :controller, :model_name
 
       def initialize(controller, item:, fields:, class_name: nil, model_name: nil,
-                     edit: false, new: false, destroy: false, style: nil, row_class: nil, **_kwargs)
+                     edit: false, new: false, destroy: false, style: nil, row_class: nil, title: nil, **_kwargs)
         @controller = controller
         @class_name = class_name
         @model_name = model_name
@@ -21,6 +21,7 @@ module ActiveElement
         @new = new
         @style = style
         @row_class = row_class
+        @title = title
       end
 
       def template
@@ -37,7 +38,8 @@ module ActiveElement
           edit: edit,
           new: new,
           style: style,
-          row_class_mapper: row_class_mapper
+          row_class_mapper: row_class_mapper,
+          title: title
         }
       end
 
@@ -47,7 +49,7 @@ module ActiveElement
 
       private
 
-      attr_reader :class_name, :item, :fields, :edit, :new, :destroy, :style, :row_class
+      attr_reader :class_name, :item, :fields, :edit, :new, :destroy, :style, :row_class, :title
 
       def row_class_mapper
         row_class.is_a?(Proc) ? row_class : proc { row_class }

@@ -19,6 +19,10 @@ module ActiveElement
                 "#{all_record_paths.join("\n")}"
         end
 
+        def link(**kwargs)
+          controller.helpers.link_to(DefaultDisplayValue.new(object: record).value, path(**kwargs))
+        end
+
         def model
           all_names.find do |name|
             controller.helpers.public_send(record_path_for(name), *path_arguments)

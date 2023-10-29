@@ -1,7 +1,7 @@
 <% if value.is_a?(Array) %>
+  <ul>
   <% value.sort.each_with_index do |each_value, index| %>
-    <%= each_value %>
-    <%= index < value.size - 1 ? '|' : nil %>
+    <li><%= each_value %></li>
   <% end %>
 <% else %>
   <%= value %>
