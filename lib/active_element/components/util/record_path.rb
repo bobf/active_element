@@ -14,9 +14,9 @@ module ActiveElement
         def path(**kwargs)
           record_path(**kwargs)
         rescue NoMethodError
-          raise Error,
-                "Unable to map #{record.inspect} to a Rails route (#{@controller.class.name}##{@type}). Tried:\n" \
-                "#{all_record_paths.join("\n")}"
+          ActiveElement.warning("Unable to map #{record.inspect} to a Rails route (#{@controller.class.name}##{@type}). Tried:\n" \
+                                "#{all_record_paths.join("\n")}")
+          nil
         end
 
         def link(**kwargs)
