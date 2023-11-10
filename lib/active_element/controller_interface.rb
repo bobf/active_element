@@ -44,10 +44,9 @@ module ActiveElement
     end
 
     def field_options(field, &block)
-      state.field_options[field] = proc do
-        FieldOptions.new(field).tap { |field_options| block.call(field_options) }
-      end
+      state.field_options[field] = block
     end
+    alias field field_options
 
     def deletable
       state.deletable = true

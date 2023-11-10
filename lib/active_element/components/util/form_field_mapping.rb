@@ -62,7 +62,8 @@ module ActiveElement
           block = controller.active_element.state.field_options[field]
           return nil if block.blank?
 
-          field_options = block.call(FieldOptions.new(field))
+          field_options = FieldOptions.new(field)
+          block.call(field_options, record)
           [field, field_options.type, field_options.options]
         end
 

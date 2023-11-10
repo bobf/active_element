@@ -46,6 +46,7 @@ module ActiveElement
           action: action,
           kwargs: kwargs,
           model_param: model_param,
+          record_path: record_path,
           destroy: destroy,
           modal: modal,
           columns: columns,

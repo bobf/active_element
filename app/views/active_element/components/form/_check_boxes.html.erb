@@ -17,12 +17,14 @@
 <% else %>
   <div class="container w-100">
     <%= form.fields_for field do |subform| %>
-      <% options.fetch(:options).each_slice(options.fetch(:columns, 1)) do |slice| %>
+      <% options.fetch(:options).in_groups(options.fetch(:columns, 1)).reduce(&:zip).each do |columns| %>
         <div class="row w-100">
-          <% slice.each do |label, name, checked| %>
+          <% columns.each do |label, name, checked| %>
             <div class="col">
-              <%= subform.check_box(name, checked: checked, class: 'me-2', tabindex: component.tabindex) %>
-              <%= subform.label name, label %>
+              <% if [label, name, checked].any?(&:present?) %>
+                <%= subform.check_box(name, checked: checked, class: 'me-2', tabindex: component.tabindex) %>
+                <%= subform.label name, label %>
+              <% end %>
             </div>
             <br/>
           <% end %>
