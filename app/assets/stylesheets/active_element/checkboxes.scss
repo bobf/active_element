@@ -1,5 +1,6 @@
 .checkboxes-container{
-  column-width: 300px;
+  column-width: clamp(16rem, 20rem, 22rem);
+
   .checkbox-wrapper{
     label{
       input[type=checkbox]{
