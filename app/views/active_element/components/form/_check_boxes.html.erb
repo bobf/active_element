@@ -10,23 +10,17 @@
           <br/>
         <% end %>
       <% end %>
-
     </div>
     <hr/>
   <% end %>
 <% else %>
-  <div class="container w-100">
+  <div class="container w-100 checkboxes-container">
     <%= form.fields_for field do |subform| %>
-      <% options.fetch(:options).in_groups(options.fetch(:columns, 1)).reduce(&:zip).each do |columns| %>
-        <div class="row w-100">
-          <% columns.each do |label, name, checked| %>
-            <div class="col">
-              <% if [label, name, checked].any?(&:present?) %>
-                <%= subform.check_box(name, checked: checked, class: 'me-2', tabindex: component.tabindex) %>
-                <%= subform.label name, label %>
-              <% end %>
-            </div>
-            <br/>
+      <% options.fetch(:options).each do |label, name, checked| %>
+        <div class="checkbox-wrapper">
+          <%= subform.label name, label do %>
+            <%= subform.check_box(name, checked: checked, class: '', tabindex: component.tabindex) %>
+            <span class="label-title"><%= label %></span>
           <% end %>
         </div>
       <% end %>

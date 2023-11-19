@@ -1,0 +1,22 @@
+.checkboxes-container{
+  column-width: 300px;
+  .checkbox-wrapper{
+    label{
+      input[type=checkbox]{
+        cursor: pointer;
+      }
+      .label-title{
+        cursor: pointer;
+      }
+
+      input[type=checkbox]:disabled{
+        cursor: not-allowed;
+
+        &+.label-title {
+          opacity: 0.4;
+          cursor: not-allowed;
+        }
+      }
+    }
+  }
+}
