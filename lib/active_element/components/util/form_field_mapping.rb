@@ -59,11 +59,9 @@ module ActiveElement
         end
 
         def inline_configured_field(field)
-          block = controller.active_element.state.field_options[field]
-          return nil if block.blank?
+          field_options = FieldOptions.from_state(field, controller.active_element.state, record)
+          return nil if field_options.blank?
 
-          field_options = FieldOptions.new(field)
-          block.call(field_options, record)
           [field, field_options.type, field_options.options]
         end
 

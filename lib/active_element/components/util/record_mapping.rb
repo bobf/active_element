@@ -17,6 +17,7 @@ module ActiveElement
         end
 
         def value
+          return value_from_config if value_from_config.present?
           return mapped_value_from_record if active_record? || column.present?
 
           value_from_record
@@ -76,6 +77,14 @@ module ActiveElement
             associated_record: value_from_record,
             options: options
           )
+        end
+
+        def value_from_config
+          field_options = FieldOptions.from_state(field, component.controller.active_element.state, record)
+          return nil if field_options.blank?
+          return nil unless DATABASE_TYPES.include?(field_options.type.to_sym)
+
+          send("#{field_options.type}_value")
         end
 
         # Override these methods as required in a class that includes this module:
