@@ -432,7 +432,14 @@ ActiveElement.JsonField = (() => {
       element.append(Option({ value: '' }));
 
       schema.options.forEach((value) => {
-        element.append(Option({ value, selected: value === store.getValue(state) }));
+        let label = value;
+
+        if (isObject(value)) {
+          label = value.label;
+          value = value.value;
+        }
+
+        element.append(Option({ value, label, selected: value === store.getValue(state) }));
       });
 
       return element;
