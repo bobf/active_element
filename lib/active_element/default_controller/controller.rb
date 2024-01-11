@@ -116,7 +116,7 @@ module ActiveElement
       end
 
       def model
-        controller.controller_name.classify.constantize
+        state.model || controller.controller_name.classify.constantize
       end
 
       def record

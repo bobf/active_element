@@ -52,6 +52,10 @@ module ActiveElement
       state.deletable = true
     end
 
+    def model=(model)
+      state.model = model.constantize
+    end
+
     def application_name
       RailsComponent.new(::Rails).application_name
     end

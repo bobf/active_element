@@ -90,6 +90,7 @@ module ActiveElement
         end
 
         def default_record_path
+          return record.controller_name.constantize.controller_path.underscore.singularize.tr('/', '_') + '_path' if record.try(:controller_name).present?
           "#{record_path_prefix}#{namespace_prefix}#{record_name}_path"
         end
 

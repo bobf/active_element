@@ -144,8 +144,6 @@ module ActiveElement
           end
 
           nil
-        rescue
-          byebug
         end
 
         def link_to(value)
