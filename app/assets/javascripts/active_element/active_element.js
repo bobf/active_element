@@ -1,4 +1,3 @@
-//= require rails-ujs
 //= require bootstrap
 //= require active_element/setup
 //= require active_element/theme

@@ -602,7 +602,7 @@ ActiveElement.JsonField = (() => {
 })();
 
 (() => {
-  window.addEventListener('DOMContentLoaded', () => {
+  window.addEventListener(ActiveElement.reloadEvent, () => {
     document.querySelectorAll('.json-field').forEach((element) => {
       ActiveElement.JsonField(element);
     });

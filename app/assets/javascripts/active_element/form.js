@@ -39,7 +39,7 @@
     });
   };
 
-  window.addEventListener('DOMContentLoaded', () => {
+  window.addEventListener(ActiveElement.reloadEvent, () => {
     initModalButtons();
     initClearFormButtons();
   });

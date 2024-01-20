@@ -1,7 +1,7 @@
 (() => {
   const cloneElement = (id) => ActiveElement.cloneElement('theme', id);
 
-  window.addEventListener('DOMContentLoaded', () => {
+  window.addEventListener(ActiveElement.reloadEvent, () => {
     const themeSelect = document.querySelector('#theme-select');
 
     const setTheme = (theme) => {

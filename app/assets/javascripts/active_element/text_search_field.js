@@ -58,7 +58,7 @@
     }
   };
 
-  window.addEventListener('DOMContentLoaded', () => {
+  window.addEventListener(ActiveElement.reloadEvent, () => {
     document.querySelectorAll('[data-field-type="text-search"]').forEach((element) => {
       const id = element.id;
       const hiddenId = `${id}-hidden-value`;

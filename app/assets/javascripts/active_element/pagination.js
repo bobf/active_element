@@ -1,5 +1,5 @@
 (() => {
-  window.addEventListener('DOMContentLoaded', () => {
+  window.addEventListener(ActiveElement.reloadEvent, () => {
     const paginationSelect = document.querySelector('#collection-table-page-size-selector');
 
     if (paginationSelect) {

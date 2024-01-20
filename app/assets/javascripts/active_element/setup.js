@@ -33,6 +33,7 @@
 
   const ActiveElement = {
     debug: false,
+    reloadEvent: window.ActiveElement.turbo ? 'turbo:load' : 'DOMContentLoaded',
     log: {
       debug: (message) => { ActiveElement.debug && console.log(`[ActiveElement:debug]`, message); },
       info: (message) => { console.log(`[ActiveElement:info] ${message}`); },
@@ -47,7 +48,7 @@
     controller_path: document.querySelector('meta[name="active_element_controller_path"]').content
   };
 
-  window.ActiveElement = ActiveElement;
+  window.ActiveElement = { ...(window.ActiveElement || {}), ...ActiveElement };
 })();
 
 ActiveElement.log.info('Initialized');

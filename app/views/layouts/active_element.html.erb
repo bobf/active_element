@@ -1,8 +1,23 @@
 <html>
   <head>
+    <script>
+      window.ActiveElement = window.ActiveElement || {};
+    </script>
+
     <%= render_active_element_hook 'active_element/before_head' %>
     <%= render_active_element_hook 'active_element/favicon' %>
     <%= render_active_element_hook 'active_element/title' %>
+
+    <% if respond_to?(:javascript_importmap_tags) %>
+      <%= javascript_importmap_tags %>
+      <script>
+        window.ActiveElement.turbo = true;
+      </script>
+    <% else %>
+      <script>
+        window.ActiveElement.turbo = false;
+      </script>
+    <% end %>
 
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha512-iecdLmaskl7CVkqkXNQ/ZH/XLlvWZOJyj7Yy7tcenmpD1ypASozpmT/E0iPtmFIB46ZmdtAc9eNBvH0H/ZpiBw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
     <link rel="stylesheet"
@@ -48,15 +63,15 @@
       window.ActiveElement = window.ActiveElement || {};
     </script>
 
-    <%= stylesheet_link_tag 'active_element/application', 'data-turbolinks-track': 'reload' %>
+    <%= csrf_meta_tag %>
+    <meta name="active_element_controller_path" content="<%= controller_path %>">
+
+    <%= stylesheet_link_tag 'active_element/active_element' %>
+    <%= javascript_include_tag 'active_element/active_element' %>
 
     <% if Rails.application.assets&.find_asset('application.css').present? %>
-      <%= stylesheet_link_tag 'application', 'data-turbolinks-track': 'reload' %>
+      <%= stylesheet_link_tag 'application' %>
     <% end %>
-
-    <%= csrf_meta_tag %>
-
-    <meta name="active_element_controller_path" content="<%= controller_path %>">
 
     <%= render_active_element_hook 'active_element/after_head' %>
   </head>
@@ -97,9 +112,10 @@
 
     <%= render_active_element_hook 'active_element/after_content' %>
 
-    <%= javascript_include_tag 'active_element/application', 'data-turbolinks-track': 'reload' %>
-    <% if Rails.application.assets&.find_asset('application.js').present? %>
-      <%= javascript_include_tag 'application', 'data-turbolinks-track': 'reload' %>
+    <% if !respond_to?(:javascript_importmap_tags) && Rails.application.assets&.find_asset('application.js').present? %>
+      <%= javascript_include_tag 'active_element/active_element', 'data-turbo-track': 'reload', 'data-turbolinks-track': 'reload' %>
+      <%= javascript_include_tag 'application', 'data-turbo-track': 'reload', 'data-turbolinks-track': 'reload' %>
     <% end %>
+
   </body>
 </html>

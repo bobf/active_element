@@ -1,7 +1,7 @@
 (() => {
   const cloneElement = (id) => ActiveElement.cloneElement('form', id);
 
-  window.addEventListener('DOMContentLoaded', () => {
+  window.addEventListener(ActiveElement.reloadEvent, () => {
     const confirmLinks = document.querySelectorAll('[data-confirm-action="true"]');
 
     confirmLinks.forEach((element) => {

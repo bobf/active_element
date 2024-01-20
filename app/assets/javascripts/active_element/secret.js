@@ -1,7 +1,7 @@
 (() => {
   const cloneElement = (id) => ActiveElement.cloneElement('secret', id);
 
-  window.addEventListener('DOMContentLoaded', () => {
+  window.addEventListener(ActiveElement.reloadEvent, () => {
     document.querySelectorAll('span[data-field-type="secret"]').forEach((element) => {
       const secret = element.dataset.secret;
       const showButton = cloneElement('show-button');
