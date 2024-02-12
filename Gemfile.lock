@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    active_element (0.0.16)
+    active_element (0.0.18)
       bootstrap (~> 5.3.0alpha3)
       kaminari (~> 1.2)
       paintbrush (~> 0.1.2)
@@ -150,7 +150,7 @@ GEM
     mini_mime (1.1.5)
     mini_portile2 (2.8.2)
     minitest (5.18.1)
-    net-imap (0.4.9.1)
+    net-imap (0.4.10)
       date
       net-protocol
     net-pop (0.1.2)

@@ -1,5 +1,9 @@
 <%= active_element.component.page_title record.model_name.to_s.titleize %>
 
+<%= render_active_element_hook "#{controller_path}/before_edit" %>
+
 <%= active_element.component.form model: [namespace, record].compact,
                                   destroy: active_element.state.deletable?,
                                   fields: active_element.state.editable_fields %>
+
+<%= render_active_element_hook "#{controller_path}/after_edit" %>
