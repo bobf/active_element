@@ -1,7 +1,7 @@
 PATH
   remote: ..
   specs:
-    active_element (0.0.14)
+    active_element (0.0.18)
       bootstrap (~> 5.3.0alpha3)
       kaminari (~> 1.2)
       paintbrush (~> 0.1.2)
