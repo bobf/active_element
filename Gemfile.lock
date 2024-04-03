@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    active_element (0.0.18)
+    active_element (0.0.19)
       bootstrap (~> 5.3.0alpha3)
       kaminari (~> 1.2)
       paintbrush (~> 0.1.2)
@@ -145,7 +145,7 @@ GEM
       net-imap
       net-pop
       net-smtp
-    marcel (1.0.2)
+    marcel (1.0.4)
     method_source (1.0.0)
     mini_mime (1.1.5)
     mini_portile2 (2.8.2)
@@ -157,9 +157,9 @@ GEM
       net-protocol
     net-protocol (0.2.2)
       timeout
-    net-smtp (0.4.0.1)
+    net-smtp (0.5.0)
       net-protocol
-    nio4r (2.7.0)
+    nio4r (2.7.1)
     nokogiri (1.15.2)
       mini_portile2 (~> 2.8.2)
       racc (~> 1.4)
