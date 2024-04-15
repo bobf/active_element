@@ -2,6 +2,7 @@
 
 ActiveElement::Engine.routes.draw do
   ActiveElement.eager_load_controllers
+  ActiveElement.eager_load_models
 
   ActiveElement::ApplicationController.descendants.map do |descendant|
     post "#{descendant.controller_path}/_active_element_text_search",

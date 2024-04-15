@@ -124,9 +124,11 @@ module ActiveElement
       end
 
       def collection
-        return model.all unless default_text_search.text_search?
+        return model.public_send(list_scope) unless default_text_search.text_search?
 
-        model.left_outer_joins(default_text_search.search_relations).where(*default_text_search.text_search)
+        model.public_send(list_scope)
+             .left_outer_joins(default_text_search.search_relations)
+             .where(*default_text_search.text_search)
       end
 
       def render_range_error(error:, action:)
@@ -139,6 +141,13 @@ module ActiveElement
         return error.message if error.try(:message).present?
 
         I18n.t('active_element.unexpected_error')
+      end
+
+      def list_scope
+        return :all if state.list_scope.blank?
+        return state.list_scope.call(request) if state.list_scope.is_a?(Proc)
+
+        state.list_scope
       end
     end
   end

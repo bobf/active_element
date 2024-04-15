@@ -12,6 +12,10 @@ module ActiveElement
         end
 
         def value
+          if object.respond_to?(:default_display_attribute)
+            return object.public_send(object.default_display_attribute)
+          end
+
           DEFAULT_FIELDS.each do |field|
             return object.public_send(field) if active_record_value?(field)
             return object[field] if hash_key(field) if hash_value?(field)

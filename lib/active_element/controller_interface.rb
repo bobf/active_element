@@ -25,8 +25,9 @@ module ActiveElement
       @authorize
     end
 
-    def listable_fields(*args, order: nil)
+    def listable_fields(*args, order: nil, scope: nil)
       state.list_order = order
+      state.list_scope = scope
       state.listable_fields.concat(args.map(&:to_sym)).uniq!
     end
 

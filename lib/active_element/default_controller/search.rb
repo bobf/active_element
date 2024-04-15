@@ -25,6 +25,7 @@ module ActiveElement
         conditions = search_filters.to_h.map do |key, value|
           next relation_matches(key, value) if relation?(key)
           next datetime_between(key, value) if datetime?(key)
+          next join(key, value) if key.to_s.include?('.')
           next model.arel_table[key].matches("#{value}%") if string_like_column?(key)
 
           model.arel_table[key].eq(value)
@@ -36,7 +37,15 @@ module ActiveElement
       end
 
       def search_relations
-        search_filters.to_h.keys.map { |key| relation?(key) ? key.to_sym : nil }.compact
+        relation_joins = search_filters.to_h.keys.map { |key| relation?(key) ? key.to_sym : nil }.compact
+        (relation_joins + shorthand_joins).uniq
+      end
+
+      def shorthand_joins
+        search_filters.to_h
+                      .keys
+                      .select { |key| key.to_s.include?('.') }
+                      .map { |key| key.partition('.').first.to_sym }
       end
 
       private
@@ -64,6 +73,11 @@ module ActiveElement
 
           relation(field).try(:foreign_key)
         end.compact
+      end
+
+      def join(key, value)
+        table, _, column = key.to_s.partition('.')
+        relation(table).klass.arel_table[column].eq(value)
       end
 
       def noop
