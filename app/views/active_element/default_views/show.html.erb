@@ -1,10 +1,10 @@
 <%= active_element.component.page_title record.model_name.to_s.titleize %>
 
-<%= render_active_element_hook "#{controller_path}/before_show" %>
+<%= render_active_element_hook "#{controller_path}/before_show", locals: { record: record } %>
 
 <%= active_element.component.table item: record,
                                    edit: active_element.state.editable?,
                                    destroy: active_element.state.deletable?,
                                    fields: active_element.state.viewable_fields %>
 
-<%= render_active_element_hook "#{controller_path}/after_show" %>
+<%= render_active_element_hook "#{controller_path}/after_show", locals: { record: record } %>

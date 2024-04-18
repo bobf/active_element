@@ -7,7 +7,7 @@
                                     fields: active_element.state.searchable_fields %>
 <% end %>
 
-<%= render_active_element_hook "#{controller_path}/before_index" %>
+<%= render_active_element_hook "#{controller_path}/before_index", locals: { collection: collection } %>
 
 <% if active_element.state.search_required && search_filters.compact_blank.blank? %>
   <% if active_element.state.creatable? %>
@@ -24,4 +24,4 @@
                                      fields: active_element.state.listable_fields %>
 <% end %>
 
-<%= render_active_element_hook "#{controller_path}/after_index" %>
+<%= render_active_element_hook "#{controller_path}/after_index", locals: { collection: collection } %>

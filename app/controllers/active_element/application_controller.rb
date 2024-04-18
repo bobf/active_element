@@ -27,8 +27,8 @@ module ActiveElement
     helper_method :active_element
     helper_method :render_active_element_hook
 
-    def render_active_element_hook(hook)
-      render_to_string partial: hook
+    def render_active_element_hook(hook, locals: {})
+      render_to_string partial: hook, locals: locals
     rescue ActionView::MissingTemplate
       nil
     end
