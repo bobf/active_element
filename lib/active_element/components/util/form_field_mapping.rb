@@ -201,6 +201,7 @@ module ActiveElement
             json: :json_field,
             jsonb: :json_field,
             geometry: :text_area,
+            text: :text_area,
             datetime: :datetime_field,
             date: :date_field,
             time: :time_field,
