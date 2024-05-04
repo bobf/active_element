@@ -59,10 +59,12 @@ module ActiveElement
         end
 
         def inline_configured_field(field)
-          field_options = FieldOptions.from_state(field, controller.active_element.state, record)
+          field_options = FieldOptions.from_state(
+            field, controller.active_element.state, record, controller
+          )
           return nil if field_options.blank?
 
-          [field, field_options.type, field_options.options]
+          [field, field_options.type, field_options.options.reverse_merge({ value: field_options.value })]
         end
 
         def field_with_provided_type_and_provided_options(field)

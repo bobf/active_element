@@ -59,13 +59,23 @@
     <% fields.each_slice(columns) do |field_group| %>
       <div class="row form-fields mb-3">
         <% field_group.each do |field, type, options| %>
-          <div class="col-sm-3">
-            <%= render partial: 'active_element/components/form/label',
-                       locals: { component: component, id: id, type: type, form: form, field: field, options: options } %>
-          </div>
+          <% if type != :hidden_field %>
+            <div class="col-sm-3">
+              <%= render partial: 'active_element/components/form/label',
+                         locals: {
+                           component: component,
+                           id: id,
+                           type: type,
+                           form: form,
+                           field: field,
+                           options: options
+                         } %>
+            </div>
+          <% end %>
 
 
-          <div class="col">
+
+          <% if type != :hidden_field %><div class="col"><% end %>
             <%= render partial: 'active_element/components/form/field',
                        locals: {
                          id: id,
@@ -76,7 +86,7 @@
                          component: component,
                          record: record }
             %>
-          </div>
+          <% if type != :hidden_field %></div><% end %>
         <% end %>
       </div>
     <% end %>

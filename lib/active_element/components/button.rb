@@ -6,7 +6,7 @@ module ActiveElement
     class Button
       # rubocop:disable Metrics/MethodLength
       def initialize(controller, record, flag_or_options, confirm: false, type: :primary, method: nil,
-                     float: nil, icon: nil, tooltip: false, **kwargs, &block)
+                     float: nil, icon: nil, tooltip: false, nested_for: nil, **kwargs, &block)
         @controller = controller
         @record = record.is_a?(ActiveRecord::Relation) ? record.klass.new : record
         @flag_or_options = flag_or_options
@@ -20,6 +20,7 @@ module ActiveElement
         @block_given = block_given?
         @content = block.call if block_given?
         @tooltip = tooltip
+        @nested_for = nested_for
       end
       # rubocop:enable Metrics/MethodLength
 
@@ -49,7 +50,7 @@ module ActiveElement
       private
 
       attr_reader :controller, :record, :flag_or_options, :float, :kwargs, :kwargs_class, :type, :method, :icon,
-                  :block_given, :content, :confirm, :tooltip
+                  :block_given, :content, :confirm, :tooltip, :nested_for
 
       def link_method
         return method if method.present?
@@ -116,7 +117,21 @@ module ActiveElement
       def record_path
         return nil unless record.class.is_a?(ActiveModel::Naming)
 
-        Util::RecordPath.new(record: record, controller: controller, type: type).path
+        Util::RecordPath.new(record: record, controller: controller, type: type).path(**nested_args)
+      end
+
+      def nested_args
+        case type
+        when :new
+          nested_params
+        else
+          {}
+        end
+      end
+
+      def nested_params
+        route = controller.request.routes.recognize_path(controller.request.path)
+        route.reject { |key, _value| %w[controller action].include?(key.to_s) }
       end
     end
   end

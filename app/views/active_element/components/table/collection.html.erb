@@ -1,5 +1,10 @@
 <% if new %>
-  <%= active_element.component.new_button(component.model&.new, float: 'end', class: 'mb-3') %>
+  <%= active_element.component.new_button(
+    component.model&.new,
+    nested_for: nested_for,
+    float: 'end',
+    class: 'mb-3'
+  ) %>
 <% end %>
 
 

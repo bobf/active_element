@@ -190,14 +190,30 @@ module ActiveElement
       end
 
       def base_options_for_select(field, field_options)
-        return normalized_options(field_options.fetch(:options)) if field_options.key?(:options)
+        return normalized_options(field_options.fetch(:options), field_options) if field_options.key?(:options)
         return default_options_for_select(field, field_options) if record.class.is_a?(ActiveModel::Naming)
 
         raise ArgumentError, "Must provide select options `[:#{field}, { options: [...] }]` or a record instance."
       end
 
-      def normalized_options(options)
-        options.map { |option| option.is_a?(Array) ? option : [option, option] }
+      def normalized_options(options, field_options)
+        options.map do |option|
+          next option if option.is_a?(Array)
+          next active_record_option(option, field_options) if option.is_a?(ActiveRecord::Base)
+          [option, option] if option.is_a?(String)
+        end
+      end
+
+      def active_record_option(option, field_options)
+        [active_record_display_value(option, field_options), option.send(option.class.primary_key)]
+      end
+
+      def active_record_display_value(option, field_options)
+        if field_options[:display_value].is_a?(Proc) && record.present?
+          field_options[:display_value].call(option)
+        else
+          Util::DefaultDisplayValue.new(object: option).value
+        end
       end
 
       def default_class_name

@@ -80,11 +80,20 @@ module ActiveElement
         end
 
         def value_from_config
-          field_options = FieldOptions.from_state(field, component.controller.active_element.state, record)
+          field_options = field_options_from_state
           return nil if field_options.blank?
           return nil unless DATABASE_TYPES.include?(field_options.type.to_sym)
 
           send("#{field_options.type}_value")
+        end
+
+        def field_options_from_state
+          FieldOptions.from_state(
+            field,
+            component.controller.active_element.state,
+            record,
+            component.controller
+          )
         end
 
         # Override these methods as required in a class that includes this module:
