@@ -9,6 +9,16 @@
 
 <%= render_active_element_hook "#{controller_path}/before_index", locals: { collection: collection } %>
 
+<% if nested_for.present? %>
+  <%=
+    active_element.component.page_section_title(
+      nested_for.map do |nested_for_record|
+        ActiveElement::Components::Util::DefaultDisplayValue.new(object: nested_for_record).value
+      end.join(', ')
+    )
+    %>
+<% end %>
+
 <% if active_element.state.search_required && search_filters.compact_blank.blank? %>
   <% if active_element.state.creatable? %>
     <%= active_element.component.new_button(collection.model&.new, float: 'end', class: 'mb-3') %>

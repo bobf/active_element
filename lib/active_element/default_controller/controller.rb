@@ -15,7 +15,8 @@ module ActiveElement
         controller.render 'active_element/default_views/index',
                           locals: {
                             collection: ordered(collection),
-                            search_filters: default_text_search.search_filters
+                            search_filters: default_text_search.search_filters,
+                            nested_for: nested_relations
                           }
       end
 
@@ -124,10 +125,11 @@ module ActiveElement
       end
 
       def collection
-        return model.public_send(list_scope) unless default_text_search.text_search?
+        return model.public_send(list_scope).where(nested_scope) unless default_text_search.text_search?
 
         model.public_send(list_scope)
              .left_outer_joins(default_text_search.search_relations)
+             .where(nested_scope)
              .where(*default_text_search.text_search)
       end
 
@@ -148,6 +150,29 @@ module ActiveElement
         return state.list_scope.call(request) if state.list_scope.is_a?(Proc)
 
         state.list_scope
+      end
+
+      def nested_scope
+        nested_params.presence || noop
+      end
+
+      def noop
+        Arel::Nodes::True.new.eq(Arel::Nodes::True.new)
+      end
+
+      def nested_params
+        route = controller.request.routes.recognize_path(controller.request.path)
+        route.reject { |key, _value| %w[controller action].include?(key.to_s) }
+      end
+
+      def nested_relations
+        return [] if nested_params.blank?
+
+        nested_params.map do |key, value|
+          collection.model.reflections.values.find do |reflection|
+            reflection.foreign_key.to_s == key.to_s
+          end&.klass&.find(value)
+        end.compact
       end
     end
   end

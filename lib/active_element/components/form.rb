@@ -197,7 +197,15 @@ module ActiveElement
       end
 
       def normalized_options(options)
-        options.map { |option| option.is_a?(Array) ? option : [option, option] }
+        options.map do |option|
+          next option if option.is_a?(Array)
+          next active_record_option(option) if option.is_a?(ActiveRecord::Base)
+          [option, option] if option.is_a?(String)
+        end
+      end
+
+      def active_record_option(option)
+        [option.send(option.class.primary_key), Util::DefaultDisplayValue.new(object: option).value]
       end
 
       def default_class_name
