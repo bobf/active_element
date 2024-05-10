@@ -19,6 +19,15 @@
       </script>
     <% end %>
 
+    <% if respond_to?(:javascript_pack_tag) && defined? Webpacker %>
+      <%= begin
+            javascript_pack_tag 'application'
+          rescue Webpacker::Manifest::MissingEntryError
+            nil
+          end
+        %>
+    <% end %>
+
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha512-iecdLmaskl7CVkqkXNQ/ZH/XLlvWZOJyj7Yy7tcenmpD1ypASozpmT/E0iPtmFIB46ZmdtAc9eNBvH0H/ZpiBw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
     <link rel="stylesheet"
           href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/styles/default.min.css">
@@ -116,6 +125,5 @@
       <%= javascript_include_tag 'active_element/active_element', 'data-turbo-track': 'reload', 'data-turbolinks-track': 'reload' %>
       <%= javascript_include_tag 'application', 'data-turbo-track': 'reload', 'data-turbolinks-track': 'reload' %>
     <% end %>
-
   </body>
 </html>
