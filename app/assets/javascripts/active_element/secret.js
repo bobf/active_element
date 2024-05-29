@@ -1,6 +1,8 @@
 (() => {
   const cloneElement = (id) => ActiveElement.cloneElement('secret', id);
 
+  if (window._active_element_secrets_loaded) return;
+
   window.addEventListener(ActiveElement.reloadEvent, () => {
     document.querySelectorAll('span[data-field-type="secret"]').forEach((element) => {
       const secret = element.dataset.secret;
@@ -36,5 +38,6 @@
       element.append(showButton);
       element.append(hideButton);
     });
+    window._active_element_secrets_loaded = true;
   });
 })();

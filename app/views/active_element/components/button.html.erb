@@ -6,7 +6,7 @@
       'bs-trigger': 'hover',
       'bs-toggle': 'popover',
       'bs-content': title,
-    } : {}).merge(method&.to_s == 'get' ? {} : { 'turbo-method' => method.to_s }),
+    } : {}).merge(method&.to_s == 'get' ? {} : { 'ae-method' => method.to_s }),
     class: "btn #{button_class} #{float_class} #{kwargs_class}",
     **kwargs
   ) do %>
