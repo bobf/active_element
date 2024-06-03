@@ -15,7 +15,7 @@ module ActiveElement
       # rubocop:disable Metrics/MethodLength
       def initialize(controller, class_name:, collection:, fields:, params:, model_name: nil, style: nil,
                      show: false, new: false, edit: false, destroy: false, paginate: true, group: nil,
-                     group_title: false, nested_for: nil, row_class: nil, title: nil, **_kwargs)
+                     group_title: false, nested_for: nil, row_class: nil, title: nil, footer_pagination: nil, **_kwargs)
         @controller = controller
         @class_name = class_name
         @model_name = model_name
@@ -34,6 +34,7 @@ module ActiveElement
         @title = title
         @nested_for = nested_for
         verify_paginate_and_group
+        @footer_pagination = footer_pagination
       end
       # rubocop:enable Metrics/MethodLength
 
@@ -60,7 +61,8 @@ module ActiveElement
           page_sizes: [5, 10, 25, 50, 75, 100, 200],
           page_size: page_size,
           i18n: i18n,
-          row_class_mapper: row_class_mapper
+          row_class_mapper: row_class_mapper,
+          footer_pagination: @footer_pagination && display_pagination?
         }
       end
 

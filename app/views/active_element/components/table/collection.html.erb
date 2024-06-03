@@ -51,3 +51,10 @@
                          row_class_mapper: row_class_mapper } %>
   <% end %>
 <% end %>
+
+<% if footer_pagination %>
+  <%=
+    render partial: 'active_element/components/table/pagination',
+           locals: { collection: collection, params: params, page_size: page_size, page_sizes: page_sizes }
+  %>
+<% end %>
