@@ -231,9 +231,9 @@ module ActiveElement
 
         def options_with_inferred_translations(field, options)
           options.reverse_merge({
-                                  label: i18n.label(field),
-                                  description: i18n.description(field),
-                                  placeholder: i18n.placeholder(field)
+                                  label: i18n.label(field, record: record),
+                                  description: i18n.description(field, record: record),
+                                  placeholder: i18n.placeholder(field, record: record)
                                 })
         end
 
@@ -267,6 +267,7 @@ module ActiveElement
         end
 
         def required?(field)
+          return false if search
           return false if record.blank?
           return false unless record.class.respond_to?(:validators)
 

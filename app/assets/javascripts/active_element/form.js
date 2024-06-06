@@ -1,6 +1,8 @@
 (() => {
   const cloneElement = (id) => ActiveElement.cloneElement('form', id);
 
+  if (window._active_element_form_loaded) return;
+
   const initModalButtons = () => {
     document.querySelectorAll('[data-field-type="form-modal"]').forEach((element) => {
       const formId = element.dataset.formId;
@@ -17,9 +19,10 @@
 
       document.body.append(modal);
 
-      element.addEventListener('click', () => {
+      element.addEventListener('click', (ev) => {
         wrapper.classList.remove('d-none');
         bootstrapModal.toggle();
+        ev.stopPropagation();
         return false;
       });
     });
@@ -43,4 +46,6 @@
     initModalButtons();
     initClearFormButtons();
   });
+
+  window._active_element_secrets_loaded = true;
 })();

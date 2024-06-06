@@ -15,31 +15,31 @@ module ActiveElement
           @component = component
         end
 
-        def label(field)
-          return titleize(field) unless model?
+        def label(field, record: nil)
+          return titleize(field) unless model?(record)
 
-          key = "admin.models.#{model_key}.fields.#{field}.label"
+          key = "admin.models.#{model_key(record)}.fields.#{field}.label"
           ::I18n.t(key, default: titleize(field))
         end
 
-        def description(field)
-          return nil unless model?
+        def description(field, record: nil)
+          return nil unless model?(record)
 
-          key = "admin.models.#{model_key}.fields.#{field}.description"
+          key = "admin.models.#{model_key(record)}.fields.#{field}.description"
           ::I18n.t(key, default: nil)
         end
 
-        def placeholder(field)
-          return nil unless model?
+        def placeholder(field, record: nil)
+          return nil unless model?(record)
 
-          key = "admin.models.#{model_key}.fields.#{field}.placeholder"
+          key = "admin.models.#{model_key(record)}.fields.#{field}.placeholder"
           ::I18n.t(key, default: nil)
         end
 
-        def format(field)
-          return nil unless model?
+        def format(field, record: nil)
+          return nil unless model?(record)
 
-          key = "admin.models.#{model_key}.fields.#{field}.format"
+          key = "admin.models.#{model_key(record)}.fields.#{field}.format"
           ::I18n.t(key, default: nil)
         end
 
@@ -47,14 +47,14 @@ module ActiveElement
 
         attr_reader :component
 
-        def model_key
-          @model_key ||= component.model.name.underscore.pluralize
+        def model_key(record = nil)
+          @model_key ||= (record&.class || component.model).name.underscore.pluralize
         end
 
-        def model?
-          return false if component.model.nil?
+        def model?(record = nil)
+          return false if record.nil? && component.model.nil?
 
-          component.model.is_a?(ActiveModel::Naming)
+          (record&.class || component.model).is_a?(ActiveModel::Naming)
         end
 
         def titleize(field)

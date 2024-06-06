@@ -7,7 +7,7 @@ module ActiveElement
     class Form # rubocop:disable Metrics/ClassLength
       include Translations
 
-      attr_reader :controller
+      attr_reader :controller, :search
 
       # rubocop:disable Metrics/MethodLength
       def initialize(controller, fields:, submit:, item:, title: nil, destroy: false, search: false,
@@ -142,7 +142,7 @@ module ActiveElement
       private
 
       attr_reader :fields, :submit, :title, :kwargs, :item, :method, :action,
-                  :destroy, :modal, :columns, :search
+                  :destroy, :modal, :columns
 
       def form_field_mapping
         @form_field_mapping ||= Util::FormFieldMapping.new(
