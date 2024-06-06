@@ -157,6 +157,8 @@ module ActiveElement
       end
 
       def noop
+        return {} if defined?(::Mongoid) && model&.include?(::Mongoid::Document)
+
         Arel::Nodes::True.new.eq(Arel::Nodes::True.new)
       end
 
