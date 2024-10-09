@@ -23,12 +23,10 @@ module ActiveElement
 
         def relation_id # rubocop:disable Metrics/CyclomaticComplexity
           case relation.macro
-          when :has_one
+          when :has_one, :belongs_to
             associated_record&.public_send(relation_key)
           when :has_many
             associated_record&.map(&relation_key.to_sym)
-          when :belongs_to
-            record&.public_send(relation_key)
           end
         end
 
@@ -37,7 +35,7 @@ module ActiveElement
           when :has_one, :has_many
             relation.klass.primary_key
           when :belongs_to
-            relation.foreign_key
+            relation.association_primary_key
           end
         end
 

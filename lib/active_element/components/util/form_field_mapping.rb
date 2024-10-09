@@ -170,8 +170,8 @@ module ActiveElement
 
         def relation_select_field(field)
           association = association_mapping(field)
-          columns = [association.display_field, association.associated_model.primary_key].compact
-          [association.relation_key, :select,
+          columns = [association.display_field, association.relation_key].compact
+          [field, :select,
            { multiple: association_mapping(field).multiple_association?,
              options: association.associated_model.pluck(*columns) }]
         end
