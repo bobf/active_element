@@ -76,7 +76,7 @@
     <meta name="active_element_controller_path" content="<%= controller_path %>">
 
     <%= stylesheet_link_tag 'active_element/active_element' %>
-    <%= javascript_include_tag 'active_element/active_element' %>
+    <%= javascript_include_tag 'active_element/active_element', 'data-turbo-track': 'reload', 'data-turbolinks-track': 'reload'  %>
 
     <% if Rails.application.assets&.find_asset('application.css').present? %>
       <%= stylesheet_link_tag 'application' %>
@@ -122,7 +122,6 @@
     <%= render_active_element_hook 'active_element/after_content' %>
 
     <% if !respond_to?(:javascript_importmap_tags) && Rails.application.assets&.find_asset('application.js').present? %>
-      <%= javascript_include_tag 'active_element/active_element', 'data-turbo-track': 'reload', 'data-turbolinks-track': 'reload' %>
       <%= javascript_include_tag 'application', 'data-turbo-track': 'reload', 'data-turbolinks-track': 'reload' %>
     <% end %>
   </body>
