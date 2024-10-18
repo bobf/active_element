@@ -53,6 +53,14 @@ module ActiveElement
       attr_reader :controller, :model
 
       def string_like_column?(key)
+        exact = controller.active_element.state.field_options&.find do |field, options_proc|
+          field_options = FieldOptions.new(key)
+          options_proc.call(field_options, nil, controller)
+          field_options.exact_match
+        end
+
+        return false if exact
+
         [:string, :text].include?(
           model.columns.find { |column| column.name.to_s == key.to_s }&.type&.to_sym
         )

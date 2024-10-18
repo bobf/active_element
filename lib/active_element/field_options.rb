@@ -1,6 +1,7 @@
 module ActiveElement
   class FieldOptions
-    attr_accessor :type, :options, :value
+    attr_accessor :options, :value, :exact_match
+    attr_writer :type
     attr_reader :field
 
     def self.from_state(field, state, record, controller)
@@ -15,6 +16,10 @@ module ActiveElement
     def initialize(field)
       @field = field
       @options = {}
+    end
+
+    def type
+      @type || :text_field
     end
   end
 end

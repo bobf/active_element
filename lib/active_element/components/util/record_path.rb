@@ -65,7 +65,7 @@ module ActiveElement
         attr_reader :record, :controller, :type
 
         def record_path(**kwargs) # rubocop:disable Metrics/AbcSize
-          return nil if record.nil?
+          return nil if record.nil? || default_record_path.nil?
 
           controller.helpers.public_send(default_record_path, *path_arguments, **kwargs)
         rescue NoMethodError
@@ -90,8 +90,16 @@ module ActiveElement
         end
 
         def default_record_path
-          return record.controller_name.constantize.controller_path.underscore.singularize.tr('/', '_') + '_path' if record.try(:controller_name).present?
-          "#{record_path_prefix}#{namespace_prefix}#{record_name}_path"
+          if record.try(:active_element_controller_name).present?
+            record.active_element_controller_name
+                  .constantize.controller_path
+                  .underscore
+                  .singularize.tr('/', '_') + '_path'
+          else
+            "#{record_path_prefix}#{namespace_prefix}#{record_name}_path"
+          end
+        rescue NameError
+          nil
         end
 
         def record_path_for(name)
