@@ -46,9 +46,18 @@ module ActiveElement
 
       def scalar?(field)
         return true if relation?(field)
-        return true if %i[json jsonb].exclude?(column(field)&.type)
+        return true if %i[json jsonb].exclude?(field_type(field))
 
         false
+      end
+
+      def field_type(field)
+        options_proc = controller.active_element.state.field_options[field]
+        return column(field)&.type if options_proc.nil?
+
+        field_options = FieldOptions.from_state(field, controller.active_element.state, nil, controller)
+        options_proc.call(field_options)
+        field_options.type || column(field)&.type
       end
 
       def json_params(fields)
